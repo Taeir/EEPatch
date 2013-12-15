@@ -1,8 +1,3 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) fieldsfirst space 
-// Source File Name:   TileEE.java
-
 package ee;
 
 import ee.network.PacketHandler;
@@ -11,10 +6,9 @@ import ee.network.TileEntityPacket;
 
 import java.util.Random;
 
-import net.minecraft.server.*;
+import org.bukkit.entity.HumanEntity;
 
-// Referenced classes of package ee:
-//			EEItem, EEBase, TileAlchChest, ItemKleinStar
+import net.minecraft.server.*;
 
 public class TileEE extends TileEntity {
 
@@ -36,13 +30,22 @@ public class TileEE extends TileEntity {
 	}
 
 	public int getKleinLevel(int var1) {
-		return var1 != EEItem.kleinStar1.id ? var1 != EEItem.kleinStar2.id ? var1 != EEItem.kleinStar3.id ? var1 != EEItem.kleinStar4.id ? var1 != EEItem.kleinStar5.id ? ((byte) (var1 != EEItem.kleinStar6.id ? 0
-				: 6))
-				: 5
-				: 4
-				: 3
-				: 2
-				: 1;
+		if (var1 != EEItem.kleinStar1.id){
+			if (var1 != EEItem.kleinStar2.id){
+				if (var1 != EEItem.kleinStar3.id){
+					if (var1 != EEItem.kleinStar4.id) {
+						if (var1 != EEItem.kleinStar5.id){
+							return ((byte) (var1 != EEItem.kleinStar6.id ? 0: 6));
+						}
+						else return 5;
+					}
+					else return 4;
+				}
+				else return 3;
+			}
+			else return 2;
+		}
+		else return 1;
 	}
 
 	public float getWOFTReciprocal(float var1) {
@@ -180,6 +183,7 @@ public class TileEE extends TileEntity {
 
 	@SuppressWarnings("null")
 	public void onBlockRemoval() {
+		for (HumanEntity h : getViewers()) h.closeInventory();
 		for (int var1 = 0; var1 < getSizeInventory(); var1++) {
 			ItemStack var2 = getStackInSlot(var1);
 			if (var2 != null) {

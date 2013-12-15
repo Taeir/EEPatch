@@ -122,6 +122,7 @@ public class EEBase {
 			instance = var0;
 			props = new EEProps(new File("mod_EE.props").getPath());
 			props = EEMaps.InitProps(props);
+			props = EEPatch.InitProps(props);
 			props.func_26596_save();
 			machineFactor = props.getInt("machineFactor");
 			setupCraftHook();

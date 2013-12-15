@@ -3,7 +3,11 @@ package ee;
 import java.util.Iterator;
 import java.util.List;
 
+import org.bukkit.entity.HumanEntity;
+
 import net.minecraft.server.AxisAlignedBB;
+import net.minecraft.server.Block;
+import net.minecraft.server.BlockContainer;
 import net.minecraft.server.EEProxy;
 import net.minecraft.server.Entity;
 import net.minecraft.server.EntityHuman;
@@ -39,70 +43,47 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 	
 	//private static HashSet<Entity> grabbing = new HashSet<Entity>();
 
-	public boolean addItem(ItemStack var1, boolean var2, Orientations var3) {
-		switch (var3) {
-			case Unknown:
-			case XNeg:
-			case XPos:
-			case YNeg:
-			case YPos:
-			case ZNeg:
-			case ZPos:
-				if (var1 != null) {
-					for (int var4 = 0; var4 < items.length; var4++) {
-						if (items[var4] == null) {
-							if (var2) {
-								for (items[var4] = var1.cloneItemStack(); var1.count > 0; var1.count -= 1);
-							}
-
-							return true;
-						}
-
-						if (items[var4].doMaterialsMatch(var1) && items[var4].count < items[var4].getMaxStackSize()) {
-							if (var2) {
-								while (items[var4].count < items[var4].getMaxStackSize() && var1.count > 0) {
-									items[var4].count += 1;
-									var1.count -= 1;
-								}
-
-								if (var1.count != 0) ;
-							} else {
-								return true;
-							}
-						}
-					}
+	public boolean addItem(ItemStack item, boolean add, Orientations side) {
+		if (item == null) return false;
+		for (int i = 0; i < items.length; i++) {
+			if (items[i] == null) {
+				if (add) {
+					for (items[i] = item.cloneItemStack(); item.count > 0; item.count -= 1);
 				}
-				break;
+
+				return true;
+			}
+
+			if (items[i].doMaterialsMatch(item) && items[i].count < items[i].getMaxStackSize()) {
+				if (add) {
+					while (items[i].count < items[i].getMaxStackSize() && item.count > 0) {
+						items[i].count++;
+						item.count--;
+					}
+
+					if (item.count != 0) continue;
+				}
+				return true;
+			}
 		}
+		
 		return false;
 	}
 
 	public ItemStack extractItem(boolean var1, Orientations var2) {
 		if (removed) return new ItemStack(3,1,0);
-		switch (var2) {
-			case Unknown:
-			case XNeg:
-			case XPos:
-			case YNeg:
-			case YPos:
-			case ZNeg:
-			case ZPos:
-				for (int var3 = 0; var3 < items.length; var3++) {
-					if (items[var3] != null) {
-						ItemStack var4 = items[var3].cloneItemStack();
-						var4.count = 1;
+		for (int var3 = 0; var3 < items.length; var3++) {
+			if (items[var3] != null) {
+				ItemStack var4 = items[var3].cloneItemStack();
+				var4.count = 1;
 
-						if (var1) {
-							items[var3].count -= 1;
-
-							if (items[var3].count < 1) {
-								items[var3] = null;
-							}
-						}
-
-						return var4;
-					}
+				if (var1) {
+					if (items[var3].count <= 1) items[var3] = null;
+					else items[var3].count--;
 				}
+
+				return var4;
+			}
 		}
 
 		return null;
@@ -119,16 +100,16 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 	
 	public ItemStack splitStack(int var1, int var2) {
 		if (items[var1] != null) {
-			if (items[var1].count <= var2) {
-				ItemStack var3 = items[var1];
+			ItemStack var3;
+			if ((var3 = items[var1]).count <= var2) {
 				items[var1] = null;
 				update();
 				return var3;
 			}
+			
+			var3 = items[var1].a(var2);
 
-			ItemStack var3 = items[var1].a(var2);
-
-			if (items[var1].count == 0) {
+			if (items[var1].count < 1) {
 				items[var1] = null;
 			}
 
@@ -199,26 +180,25 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 		return 64;
 	}
 
-	
 	public void update() {
 		super.update();
 		
 		if (world == null || EEProxy.isClient(world)) return;
 		
-		boolean var1 = false;
-		boolean var2 = false;
-		boolean var3 = false;
-		boolean var4 = false;
-		boolean var5 = false;
+		boolean repair = false;
+		boolean eternal = false;
+		boolean torch = false;
+		boolean watch = false;
+		boolean bhb = false;
 
 		for (int var6 = 0; var6 < getSize(); var6++) {
 			if (items[var6] != null) {
 				if (items[var6].getItem().id == EEItem.watchOfTime.id) {
-					var4 = true;
+					watch = true;
 				}
 
 				if (items[var6].getItem().id == EEItem.repairCharm.id) {
-					var1 = true;
+					repair = true;
 				}
 
 				if (items[var6].getItem() instanceof ItemVoidRing) {
@@ -229,8 +209,8 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 						((ItemEECharged) items[var6].getItem()).setBoolean(items[var6], "active", true);
 					}
 
-					var2 = true;
-					var5 = true;
+					eternal = true;
+					bhb = true;
 				}
 
 				if (items[var6].getItem().id == EEItem.eternalDensity.id) {
@@ -241,7 +221,7 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 						((ItemEECharged) items[var6].getItem()).setBoolean(items[var6], "active", true);
 					}
 
-					var2 = true;
+					eternal = true;
 				}
 
 				if (items[var6].getItem() instanceof ItemAttractionRing) {
@@ -250,32 +230,32 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 						((ItemEECharged) items[var6].getItem()).setBoolean(items[var6], "active", true);
 					}
 
-					var5 = true;
+					bhb = true;
 				}
 
 				if (items[var6].getItem().id == EEBlock.eeTorch.id && items[var6].getData() == 0) {
-					var3 = true;
+					torch = true;
 				}
 			}
 		}
 
-		if (var4 != timeWarp) 
-			timeWarp = var4;
+		if (watch != timeWarp) 
+			timeWarp = watch;
 
-		if (var1 != repairOn) 
-			repairOn = var1;
+		if (repair != repairOn) 
+			repairOn = repair;
 
-		if (var5 != attractionOn) 
-			attractionOn = var5;
+		if (bhb != attractionOn) 
+			attractionOn = bhb;
 
-		if (var2 != condenseOn) 
-			condenseOn = var2;
-		else if (!var2)
+		if (eternal != condenseOn) 
+			condenseOn = eternal;
+		else if (!eternal)
 			eternalDensity = -1;
 
-		if (var3 != interdictionOn) {
+		if (torch != interdictionOn) {
 			world.notify(x, y, z);
-			interdictionOn = var3;
+			interdictionOn = torch;
 		}
 	}
 
@@ -290,10 +270,9 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 
 				if (var1 != null) {
 					for (int var4 = 0; var4 < EEMaps.chargedItems.size(); var4++) {
-						if (EEMaps.chargedItems.get(var4) == var1.id) {
-							var2 = true;
-							break;
-						}
+						if (EEMaps.chargedItems.get(var4).intValue() != var1.id) continue;
+						var2 = true;
+						break;
 					}
 
 					if (!var2 && var1.getData() >= 1 && var1.d()) {
@@ -324,11 +303,20 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 				}
 			}
 
+			if (var2 < EEMaps.getEMC(EEItem.redMatter.id) && !AnalyzeTier(items[eternalDensity], EEMaps.getEMC(EEItem.redMatter.id)) &&
+				var2 < EEMaps.getEMC(EEItem.darkMatter.id) && !AnalyzeTier(items[eternalDensity], EEMaps.getEMC(EEItem.darkMatter.id)) &&
+				var2 < EEMaps.getEMC(Item.DIAMOND.id) && !AnalyzeTier(items[eternalDensity], EEMaps.getEMC(Item.DIAMOND.id)) &&
+				var2 < EEMaps.getEMC(Item.GOLD_INGOT.id) && !AnalyzeTier(items[eternalDensity], EEMaps.getEMC(Item.GOLD_INGOT.id)) &&
+				var2 < EEMaps.getEMC(Item.IRON_INGOT.id))
+				if (!AnalyzeTier(items[eternalDensity], EEMaps.getEMC(Item.IRON_INGOT.id)));
+			
+			/*
 			if (var2 >= EEMaps.getEMC(EEItem.redMatter.id) || AnalyzeTier(items[eternalDensity], EEMaps.getEMC(EEItem.redMatter.id))
 					|| var2 >= EEMaps.getEMC(EEItem.darkMatter.id) || AnalyzeTier(items[eternalDensity], EEMaps.getEMC(EEItem.darkMatter.id))
 					|| var2 >= EEMaps.getEMC(Item.DIAMOND.id) || AnalyzeTier(items[eternalDensity], EEMaps.getEMC(Item.DIAMOND.id))
 					|| var2 >= EEMaps.getEMC(Item.GOLD_INGOT.id) || AnalyzeTier(items[eternalDensity], EEMaps.getEMC(Item.GOLD_INGOT.id))
 					|| var2 >= EEMaps.getEMC(Item.IRON_INGOT.id) || !AnalyzeTier(items[eternalDensity], EEMaps.getEMC(Item.IRON_INGOT.id))) ;
+			*/
 		}
 	}
 
@@ -340,8 +328,10 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 		int var3 = 0;
 
 		for (int var4 = 0; var4 < items.length; var4++) {
-			if (items[var4] != null && isValidMaterial(items[var4]) && EEMaps.getEMC(items[var4]) < var2) {
-				var3 += EEMaps.getEMC(items[var4]) * items[var4].count;
+			if (items[var4] == null || !isValidMaterial(items[var4])) continue;
+			int emc = EEMaps.getEMC(items[var4]);
+			if (emc < var2) {
+				var3 += emc * items[var4].count;
 			}
 		}
 
@@ -381,23 +371,41 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 	}
 
 	private ItemStack getProduct(int var1) {
+		if (var1 != EEMaps.getEMC(Item.IRON_INGOT.id)){
+			if (var1 != EEMaps.getEMC(Item.GOLD_INGOT.id)){
+				if (var1 != EEMaps.getEMC(Item.DIAMOND.id)){
+					if (var1 != EEMaps.getEMC(EEItem.darkMatter.id)){
+						if (var1 != EEMaps.getEMC(EEItem.redMatter.id)){
+							return null;
+						}
+						else return new ItemStack(EEItem.redMatter, 1);
+					}
+					else return new ItemStack(EEItem.darkMatter, 1);
+				}
+				else return new ItemStack(Item.DIAMOND, 1);
+			}
+			else return new ItemStack(Item.GOLD_INGOT, 1);
+		}
+		else return new ItemStack(Item.IRON_INGOT, 1);
+		
+		/*
 		return var1 == EEMaps.getEMC(EEItem.redMatter.id) ? new ItemStack(EEItem.redMatter, 1) :
 					var1 == EEMaps.getEMC(EEItem.darkMatter.id) ? new ItemStack(EEItem.darkMatter, 1) :
 						var1 == EEMaps.getEMC(Item.DIAMOND.id) ? new ItemStack(Item.DIAMOND, 1) :
 							var1 == EEMaps.getEMC(Item.GOLD_INGOT.id) ? new ItemStack(Item.GOLD_INGOT, 1) :
 								var1 == EEMaps.getEMC(Item.IRON_INGOT.id) ? new ItemStack(Item.IRON_INGOT, 1) :
 									null;
+								*/
 	}
 
 	private void ConsumeMaterialBelowTier(ItemStack var1, int var2) {
 		for (int var3 = 0; var3 < items.length; var3++) {
-			if (items[var3] != null && isValidMaterial(items[var3]) && EEMaps.getEMC(items[var3]) < var2) {
-				addEMC(var1, EEMaps.getEMC(items[var3]));
-				items[var3].count -= 1;
-
-				if (items[var3].count == 0) {
-					items[var3] = null;
-				}
+			if (items[var3] == null || !isValidMaterial(items[var3])) continue;
+			int emc = EEMaps.getEMC(items[var3]);
+			if (emc < var2) {
+				addEMC(var1, emc);
+				if (items[var3].count <= 1) items[var3] = null;
+				else items[var3].count--;
 
 				return;
 			}
@@ -414,7 +422,7 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 		}
 
 		int var2 = var1.id;
-		return var2 != EEItem.redMatter.id;
+		return var2 != EEItem.redMatter.id ? var2 >= Block.byId.length || !(Block.byId[var2] instanceof BlockContainer) || !Block.byId[var2].hasTileEntity(var1.getData()) : false;
 	}
 
 	private int emc(ItemStack var1) {
@@ -443,7 +451,7 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 	}
 
 	public void q_() {
-		if (++ticksSinceSync % 20 * 4 == 0) {
+		if ((++ticksSinceSync % 20) * 4 == 0) {
 			world.playNote(x, y, z, 1, numUsingPlayers);
 		}
 
@@ -526,7 +534,6 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 
 		while (var9.hasNext()) {
 			Entity var8 = var9.next();
-			if (var8 == null) continue;
 			GrabItems(var8);
 		}
 
@@ -535,13 +542,12 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 
 		while (var11.hasNext()) {
 			Entity var10 = var11.next();
-			if (var10 == null) continue;
 			GrabItems(var10);
 		}
 	}
 
 	public boolean PushStack(EntityItem var1) {
-		if (var1 == null) return false;
+		if (var1 == null || var1.dead) return false;
 		
 		if (var1.itemStack == null) {
 			var1.die();
@@ -556,8 +562,8 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 			if (items[var2] == null) {
 				items[var2] = var1.itemStack.cloneItemStack();
 
-				for (items[var2].count = 0; var1.itemStack.count > 0 && items[var2].count < items[var2].getMaxStackSize(); var1.itemStack.count -= 1) {
-					items[var2].count += 1;
+				for (items[var2].count = 0; var1.itemStack.count > 0 && items[var2].count < items[var2].getMaxStackSize(); var1.itemStack.count--) {
+					items[var2].count++;
 				}
 
 				var1.die();
@@ -566,8 +572,8 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 
 			if (items[var2].doMaterialsMatch(var1.itemStack) && items[var2].count <= var1.itemStack.getMaxStackSize() - var1.itemStack.count) {
 				while (var1.itemStack.count > 0 && items[var2].count < items[var2].getMaxStackSize()) {
-					items[var2].count += 1;
-					var1.itemStack.count -= 1;
+					items[var2].count++;
+					var1.itemStack.count--;
 				}
 
 				var1.die();
@@ -620,6 +626,8 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 
 			if (var9.getItem() instanceof ItemLootBall) {
 				ItemLootBall var3 = (ItemLootBall) var9.getItem();
+				//if (var3.isGrabbed) return;
+				//var3.isGrabbed = true;
 				ItemStack[] var4 = var3.getDroplist(var9);
 				ItemStack[] var5 = var4;
 				int var6 = var4.length;
@@ -640,6 +648,7 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 		} else if (var1 instanceof EntityLootBall) {
 			if (((EntityLootBall) var1).items == null) {
 				var1.die();
+				return;
 			}
 
 			ItemStack[] var2 = ((EntityLootBall) var1).items;
@@ -653,9 +662,8 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 
 	private void PullItems(Entity var1) {
 		if (var1 instanceof EntityItem || var1 instanceof EntityLootBall) {
-			if (var1 instanceof EntityLootBall) {
-				((EntityLootBall) var1).setBeingPulled(true);
-			}
+			if (var1 instanceof EntityLootBall) ((EntityLootBall) var1).setBeingPulled(true);
+			
 
 			double var3 = x + 0.5D - var1.locX;
 			double var5 = y + 0.5D - var1.locY;
@@ -664,9 +672,9 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 			var9 *= var9;
 
 			if (var9 <= Math.pow(6.0D, 4.0D)) {
-				double var11 = var3 * 0.01999999955296516D / var9 * Math.pow(6.0D, 3.0D);
-				double var13 = var5 * 0.01999999955296516D / var9 * Math.pow(6.0D, 3.0D);
-				double var15 = var7 * 0.01999999955296516D / var9 * Math.pow(6.0D, 3.0D);
+				double var11 = var3 * 0.02D / var9 * Math.pow(6.0D, 3.0D);
+				double var13 = var5 * 0.02D / var9 * Math.pow(6.0D, 3.0D);
+				double var15 = var7 * 0.02D / var9 * Math.pow(6.0D, 3.0D);
 
 				if (var11 > 0.1D) {
 					var11 = 0.1D;
@@ -707,9 +715,9 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 			var12 *= var12;
 
 			if (var12 <= Math.pow(6.0D, 4.0D)) {
-				double var14 = -(var6 * 0.01999999955296516D / var12) * Math.pow(6.0D, 3.0D);
-				double var16 = -(var8 * 0.01999999955296516D / var12) * Math.pow(6.0D, 3.0D);
-				double var18 = -(var10 * 0.01999999955296516D / var12) * Math.pow(6.0D, 3.0D);
+				double var14 = -(var6 * 0.02D / var12) * Math.pow(6.0D, 3.0D);
+				double var16 = -(var8 * 0.02D / var12) * Math.pow(6.0D, 3.0D);
+				double var18 = -(var10 * 0.02D / var12) * Math.pow(6.0D, 3.0D);
 
 				if (var14 > 0.0D) {
 					var14 = 0.22D;
@@ -741,19 +749,21 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 			numUsingPlayers = var2;
 		}
 	}
+	
 
 	public void f() {
-		numUsingPlayers += 1;
+		numUsingPlayers++;
 		world.playNote(x, y, z, 1, numUsingPlayers);
 	}
+	
 
 	public void g() {
-		numUsingPlayers -= 1;
+		numUsingPlayers--;
 		world.playNote(x, y, z, 1, numUsingPlayers);
 	}
 	
 	public boolean a(EntityHuman var1) {
-		return world.getTileEntity(x, y, z) == this;
+		return world.getTileEntity(x, y, z) == this ? var1.e(x + 0.5D, y + 0.5D, z + 0.5D) <= 64D : false;
 	}
 	
 	public int getStartInventorySide(int var1) {
@@ -775,6 +785,8 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 
 	@SuppressWarnings("null")
 	public void onBlockRemoval() {
+		for (HumanEntity h : this.getViewers()) h.closeInventory();
+		
 		removed = true;
 		for (int var1 = 0; var1 < getSize(); var1++) {
 			ItemStack var2 = getItem(var1);

@@ -7,29 +7,22 @@ import ee.events.EEEventManager;
 import ee.events.EEDuplicateEvent;
 import ee.events.EEEnums.DuplicateType;
 import forge.ISidedInventory;
+
 import java.util.Random;
+
+import org.bukkit.entity.HumanEntity;
 
 import net.minecraft.server.*;
 
-@SuppressWarnings("cast")
 public class TileRMFurnace extends TileEE implements ISpecialInventory, ISidedInventory, IEEPowerNet
 {
-	private ItemStack items[];
-	public int furnaceBurnTime;
-	public int currentItemBurnTime;
-	public int furnaceCookTime;
+	private ItemStack items[] = new ItemStack[27];
+	public int furnaceBurnTime = 0;
+	public int currentItemBurnTime = 0;
+	public int furnaceCookTime = 0;
 	public int nextinstack;
 	public int nextoutstack;
-	private float woftFactor;
-	
-	public TileRMFurnace()
-	{
-		items = new ItemStack[27];
-		furnaceBurnTime = 0;
-		currentItemBurnTime = 0;
-		furnaceCookTime = 0;
-		woftFactor = 1.0F;
-	}
+	private float woftFactor = 1.0F;
 
 	@SuppressWarnings("unused")
 	private boolean isChest(TileEntity var1)
@@ -40,6 +33,8 @@ public class TileRMFurnace extends TileEE implements ISpecialInventory, ISidedIn
 	@SuppressWarnings({ "null", "unused" })
 	public void onBlockRemoval()
 	{
+		for (HumanEntity h : getViewers()) h.closeInventory();
+		
 		for(int var1 = 0; var1 < getSize(); var1++)
 		{
 			ItemStack var2 = getItem(var1);
@@ -53,7 +48,7 @@ public class TileRMFurnace extends TileEE implements ISpecialInventory, ISidedIn
 				int var6 = world.random.nextInt(21) + 10;
 				if(var6 > var2.count) var6 = var2.count;
 				var2.count -= var6;
-				EntityItem var7 = new EntityItem(world, (float)x + var3, (float)y + var4, (float)z + var5, new ItemStack(var2.id, var6, var2.getData()));
+				EntityItem var7 = new EntityItem(world, x + var3, y + var4, z + var5, new ItemStack(var2.id, var6, var2.getData()));
 				if(var7 == null) continue;
 				
 				float var8 = 0.05F;
@@ -128,7 +123,7 @@ public class TileRMFurnace extends TileEE implements ISpecialInventory, ISidedIn
 	 * If an item can be added, adding the item is attempted again with real = true.
 	 * @see buildcraft.api.ISpecialInventory#addItem(net.minecraft.server.ItemStack, boolean, buildcraft.api.Orientations)
 	 */
-	public boolean addItem(ItemStack item, boolean real, Orientations orientation)
+	public boolean addItem(ItemStack item, boolean real, Orientations side)
 	{
 		if(item == null) return false;
 		
@@ -228,10 +223,8 @@ public class TileRMFurnace extends TileEE implements ISpecialInventory, ISidedIn
 			}
 
 			// fall through
-			
-		default:
-			return null;
 		}
+		return null;
 	}
 
 	public String getName()
@@ -307,7 +300,7 @@ public class TileRMFurnace extends TileEE implements ISpecialInventory, ISidedIn
 		
 		//If furnace is burning.
 		if(furnaceBurnTime > 0) {
-			furnaceBurnTime = (int)((float)furnaceBurnTime - woft);
+			furnaceBurnTime = (int)(furnaceBurnTime - woft);
 			if(furnaceBurnTime <= 0)
 			{
 				furnaceBurnTime = 0;
@@ -335,7 +328,7 @@ public class TileRMFurnace extends TileEE implements ISpecialInventory, ISidedIn
 			}
 			
 			if(isBurning() && canSmelt()) {
-				for(furnaceCookTime = (int)((float)furnaceCookTime + woft); furnaceCookTime >= 3 && canSmelt();)
+				for(furnaceCookTime = (int)(furnaceCookTime + woft); furnaceCookTime >= 3 && canSmelt();)
 				{
 					furnaceCookTime -= 3;
 					smeltItem();
@@ -434,7 +427,7 @@ public class TileRMFurnace extends TileEE implements ISpecialInventory, ISidedIn
 				{
 					items[14].count--;
 					items[var2].count++;
-					if(items[14].count == 0)
+					if(items[14].count <= 0)
 					{
 						items[14] = null;
 						return true;
@@ -525,7 +518,7 @@ public class TileRMFurnace extends TileEE implements ISpecialInventory, ISidedIn
 
 	public boolean a(EntityHuman var1)
 	{
-		return world.getTileEntity(x, y, z) == this ? var1.e((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D) <= 64D : false;
+		return world.getTileEntity(x, y, z) == this ? var1.e(x + 0.5D, y + 0.5D, z + 0.5D) <= 64D : false;
 	}
 
 	public int getStartInventorySide(int var1)
@@ -564,9 +557,9 @@ public class TileRMFurnace extends TileEE implements ISpecialInventory, ISidedIn
 		if(isBurning())
 		{
 			byte var2 = direction;
-			float var3 = (float)x + 0.5F;
-			float var4 = (float)y + 0.0F + (var1.nextFloat() * 6F) / 16F;
-			float var5 = (float)z + 0.5F;
+			float var3 = x + 0.5F;
+			float var4 = y + 0.0F + (var1.nextFloat() * 6F) / 16F;
+			float var5 = z + 0.5F;
 			float var6 = 0.52F;
 			float var7 = var1.nextFloat() * 0.6F - 0.3F;
 			if(var2 == 4)
@@ -591,24 +584,24 @@ public class TileRMFurnace extends TileEE implements ISpecialInventory, ISidedIn
 						}
 			for(int var8 = 0; var8 < 4; var8++)
 			{
-				double var9 = (float)x + var1.nextFloat();
-				double var11 = (float)y + var1.nextFloat();
-				double var13 = (float)z + var1.nextFloat();
+				double var9 = x + var1.nextFloat();
+				double var11 = y + var1.nextFloat();
+				double var13 = z + var1.nextFloat();
 				double var15 = 0.0D;
 				double var17 = 0.0D;
 				double var19 = 0.0D;
 				int var21 = var1.nextInt(2) * 2 - 1;
-				var15 = ((double)var1.nextFloat() - 0.5D) * 0.5D;
-				var17 = ((double)var1.nextFloat() - 0.5D) * 0.5D;
-				var19 = ((double)var1.nextFloat() - 0.5D) * 0.5D;
+				var15 = (var1.nextFloat() - 0.5D) * 0.5D;
+				var17 = (var1.nextFloat() - 0.5D) * 0.5D;
+				var19 = (var1.nextFloat() - 0.5D) * 0.5D;
 				if((world.getTypeId(x - 1, y, z) != EEBlock.eeStone.id || world.getData(x - 1, y, z) != 3) && (world.getTypeId(x + 1, y, z) != EEBlock.eeStone.id || world.getData(x + 1, y, z) != 3))
 				{
-					var9 = (double)x + 0.5D + 0.25D * (double)var21;
-					var15 = var1.nextFloat() * 2.0F * (float)var21;
+					var9 = x + 0.5D + 0.25D * var21;
+					var15 = var1.nextFloat() * 2.0F * var21;
 				} else
 				{
-					var13 = (double)z + 0.5D + 0.25D * (double)var21;
-					var19 = var1.nextFloat() * 2.0F * (float)var21;
+					var13 = z + 0.5D + 0.25D * var21;
+					var19 = var1.nextFloat() * 2.0F * var21;
 				}
 				world.a("portal", var9, var11, var13, var15, var17, var19);
 			}

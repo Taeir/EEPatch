@@ -329,7 +329,7 @@ public class TilePedestal extends TileEE implements IInventory {
 			}
 
 			if (activationCooldown > 0) {
-				activationCooldown -= 1;
+				activationCooldown--;
 			}
 		}
 	}
@@ -383,7 +383,6 @@ public class TilePedestal extends TileEE implements IInventory {
 
 			while (var14.hasNext()) {
 				Entity var13 = var14.next();
-				if (var13 == null) continue;
 				GrabItems(var13);
 			}
 
@@ -392,7 +391,6 @@ public class TilePedestal extends TileEE implements IInventory {
 
 			while (var16.hasNext()) {
 				Entity var15 = var16.next();
-				if (var15 == null) continue;
 				GrabItems(var15);
 			}
 		}
@@ -417,7 +415,7 @@ public class TilePedestal extends TileEE implements IInventory {
 
 		ItemStack var2 = var1.itemStack.cloneItemStack();
 
-		for (var2.count = 1; var1.itemStack.count > 0 && tryDropInChest(var2.cloneItemStack()); var1.itemStack.count -= 1);
+		for (var2.count = 1; var1.itemStack.count > 0 && tryDropInChest(var2.cloneItemStack()); var1.itemStack.count--);
 		return var1.itemStack.count <= 0;
 	}
 
@@ -467,9 +465,9 @@ public class TilePedestal extends TileEE implements IInventory {
 			var9 *= var9;
 
 			if (var9 <= Math.pow(6.0D, 4.0D)) {
-				double var11 = var3 * 0.01999999955296516D / var9 * Math.pow(6.0D, 3.0D);
-				double var13 = var5 * 0.01999999955296516D / var9 * Math.pow(6.0D, 3.0D);
-				double var15 = var7 * 0.01999999955296516D / var9 * Math.pow(6.0D, 3.0D);
+				double var11 = var3 * 0.02D / var9 * Math.pow(6.0D, 3.0D);
+				double var13 = var5 * 0.02D / var9 * Math.pow(6.0D, 3.0D);
+				double var15 = var7 * 0.02D / var9 * Math.pow(6.0D, 3.0D);
 
 				if (var11 > 0.1D) {
 					var11 = 0.1D;
@@ -506,9 +504,9 @@ public class TilePedestal extends TileEE implements IInventory {
 				var11 *= var11;
 
 				if (var11 <= Math.pow(6.0D, 4.0D)) {
-					double var13 = var5 * 0.01999999955296516D / var11 * Math.pow(6.0D, 3.0D);
-					double var15 = var7 * 0.01999999955296516D / var11 * Math.pow(6.0D, 3.0D);
-					double var17 = var9 * 0.01999999955296516D / var11 * Math.pow(6.0D, 3.0D);
+					double var13 = var5 * 0.02D / var11 * Math.pow(6.0D, 3.0D);
+					double var15 = var7 * 0.02D / var11 * Math.pow(6.0D, 3.0D);
+					double var17 = var9 * 0.02D / var11 * Math.pow(6.0D, 3.0D);
 
 					if (var13 > 0.1D) {
 						var13 = 0.1D;
@@ -687,7 +685,7 @@ public class TilePedestal extends TileEE implements IInventory {
 			}
 
 			if (healingTimer > 0) {
-				healingTimer -= 1;
+				healingTimer--;
 			}
 		}
 	}
@@ -764,18 +762,18 @@ public class TilePedestal extends TileEE implements IInventory {
 							int var5 = world.getTypeId(x + var2, y + var6 - 1, z + var4);
 
 							if (var5 != 0 && Block.byId[var5].a() && world.getMaterial(x + var2, y + var6 - 1, z + var4).isBuildable()
-									&& world.getTypeId(x + var2, y + var6, z + var4) == 0) {
+									&& world.getTypeId(x + var2, y + var6, z + var4) == 0 && EEPatch.attemptPlace(activationPlayer, x + var2, y + var6, z + var4)) {
 								world.setTypeId(x + var2, y + var6, z + var4, Block.SNOW.id);
 							}
 						}
 
 						if (world.random.nextInt(3) == 0 && world.getMaterial(x + var2, y + var6, z + var4) == Material.WATER
-								&& world.getTypeId(x + var2, y + var6 + 1, z + var4) == 0) {
+								&& world.getTypeId(x + var2, y + var6 + 1, z + var4) == 0  && EEPatch.attemptBreak(activationPlayer, x + var2, y + var6, z + var4)) {
 							world.setTypeId(x + var2, y + var6, z + var4, Block.ICE.id);
 						}
 
 						if (world.random.nextInt(3) == 0 && world.getMaterial(x + var2, y + var6, z + var4) == Material.LAVA
-								&& world.getTypeId(x + var2, y + var6 + 1, z + var4) == 0 && world.getData(x + var2, y + var6, z + var4) == 0) {
+								&& world.getTypeId(x + var2, y + var6 + 1, z + var4) == 0 && world.getData(x + var2, y + var6, z + var4) == 0  && EEPatch.attemptBreak(activationPlayer, x + var2, y + var6, z + var4)) {
 							world.setTypeId(x + var2, y + var6, z + var4, Block.OBSIDIAN.id);
 						}
 					}
@@ -840,7 +838,7 @@ public class TilePedestal extends TileEE implements IInventory {
 				// }
 			}
 
-			repairTimer += 1;
+			repairTimer++;
 		}
 	}
 
@@ -920,49 +918,50 @@ public class TilePedestal extends TileEE implements IInventory {
 		for (int var4 = -5; var4 <= 5; var4++) {
 			for (int var5 = -5; var5 <= 5; var5++) {
 				for (int var6 = -5; var6 <= 5; var6++) {
-					int var7 = world.getTypeId(var1 + var4, var2 + var5, var3 + var6);
+					int nx = var1 + var4;
+					int ny = var2 + var5;
+					int nz = var3 + var6;
+					int id = world.getTypeId(nx, ny, nz);
+					int data = world.getData(nx, ny, nz);
 
-					if (var7 == Block.CROPS.id) {
-						int var8 = world.getData(var1 + var4, var2 + var5, var3 + var6);
-
-						if (var8 >= 7) {
-							Block.byId[var7].dropNaturally(world, var1 + var4, var2 + var5, var3 + var6, world.getData(var1 + var4, var2 + var5, var3 + var6),
-									0.05F, 1);
-							Block.byId[var7].dropNaturally(world, var1 + var4, var2 + var5, var3 + var6, world.getData(var1 + var4, var2 + var5, var3 + var6),
-									1.0F, 1);
-							world.setTypeId(var1 + var4, var2 + var5, var3 + var6, 0);
-							world.a("largesmoke", var1 + var4, var2 + var5, var3 + var6, 0.0D, 0.05D, 0.0D);
-						} else if (world.random.nextInt(400) == 0) {
-							var8++;
-							world.setData(var1 + var4, var2 + var5, var3 + var6, var8);
+					if (id == Block.CROPS.id) {
+						int var8 = data;
+						
+						if (EEPatch.attemptBreak(activationPlayer, nx, ny, nz)){
+							if (var8 >= 7) {
+								Block.byId[id].dropNaturally(world, nx, ny, nz, data, 0.05F, 1);
+								Block.byId[id].dropNaturally(world, nx, ny, nz, data, 1.0F, 1);
+								world.setTypeId(nx, ny, nz, 0);
+								world.a("largesmoke", nx, ny, nz, 0.0D, 0.05D, 0.0D);
+							} else if (world.random.nextInt(400) == 0) {
+								var8++;
+								world.setData(nx, ny, nz, var8);
+							}
 						}
-					} else if (var7 != Block.YELLOW_FLOWER.id && var7 != Block.RED_ROSE.id && var7 != Block.BROWN_MUSHROOM.id && var7 != Block.RED_MUSHROOM.id
-							&& var7 != Block.LONG_GRASS.id) {
-						if (var7 == Block.SUGAR_CANE_BLOCK.id && world.getTypeId(var1 + var4, var2 + var5 - 4, var3 + var6) == Block.SUGAR_CANE_BLOCK.id
-								|| var7 == Block.CACTUS.id && world.getTypeId(var1 + var4, var2 + var5 - 4, var3 + var6) == Block.CACTUS.id) {
-							if (var7 == Block.SUGAR_CANE_BLOCK.id) {
-								Block.byId[var7].dropNaturally(world, var1 + var4, var2 + var5 - 3, var3 + var6,
-										world.getData(var1 + var4, var2 + var5, var3 + var6), 0.25F, 1);
-								Block.byId[var7].dropNaturally(world, var1 + var4, var2 + var5 - 3, var3 + var6,
-										world.getData(var1 + var4, var2 + var5, var3 + var6), 1.0F, 1);
-								world.setTypeId(var1 + var4, var2 + var5 - 3, var3 + var6, 0);
+					} else if (id != Block.YELLOW_FLOWER.id && id != Block.RED_ROSE.id && id != Block.BROWN_MUSHROOM.id && id != Block.RED_MUSHROOM.id
+							&& id != Block.LONG_GRASS.id) {
+						int sc = Block.SUGAR_CANE_BLOCK.id;
+						int id2 = world.getTypeId(nx, ny - 4, nz);
+						if (((id == sc && id2 == sc && world.getTypeId(nx, ny-1, nz) == sc && world.getTypeId(nx, ny-2, nz) == sc && world.getTypeId(nx, ny-3, nz) == sc)
+						  || (id == Block.CACTUS.id && id2 == Block.CACTUS.id)) && EEPatch.attemptBreak(activationPlayer, nx, ny, nz)) {
+							if (id == sc) {
+								Block.byId[id].dropNaturally(world, nx, ny - 3, nz, data, 0.25F, 1);
+								Block.byId[id].dropNaturally(world, nx, ny - 3, nz, data, 1.0F, 1);
+								world.setTypeId(nx, ny - 3, nz, 0);
 							} else {
-								Block.byId[var7].dropNaturally(world, var1 + var4, var2 + var5 - 4, var3 + var6,
-										world.getData(var1 + var4, var2 + var5, var3 + var6), 0.25F, 1);
-								Block.byId[var7].dropNaturally(world, var1 + var4, var2 + var5 - 4, var3 + var6,
-										world.getData(var1 + var4, var2 + var5, var3 + var6), 1.0F, 1);
-								world.setTypeId(var1 + var4, var2 + var5 - 4, var3 + var6, 0);
+								Block.byId[id].dropNaturally(world, nx, ny - 4, nz, data, 0.25F, 1);
+								Block.byId[id].dropNaturally(world, nx, ny - 4, nz, data, 1.0F, 1);
+								world.setTypeId(nx, ny - 4, nz, 0);
 							}
 
-							world.a("largesmoke", var1 + var4, var2 + var5 - 3, var3 + var6, 0.0D, 0.05D, 0.0D);
+							world.a("largesmoke", nx, ny - 3, nz, 0.0D, 0.05D, 0.0D);
 						}
 					} else {
-						Block.byId[var7].dropNaturally(world, var1 + var4, var2 + var5, var3 + var6, world.getData(var1 + var4, var2 + var5, var3 + var6),
-								0.05F, 1);
-						Block.byId[var7].dropNaturally(world, var1 + var4, var2 + var5, var3 + var6, world.getData(var1 + var4, var2 + var5, var3 + var6),
-								1.0F, 1);
-						world.setTypeId(var1 + var4, var2 + var5, var3 + var6, 0);
-						world.a("largesmoke", var1 + var4, var2 + var5, var3 + var6, 0.0D, 0.05D, 0.0D);
+						if (!EEPatch.attemptBreak(activationPlayer, nx, ny, nz)) continue;
+						Block.byId[id].dropNaturally(world, nx, ny, nz, data, 0.05F, 1);
+						Block.byId[id].dropNaturally(world, nx, ny, nz, data, 1.0F, 1);
+						world.setTypeId(nx, ny, nz, 0);
+						world.a("largesmoke", nx, ny, nz, 0.0D, 0.05D, 0.0D);
 					}
 				}
 			}
@@ -988,8 +987,7 @@ public class TilePedestal extends TileEE implements IInventory {
 				byte var4 = 10;
 
 				if (grimarchCounter >= 0 && grimarchCounter < 5) {
-					List<Entity> var5 = world.a(EntityLiving.class,
-							AxisAlignedBB.b(var1 - var4, var2 - var4, var3 - var4, var1 + var4, var2 + var4, var3 + var4));
+					List<Entity> var5 = world.a(EntityLiving.class, AxisAlignedBB.b(var1 - var4, var2 - var4, var3 - var4, var1 + var4, var2 + var4, var3 + var4));
 					Iterator<Entity> var7 = var5.iterator();
 
 					while (var7.hasNext()) {
@@ -997,7 +995,7 @@ public class TilePedestal extends TileEE implements IInventory {
 						ShootArrowAt(var6, var1, var2, var3);
 					}
 
-					grimarchCounter -= 1;
+					grimarchCounter--;
 
 					if (grimarchCounter == 0) {
 						grimarchCounter = 40;
@@ -1005,7 +1003,7 @@ public class TilePedestal extends TileEE implements IInventory {
 				}
 
 				if (grimarchCounter >= 5) {
-					grimarchCounter -= 1;
+					grimarchCounter--;
 				}
 			}
 		}
@@ -1014,7 +1012,7 @@ public class TilePedestal extends TileEE implements IInventory {
 	private void ShootArrowAt(Entity var1, int var2, int var3, int var4) {
 		if (!(var1 instanceof EntityHuman)) {
 			double var5 = var1.locX - x;
-			double var7 = var1.boundingBox.b + var1.length / 2.0F - (y + 1.0D);
+			double var7 = (var1.boundingBox.b + (var1.length / 2.0F)) - (y + 1.0D);
 			double var9 = var1.locZ - z;
 			EntityGrimArrow var11 = new EntityGrimArrow(world, var5, var7, var9);
 			// double var12 = 4.0D;
@@ -1092,9 +1090,9 @@ public class TilePedestal extends TileEE implements IInventory {
 			var12 *= var12;
 
 			if (var12 <= Math.pow(6.0D, 4.0D)) {
-				double var14 = -(var6 * 0.01999999955296516D / var12) * Math.pow(6.0D, 3.0D);
-				double var16 = -(var8 * 0.01999999955296516D / var12) * Math.pow(6.0D, 3.0D);
-				double var18 = -(var10 * 0.01999999955296516D / var12) * Math.pow(6.0D, 3.0D);
+				double var14 = -(var6 * 0.02D / var12) * Math.pow(6.0D, 3.0D);
+				double var16 = -(var8 * 0.02D / var12) * Math.pow(6.0D, 3.0D);
+				double var18 = -(var10 * 0.02D / var12) * Math.pow(6.0D, 3.0D);
 
 				if (var14 > 0.0D) {
 					var14 = 0.22D;
@@ -1264,7 +1262,7 @@ public class TilePedestal extends TileEE implements IInventory {
 	public void g() {}
 
 	public boolean a(EntityHuman var1) {
-		return world.getTileEntity(x, y, z) == this;
+		return world.getTileEntity(x, y, z) == this ? var1.f(x + 0.5D, y + 0.5D, z + 0.5D) <= 64D : false;
 	}
 	
 	public boolean onBlockActivated(EntityHuman var1) {

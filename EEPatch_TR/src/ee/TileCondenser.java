@@ -38,6 +38,7 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 	public int displayEnergy;
 	public int currentItemProgress;
 	private boolean attractionOn;
+	public static boolean applySidePatch = false;
 
 	public TileCondenser() {
 		items = new ItemStack[92];
@@ -248,7 +249,7 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 				//items[var3].count--;
 				//if (items[var3].count == 0) items[var3] = null;
 				
-				if (items[var3].count == 1)
+				if (items[var3].count <= 1)
 					items[var3] = null;
 				else
 					items[var3].count--;
@@ -339,6 +340,8 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 
 		return true;
 	}
+	
+	/* PowerNet */
 
 	/**
 	 * @param add If add is true, then the emc will be added. If not, it will only return if the emc can be added.
@@ -354,10 +357,12 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 		return false;
 	}
 
+	/** @return If this machine can send energy. */
 	public boolean sendEnergy(int var1, byte var2, boolean var3) {
 		return false;
 	}
-
+	
+	/** @return If this machine can pass energy. */
 	public boolean passEnergy(int var1, byte var2, boolean var3) {
 		return false;
 	}
@@ -368,6 +373,8 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 		return 0;
 	}
 
+	/* END OF: PowerNet */
+	
 	public int getSize() {
 		return items.length;
 	}
@@ -376,102 +383,72 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 		return 64;
 	}
 
-	public boolean addItem(ItemStack var1, boolean var2, Orientations var3) {
-		if (var1 != null) {
-			for (int var4 = 1; var4 < items.length; var4++) {
-				if (items[var4] == null) {
-					if (var2) {
-						items[var4] = var1.cloneItemStack();
-						for (; var1.count > 0; var1.count--);
+	public boolean addItem(ItemStack item, boolean add, Orientations side) {
+		if (item == null) return false;
+		
+		if (side == Orientations.YPos && applySidePatch){
+				if (items[0] == null) {
+					if (add){
+						items[0] = item.cloneItemStack();
+						//item.count = 0;
+						while (item.count > 0) item.count--;
 					}
 					return true;
 				}
-				if (!items[var4].doMaterialsMatch(var1) || items[var4].count >= items[var4].getMaxStackSize()) continue;
-				if (var2) {
-					for (; items[var4].count < items[var4].getMaxStackSize() && var1.count > 0; var1.count--)
-						items[var4].count++;
+				if (!items[0].doMaterialsMatch(item) || items[0].count >= items[0].getMaxStackSize()) return false;
+				if (add){
+					while (items[0].count < items[0].getMaxStackSize() && item.count > 0){
+						item.count--;
+						items[0].count++;
+					}
+					
+					if (item.count != 0) return false;
+				} else {
+					return true;
+				}
+		} else {
+			for (int i = 1; i < items.length; i++) {
+				if (items[i] == null) {
+					if (add) {
+						items[i] = item.cloneItemStack();
+						while (item.count > 0) item.count--;
+					}
+					return true;
+				}
+				if (!items[i].doMaterialsMatch(item) || items[i].count >= items[i].getMaxStackSize()) continue;
+				if (add) {
+					for (; items[i].count < items[i].getMaxStackSize() && item.count > 0; item.count--)
+						items[i].count++;
 
-					if (var1.count != 0) continue;
+					if (item.count != 0) continue;
 				} else {
 					return true;
 				}
 			}
-
 		}
+		
 		return false;
-		/*
-		switch (var3) {
-			case Unknown:
-			case XNeg:
-			case XPos:
-			case YNeg:
-			case YPos:
-			case ZNeg:
-			case ZPos:
-				if (var1 != null) {
-					for (int var4 = 1; var4 < items.length; var4++) {
-						if (items[var4] == null) {
-							if (var2) {
-								items[var4] = var1.cloneItemStack();
-								for (; var1.count > 0; var1.count--);
-							}
-							return true;
-						}
-						if (!items[var4].doMaterialsMatch(var1) || items[var4].count >= items[var4].getMaxStackSize()) continue;
-						if (var2) {
-							for (; items[var4].count < items[var4].getMaxStackSize() && var1.count > 0; var1.count--)
-								items[var4].count++;
-
-							if (var1.count != 0) continue;
-						} else {
-							return true;
-						}
-					}
-
-				}
-				break;
-		}
-		return false;
-		*/
 	}
 
-	public ItemStack extractItem(boolean var1, Orientations var2) {
-		for (int var3 = 1; var3 < items.length; var3++){
+	public ItemStack extractItem(boolean extract, Orientations side) {
+		int var3;
+		if (side == Orientations.YPos && applySidePatch){
+			var3 = 0;
+		} else {
+			var3 = 1;
+		}
+		for (; var3 < items.length; var3++){
 			if (items[var3] != null && (target() == null || items[var3].doMaterialsMatch(target()))) {
 				ItemStack var4 = items[var3].cloneItemStack();
 				var4.count = 1;
-				if (var1) {
-					items[var3].count--;
-					if (items[var3].count < 1) items[var3] = null;
+				if (extract) {
+					if (items[var3].count <= 1) items[var3] = null;
+					else items[var3].count--;
 				}
 				return var4;
 			}
 		}
 		return null;
-		/*
-		switch (var2) {
-			case Unknown:
-			case XNeg:
-			case XPos:
-			case YNeg:
-			case YPos:
-			case ZNeg:
-			case ZPos:
-				for (int var3 = 1; var3 < items.length; var3++)
-					if (items[var3] != null && (target() == null || items[var3].doMaterialsMatch(target()))) {
-						ItemStack var4 = items[var3].cloneItemStack();
-						var4.count = 1;
-						if (var1) {
-							items[var3].count--;
-							if (items[var3].count < 1) items[var3] = null;
-						}
-						return var4;
-					}
-
-				break;
-		}
-		return null;
-		*/
 	}
 
 	public String getName() {
@@ -535,67 +512,84 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 
 	public void update() {
 		super.update();
-		boolean var1 = false;
-		boolean var2 = false;
-		for (int var3 = 0; var3 < getSize(); var3++)
-			if (items[var3] != null) {
-				if (items[var3].getItem() instanceof ItemVoidRing) {
-					eternalDensity = var3;
-					if ((items[var3].getData() & 1) == 0) {
-						items[var3].setData(items[var3].getData() + 1);
-						((ItemEECharged) items[var3].getItem()).setBoolean(items[var3], "active", true);
-					}
-					var1 = true;
-					var2 = true;
+		boolean eternal = false;
+		boolean bhb = false;
+		for (int var3 = 0; var3 < getSize(); var3++){
+			if (items[var3] == null) continue;
+			if (items[var3].getItem() instanceof ItemVoidRing) {
+				eternalDensity = var3;
+				if ((items[var3].getData() & 1) == 0) {
+					items[var3].setData(items[var3].getData() + 1);
+					((ItemEECharged) items[var3].getItem()).setBoolean(items[var3], "active", true);
 				}
-				if (items[var3].getItem().id == EEItem.eternalDensity.id) {
-					eternalDensity = var3;
-					if ((items[var3].getData() & 1) == 0) {
-						items[var3].setData(items[var3].getData() + 1);
-						((ItemEECharged) items[var3].getItem()).setBoolean(items[var3], "active", true);
-					}
-					var1 = true;
-				}
-				if (items[var3].getItem() instanceof ItemAttractionRing) {
-					if ((items[var3].getData() & 1) == 0) {
-						items[var3].setData(items[var3].getData() + 1);
-						((ItemEECharged) items[var3].getItem()).setBoolean(items[var3], "active", true);
-					}
-					var2 = true;
-				}
+				eternal = true;
+				bhb = true;
 			}
-
-		if (var1 != condenseOn) condenseOn = var1;
-		if (var2 != attractionOn) attractionOn = var2;
+			if (items[var3].getItem().id == EEItem.eternalDensity.id) {
+				eternalDensity = var3;
+				if ((items[var3].getData() & 1) == 0) {
+					items[var3].setData(items[var3].getData() + 1);
+					((ItemEECharged) items[var3].getItem()).setBoolean(items[var3], "active", true);
+				}
+				eternal = true;
+			}
+			if (items[var3].getItem() instanceof ItemAttractionRing) {
+				if ((items[var3].getData() & 1) == 0) {
+					items[var3].setData(items[var3].getData() + 1);
+					((ItemEECharged) items[var3].getItem()).setBoolean(items[var3], "active", true);
+				}
+				bhb = true;
+			}
+			
+		}
+		if (eternal != condenseOn) condenseOn = eternal;
+		if (bhb != attractionOn) attractionOn = bhb;
 	}
 
 	public int getCondenserProgressScaled(int var1) {
-		return getTargetValue(target()) != 0 ? scaledEnergy / 80 <= getTargetValue(target()) ? scaledEnergy / 80 * var1 / getTargetValue(target()) : var1 : 0;
+		int temc = getTargetValue(target());
+		if (temc == 0) return 0;
+		if (scaledEnergy / 80 <= temc){
+			return ((scaledEnergy / 80) * var1) / temc;
+		} else {
+			return var1;
+		}
 	}
 
 	public boolean isValidTarget() {
-		return EEMaps.getEMC(items[0].id, items[0].getData()) == 0 ? EEMaps.getEMC(items[0].id) == 0 : true;
+		if (EEMaps.getEMC(items[0].id, items[0].getData()) == 0){
+			return EEMaps.getEMC(items[0].id) == 0;
+		} else {
+			return true;
+		}
 	}
 
 	public void q_() {
 		currentItemProgress = getCondenserProgressScaled(102);
 		displayEnergy = latentEnergy();
+		
 		if (!initialized) {
 			initialized = true;
 			update();
 		}
-		if (++ticksSinceSync % 20 * 4 == 0) world.playNote(x, y, z, 1, numUsingPlayers);
+		
+		if ((++ticksSinceSync % 20) * 4 == 0)
+			world.playNote(x, y, z, 1, numUsingPlayers);
 		prevLidAngle = lidAngle;
 		float var1 = 0.1F;
+		
 		if (numUsingPlayers > 0 && lidAngle == 0.0F) {
 			double var4 = x + 0.5D;
 			double var2 = z + 0.5D;
 			world.makeSound(var4, y + 0.5D, var2, "random.chestopen", 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
 		}
+		
 		if (numUsingPlayers == 0 && lidAngle > 0.0F || numUsingPlayers > 0 && lidAngle < 1.0F) {
 			float var8 = lidAngle;
+			
 			if (numUsingPlayers > 0) lidAngle += var1;
 			else lidAngle -= var1;
+			
 			if (lidAngle > 1.0F) lidAngle = 1.0F;
 			float var5 = 0.5F;
 			if (lidAngle < var5 && var8 >= var5) {
@@ -605,17 +599,23 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 			}
 			if (lidAngle < 0.0F) lidAngle = 0.0F;
 		}
+		
 		if (canCondense()) {
-			for (; scaledEnergy >= getTargetValue(target()) * 80 && roomFor(new ItemStack(target().id, 1, target().getData())); PushStack(new ItemStack(
-					target().id, 1, target().getData())))
+			while (scaledEnergy >= getTargetValue(target()) * 80 && roomFor(new ItemStack(target().id, 1, target().getData()))){
 				scaledEnergy -= getTargetValue(target()) * 80;
+				PushStack(new ItemStack(target().id, 1, target().getData()));
+			}
 
 			for (int var9 = 1; var9 < items.length; var9++) {
-				if (items[var9] == null || EEMaps.getEMC(items[var9]) == 0 || items[var9].doMaterialsMatch(target())
-						|| items[var9].getItem() instanceof ItemKleinStar || scaledEnergy + EEMaps.getEMC(items[var9]) * 80 > 800000000) continue;
-				scaledEnergy += EEMaps.getEMC(items[var9]) * 80;
-				items[var9].count--;
-				if (items[var9].count == 0) items[var9] = null;
+				if (items[var9] == null || EEMaps.getEMC(items[var9]) == 0 ||
+					items[var9].doMaterialsMatch(target()) ||
+					items[var9].getItem() instanceof ItemKleinStar) continue;
+				int emc = EEMaps.getEMC(items[var9]);
+				if (scaledEnergy + emc * 80 > 800000000) continue;
+				scaledEnergy += emc * 80;
+				
+				if (items[var9].count <= 1) items[var9] = null;
+				else items[var9].count--;
 				break;
 			}
 
@@ -645,7 +645,6 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 
 		while (var9.hasNext()) {
 			Entity var8 = var9.next();
-			if (var8 == null) continue;
 			GrabItems(var8);
 		}
 
@@ -654,7 +653,6 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 
 		while (var11.hasNext()) {
 			Entity var10 = var11.next();
-			if (var10 == null) continue;
 			GrabItems(var10);
 		}
 
@@ -680,8 +678,10 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 				return true;
 			}
 			if (items[var2].doMaterialsMatch(var1.itemStack) && items[var2].count <= var1.itemStack.getMaxStackSize() - var1.itemStack.count) {
-				for (; var1.itemStack.count > 0 && items[var2].count < items[var2].getMaxStackSize(); var1.itemStack.count--)
+				while (var1.itemStack.count > 0 && items[var2].count < items[var2].getMaxStackSize()){
 					items[var2].count++;
+					var1.itemStack.count--;
+				}
 
 				var1.die();
 				return true;
@@ -717,6 +717,15 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 		}
 		return var1;
 	}
+	
+	@SuppressWarnings("unused")
+	private void PushDenseStacks(EntityLootBall var1) {
+		for (int var2 = 1; var2 < var1.items.length; var2++) {
+			if ((var1.items[var2] != null) && (PushStack(var1.items[var2]))) {
+				var1.items[var2] = null;
+			}
+		}
+	}
 
 	//Not the problem below here
 	private void GrabItems(Entity var1) {
@@ -727,11 +736,14 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 				var1.die();
 				return;
 			}
+			
 			ItemStack var9 = ((EntityItem) var1).itemStack.cloneItemStack();
 			((EntityItem) var1).itemStack = null;
 			
 			if (var9.getItem() instanceof ItemLootBall) {
 				ItemLootBall var3 = (ItemLootBall) var9.getItem();
+				//if (var3.isGrabbed) return;
+				//var3.isGrabbed = true;
 				ItemStack var4[] = var3.getDroplist(var9);
 				ItemStack var5[] = var4;
 				int var6 = var4.length;
@@ -752,10 +764,11 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 		} else if (var1 instanceof EntityLootBall) {
 			if (((EntityLootBall) var1).items == null){
 				var1.die();
+				return;
 			}
 			
 			ItemStack var2[] = ((EntityLootBall)var1).items;
-			((EntityLootBall) var1).items = PushDenseStacks(var2);
+			((EntityLootBall)var1).items = PushDenseStacks(var2);
 			
 			if (((EntityLootBall) var1).isEmpty()) {
 				var1.die();
@@ -772,15 +785,18 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 			double var9 = var3 * var3 + var5 * var5 + var7 * var7;
 			var9 *= var9;
 			if (var9 <= Math.pow(6D, 4D)) {
-				double var11 = var3 * 0.019999999552965164D / var9 * Math.pow(6D, 3D);
-				double var13 = var5 * 0.019999999552965164D / var9 * Math.pow(6D, 3D);
-				double var15 = var7 * 0.019999999552965164D / var9 * Math.pow(6D, 3D);
-				if (var11 > 0.10000000000000001D) var11 = 0.10000000000000001D;
-				else if (var11 < -0.10000000000000001D) var11 = -0.10000000000000001D;
-				if (var13 > 0.10000000000000001D) var13 = 0.10000000000000001D;
-				else if (var13 < -0.10000000000000001D) var13 = -0.10000000000000001D;
-				if (var15 > 0.10000000000000001D) var15 = 0.10000000000000001D;
-				else if (var15 < -0.10000000000000001D) var15 = -0.10000000000000001D;
+				double var11 = var3 * 0.02D / var9 * Math.pow(6D, 3D);
+				double var13 = var5 * 0.02D / var9 * Math.pow(6D, 3D);
+				double var15 = var7 * 0.02D / var9 * Math.pow(6D, 3D);
+				if (var11 > 0.1D) var11 = 0.1D;
+				else if (var11 < -0.1D) var11 = -0.1D;
+				
+				if (var13 > 0.1D) var13 = 0.1D;
+				else if (var13 < -0.1D) var13 = -0.1D;
+				
+				if (var15 > 0.1D) var15 = 0.1D;
+				else if (var15 < -0.1D) var15 = -0.1D;
+				
 				var1.motX += var11 * 1.2D;
 				var1.motY += var13 * 1.2D;
 				var1.motZ += var15 * 1.2D;
