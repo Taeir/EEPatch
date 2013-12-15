@@ -260,54 +260,94 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 	private boolean isValidMaterial(ItemStack var1) {
 		if (var1 == null) return false;
 		if (EEMaps.getEMC(var1) == 0) return false;
-		if (var1.getItem() instanceof ItemKleinStar) {
-			return false;
-		}
+		if (var1.getItem() instanceof ItemKleinStar) return false;
+		
 		int var2 = var1.id;
-		return var2 != EEItem.redMatter.id ? var2 >= Block.byId.length || !(Block.byId[var2] instanceof BlockContainer)
-				|| !Block.byId[var2].hasTileEntity(var1.getData()) : false;
+		if (var2 == EEItem.redMatter.id) {
+			return false;
+		} else {
+			return var2 >= Block.byId.length ||
+				!(Block.byId[var2] instanceof BlockContainer) ||
+				!Block.byId[var2].hasTileEntity(var1.getData());
+		}
 	}
 
 	private int emc(ItemStack var1) {
-		return var1.getItem() instanceof ItemEternalDensity ? ((ItemEternalDensity) var1.getItem()).getInteger(var1, "emc")
-				: var1.getItem() instanceof ItemVoidRing ? ((ItemVoidRing) var1.getItem()).getInteger(var1, "emc") : 0;
+		if (var1.getItem() instanceof ItemEternalDensity){
+			return ((ItemEternalDensity) var1.getItem()).getInteger(var1, "emc");
+		} else if (var1.getItem() instanceof ItemVoidRing) {
+			return ((ItemVoidRing) var1.getItem()).getInteger(var1, "emc");
+		}
+		
+		return 0;
 	}
 
 	private void takeEMC(ItemStack var1, int var2) {
-		if (var1.getItem() instanceof ItemEternalDensity || var1.getItem() instanceof ItemVoidRing)
-			if (var1.getItem() instanceof ItemEternalDensity) ((ItemEternalDensity) var1.getItem()).setInteger(var1, "emc", emc(var1) - var2);
-			else ((ItemVoidRing) var1.getItem()).setInteger(var1, "emc", emc(var1) - var2);
+		if (var1.getItem() instanceof ItemEternalDensity)
+			((ItemEternalDensity) var1.getItem()).setInteger(var1, "emc", emc(var1) - var2);
+		else if (var1.getItem() instanceof ItemVoidRing)
+			((ItemVoidRing) var1.getItem()).setInteger(var1, "emc", emc(var1) - var2);
 	}
 
 	private void addEMC(ItemStack var1, int var2) {
-		if (var1.getItem() instanceof ItemEternalDensity || var1.getItem() instanceof ItemVoidRing)
-			if (var1.getItem() instanceof ItemEternalDensity) ((ItemEternalDensity) var1.getItem()).setInteger(var1, "emc", emc(var1) + var2);
-			else ((ItemVoidRing) var1.getItem()).setInteger(var1, "emc", emc(var1) + var2);
+		if (var1.getItem() instanceof ItemEternalDensity)
+			((ItemEternalDensity) var1.getItem()).setInteger(var1, "emc", emc(var1) + var2);
+		else if (var1.getItem() instanceof ItemVoidRing)
+			((ItemVoidRing) var1.getItem()).setInteger(var1, "emc", emc(var1) + var2);
 	}
 
+	/**
+	 * @return The item in slot 0, the item to transmute to.
+	 */
 	public ItemStack target() {
 		return items[0];
 	}
 
+	/**
+	 * @param var1
+	 * @return The emc value of the target item.
+	 */
 	public int getTargetValue(ItemStack var1) {
-		return var1 != null ? EEMaps.getEMC(var1.id, var1.getData()) != 0 ? EEMaps.getEMC(var1.id, var1.getData()) : var1.d() ? EEMaps.getEMC(var1.id)
-				* (int) (((float) var1.i() - (float) var1.getData()) / var1.i()) : EEMaps.getEMC(var1.id) : 0;
+		if (var1 == null) return 0;
+		int emc;
+		if ((emc = EEMaps.getEMC(var1.id, var1.getData())) != 0){
+			return emc;
+		} else {
+			if (var1.d()){
+				return EEMaps.getEMC(var1.id) * (int) (((float) var1.i() - (float) var1.getData()) / var1.i());
+			} else {
+				return EEMaps.getEMC(var1.id);
+			}
+		}
+
 	}
 
+	/** @return True if there is a target, it has an emc value and there is room for it. */
 	public boolean canCondense() {
-		return target() != null ? getTargetValue(target()) != 0 ? !isInventoryFull() || roomFor(target()) : false : false;
+		if (target() == null) return false;
+		if (getTargetValue(target()) != 0){
+			return !isInventoryFull() || roomFor(target());
+		}
+		else return false;
 	}
 
+	/** @return True if all slots in the inventory are filled. */
 	public boolean isInventoryFull() {
-		for (int var1 = 0; var1 < items.length; var1++)
-			if (items[var1] == null) return false;
+		for (int i = 0; i < items.length; i++){
+			if (items[i] == null) return false;
+		}
 
 		return true;
 	}
 
-	public boolean receiveEnergy(int var1, byte var2, boolean var3) {
-		if (canCondense() && scaledEnergy + var1 <= 800000000) {
-			if (var3) scaledEnergy += var1;
+	/**
+	 * @param add If add is true, then the emc will be added. If not, it will only return if the emc can be added.
+	 * @return True if this condenser can condense and it is not full on emc (8 * 10^8 emc)
+	 * @see ee.IEEPowerNet#receiveEnergy(int, byte, boolean)
+	 */
+	public boolean receiveEnergy(int emc, byte unused, boolean add) {
+		if (canCondense() && scaledEnergy + emc <= 800000000) {
+			if (add) scaledEnergy += emc;
 			return true;
 		}
 
