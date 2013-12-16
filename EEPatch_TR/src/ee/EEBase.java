@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
-import org.bukkit.permissions.Permission;
-
 import net.minecraft.server.AxisAlignedBB;
 import net.minecraft.server.BaseMod;
 import net.minecraft.server.Block;
@@ -45,7 +43,6 @@ import ee.events.EEEventManager;
 import ee.events.armor.EEArmorEvent;
 import forge.ICraftingHandler;
 import forge.MinecraftForge;
-
 
 public class EEBase {
 
@@ -146,12 +143,12 @@ public class EEBase {
 		return var0 == null;
 	}
 
-	private static boolean t = false;
+	//private static boolean t = false;
 	public static boolean isOnQuickBar(Item var0, EntityHuman var1) {
-		if (!t){
-			Permission l = new Permission("eepatch.delay");
-			t = true;
-		}
+		//if (!t){
+		//	Permission l = new Permission("eepatch.delay");
+		//	t = true;
+		//}
 		for (int var2 = 0; var2 < 9; var2++) {
 			ItemStack current = var1.inventory.getItem(var2);
 			if ((current == null) || (current.getItem() != var0)) continue;

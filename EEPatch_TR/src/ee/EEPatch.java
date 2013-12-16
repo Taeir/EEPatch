@@ -12,7 +12,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import net.minecraft.server.EntityHuman;
 
 public class EEPatch {
-	public static final double version = 1.6;
+	public static final double version = 1.72;
 	
 	public static EEProps InitProps(EEProps props)
 	{
