@@ -203,21 +203,21 @@ public class ContainerTransmutation extends Container {
 				}
 			} else if (slotNr >= 26 && slotNr < 62) {
 				if ((EEMaps.getEMC(item) > 0 || EEBase.isKleinStar(item.id)) && !a(item, 0, 8, false)) {
-					if (item.count == 0) {
+					if (item.count <= 0) {
 						slot.set(null);
 					}
 
 					return null;
 				}
 			} else if (!a(item, 26, 62, false)) {
-				if (item.count == 0) {
+				if (item.count <= 0) {
 					slot.set(null);
 				}
 
 				return null;
 			}
 
-			if (item.count == 0) {
+			if (item.count <= 0) {
 				if (slotNr > 9 && slotNr < 26) {
 					item.count = 1;
 				} else {
@@ -249,6 +249,14 @@ public class ContainerTransmutation extends Container {
 		return var2;
 	}
 
+	/**
+	 * @param var1 The item the player is taking
+	 * @param slot The slot
+	 * @param var3
+	 * @param var4
+	 * @param var5
+	 * @return
+	 */
 	protected boolean grabResult(ItemStack var1, Slot slot, int var3, int var4, boolean var5) {
 		if (transGrid.latentEnergy + transGrid.currentEnergy < EEMaps.getEMC(var1)) return false;
 
