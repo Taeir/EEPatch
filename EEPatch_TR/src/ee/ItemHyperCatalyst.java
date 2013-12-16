@@ -149,10 +149,10 @@ public class ItemHyperCatalyst extends ItemEECharged {
 	public boolean interactWith(ItemStack item, EntityHuman human, World world, int x, int y, int z, int var7) {
 		if (EEProxy.isClient(world)) return false;
 		if (getCooldown(item) > 0) return false;
-		if (human.getBukkitEntity().hasPermission("eepatch.delay") && delay > System.currentTimeMillis()){
-			return false;
-		}
-		delay = System.currentTimeMillis()+1000*5;
+		//if (human.getBukkitEntity().hasPermission("eepatch.delay") && delay > System.currentTimeMillis()){
+		//	return false;
+		//}
+		//delay = System.currentTimeMillis()+1000*5;
 		if (EEEventManager.callEvent(new EEHyperCatalystEvent(item, EEAction.RIGHTCLICK, human, x, y, z, EEAction2.BreakRadius))) return false;
 		
 		initCooldown(item);
@@ -301,16 +301,16 @@ public class ItemHyperCatalyst extends ItemEECharged {
 		if (world.random.nextInt(8) == 0) world.a("explode", x, y, z, 0.0D, 0.0D, 0.0D);
 	}
 
-	private long delay2 = 0;
+	//private long delay2 = 0;
 	public ItemStack a(ItemStack var1, World var2, EntityHuman var3) {
 		if (EEProxy.isClient(var2)) {
 			return var1;
 		} else {
 			if (EEEventManager.callEvent(new EEHyperCatalystEvent(var1, EEAction.RIGHTCLICK, var3, EEAction2.BreakRadius))) return var1;
-			if (!var3.getBukkitEntity().hasPermission("eepatch.delay") || delay2 <= System.currentTimeMillis()){
+			//if (!var3.getBukkitEntity().hasPermission("eepatch.delay") || delay2 <= System.currentTimeMillis()){
 				doBreak2(var1, var2, var3);
-				delay2 = System.currentTimeMillis()+1000*5;
-			}
+			//	delay2 = System.currentTimeMillis()+1000*5;
+			//}
 			
 			return var1;
 		}
@@ -318,15 +318,15 @@ public class ItemHyperCatalyst extends ItemEECharged {
 
 	public void doToggle(ItemStack itemstack1, World world1, EntityHuman entityhuman1) {}
 
-	private long delay = 0;
+	//private long delay = 0;
 	public void doRelease(ItemStack item, World world, EntityHuman human) {
 		if (EEProxy.isClient(world)) return;
 		
 		if (EEEventManager.callEvent(new EEHyperCatalystEvent(item, EEAction.RELEASE, human, EEAction2.BreakRadius))) return;
-		if (!human.getBukkitEntity().hasPermission("eepatch.delay") || delay <= System.currentTimeMillis()){
+		//if (!human.getBukkitEntity().hasPermission("eepatch.delay") || delay <= System.currentTimeMillis()){
 			doBreak(item, world, human);
-			delay = System.currentTimeMillis()+1000*5;
-		}
+		//	delay = System.currentTimeMillis()+1000*5;
+		//}
 	}
 
 	public void doPassive(ItemStack var1, World var2, EntityHuman var3) {

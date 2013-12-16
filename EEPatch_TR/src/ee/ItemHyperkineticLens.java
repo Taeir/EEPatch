@@ -37,10 +37,10 @@ public class ItemHyperkineticLens extends ItemEECharged {
 			return var1;
 		} else {
 			if (EEEventManager.callEvent(new EEHyperkineticLensEvent(var1, EEAction.RIGHTCLICK, var3, EEAction2.BreakRadius))) return var1;
-			if (!var3.getBukkitEntity().hasPermission("eepatch.delay") || delay <= System.currentTimeMillis()){
+			//if (!var3.getBukkitEntity().hasPermission("eepatch.delay") || delay <= System.currentTimeMillis()){
 				doBreak(var1, var2, var3);
-				delay = System.currentTimeMillis()+1000*5;
-			}
+			//	delay = System.currentTimeMillis()+1000*5;
+			//}
 			return var1;
 		}
 	}
@@ -48,21 +48,20 @@ public class ItemHyperkineticLens extends ItemEECharged {
 	public void doRelease(ItemStack item, World world, EntityHuman human) {
 		if (EEProxy.isClient(world)) return;
 		if (EEEventManager.callEvent(new EEHyperkineticLensEvent(item, EEAction.RELEASE, human, EEAction2.BreakRadius))) return;
-		if (!human.getBukkitEntity().hasPermission("eepatch.delay") || delay <= System.currentTimeMillis()){
+		//if (!human.getBukkitEntity().hasPermission("eepatch.delay") || delay <= System.currentTimeMillis()){
 			doBreak(item, world, human);
-			delay = System.currentTimeMillis()+1000*5;
-		}
-		doBreak(item, world, human);
+		//	delay = System.currentTimeMillis()+1000*5;
+		//}
 	}
 
-	private long delay = 0;
+	//private long delay = 0;
 	public void doLeftClick(ItemStack var1, World var2, EntityHuman var3) {
 		if (EEProxy.isClient(var2)) return;
 		if (EEEventManager.callEvent(new EEHyperkineticLensEvent(var1, EEAction.LEFTCLICK, var3, EEAction2.BreakRadius))) return;
-		if (!var3.getBukkitEntity().hasPermission("eepatch.delay") || delay <= System.currentTimeMillis()){
+		//if (!var3.getBukkitEntity().hasPermission("eepatch.delay") || delay <= System.currentTimeMillis()){
 			doBreak(var1, var2, var3);
-			delay = System.currentTimeMillis()+1000*5;
-		}
+		//	delay = System.currentTimeMillis()+1000*5;
+		//}
 	}
 
 	public void doToggle(ItemStack itemstack, World world, EntityHuman entityhuman) {}

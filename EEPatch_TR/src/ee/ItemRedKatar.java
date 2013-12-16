@@ -91,13 +91,13 @@ public class ItemRedKatar extends ItemRedTool {
 	}
 
 	
-	private long delay = 0;
+	//private long delay = 0;
 	public boolean interactWith(ItemStack item, EntityHuman human, World world, int x, int y, int z, int var7) {
 		if (EEProxy.isClient(world)) return false;
-		if (human.getBukkitEntity().hasPermission("eepatch.delay") && delay > System.currentTimeMillis()){
-			return false;
-		}
-		delay = System.currentTimeMillis()+1000*5;
+		//if (human.getBukkitEntity().hasPermission("eepatch.delay") && delay > System.currentTimeMillis()){
+		//	return false;
+		//}
+		//delay = System.currentTimeMillis()+1000*5;
 		
 		int id = world.getTypeId(x, y, z);
 		chargeLevel(item);
