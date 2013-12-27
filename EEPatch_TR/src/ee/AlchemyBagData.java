@@ -1,9 +1,11 @@
 package ee;
 
 import ee.item.ItemLootBall;
+
 import java.util.*;
 
 import net.minecraft.server.*;
+
 import nl.taico.fixpack.ee.TRUtil;
 
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
@@ -645,19 +647,28 @@ public class AlchemyBagData extends WorldMapBase implements IInventory {
 	public void g() {}
 
 	public void a(NBTTagCompound var1) {
-		voidOn = var1.getBoolean("voidOn");
-		repairOn = var1.getBoolean("repairOn");
-		condenseOn = var1.getBoolean("condenseOn");
-		eternalDensity = var1.getShort("eternalDensity");
-		NBTTagList var2 = var1.getList("Items");
-		items = new ItemStack[113];
-		for (int var3 = 0; var3 < var2.size(); var3++) {
-			NBTTagCompound var4 = (NBTTagCompound) var2.get(var3);
-			int var5 = var4.getByte("Slot") & 255;
-			if (var5 >= 0 && var5 < items.length) items[var5] = ItemStack.a(var4);
+		if (!EEPatch.allowAlcBags){
+			voidOn = false;
+			repairOn = false;
+			condenseOn = false;
+			eternalDensity = 0;
+			items = new ItemStack[113];
+		} else {
+			voidOn = var1.getBoolean("voidOn");
+			repairOn = var1.getBoolean("repairOn");
+			condenseOn = var1.getBoolean("condenseOn");
+			eternalDensity = var1.getShort("eternalDensity");
+			NBTTagList var2 = var1.getList("Items");
+			items = new ItemStack[113];
+			for (int var3 = 0; var3 < var2.size(); var3++) {
+				NBTTagCompound var4 = (NBTTagCompound) var2.get(var3);
+				int var5 = var4.getByte("Slot") & 255;
+				if (var5 >= 0 && var5 < items.length) items[var5] = ItemStack.a(var4);
+			}
 		}
 	}
 	public void b(NBTTagCompound var1) {
+		if (!EEPatch.allowAlcBags) return;
 		var1.setBoolean("voidOn", voidOn);
 		var1.setBoolean("repairOn", repairOn);
 		var1.setBoolean("condenseOn", condenseOn);
@@ -688,7 +699,6 @@ public class AlchemyBagData extends WorldMapBase implements IInventory {
 	public void onClose(CraftHumanEntity crafthumanentity) {
 		transaction.remove(crafthumanentity);
 	}
-	
 	
 	public List<HumanEntity> getViewers() {
 		return transaction;

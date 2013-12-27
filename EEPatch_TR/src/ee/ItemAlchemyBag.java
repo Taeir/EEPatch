@@ -28,7 +28,7 @@ public class ItemAlchemyBag extends ItemEECharged {
 
 	public ItemStack a(ItemStack item, World world, EntityHuman human) {
 		if (ModLoader.getMinecraftServerInstance() != null) {
-			human.openGui(mod_EE.getInstance(), GuiIds.ALCH_BAG, world, item.getData(), (int) human.locY, (int) human.locZ);
+			if (EEPatch.allowAlcBags) human.openGui(mod_EE.getInstance(), GuiIds.ALCH_BAG, world, item.getData(), (int) human.locY, (int) human.locZ);
 		}
 
 		return item;
@@ -50,7 +50,7 @@ public class ItemAlchemyBag extends ItemEECharged {
 
 	public boolean interactWith(ItemStack var1, EntityHuman var2, World var3, int var4, int var5, int var6, int var7) {
 		if (ModLoader.getMinecraftServerInstance() != null) {
-			var2.openGui(mod_EE.getInstance(), GuiIds.ALCH_BAG, var3, var1.getData(), (int) var2.locY, (int) var2.locZ);
+			if (EEPatch.allowAlcBags) var2.openGui(mod_EE.getInstance(), GuiIds.ALCH_BAG, var3, var1.getData(), (int) var2.locY, (int) var2.locZ);
 		}
 
 		return true;
@@ -64,16 +64,25 @@ public class ItemAlchemyBag extends ItemEECharged {
 
 	public void doAlternate(ItemStack item, World world, EntityHuman human) {
 		if (ModLoader.getMinecraftServerInstance() == null) return;
-		human.openGui(mod_EE.getInstance(), GuiIds.ALCH_BAG, world, item.getData(), (int) human.locY, (int) human.locZ);
+		if (EEPatch.allowAlcBags) human.openGui(mod_EE.getInstance(), GuiIds.ALCH_BAG, world, item.getData(), (int) human.locY, (int) human.locZ);
 	}
 
 	public void a(ItemStack item, World world, Entity entity, int unused1, boolean unused2) {
 		if (EEProxy.isClient(world) || !(entity instanceof EntityHuman)) return;
+		if (!EEPatch.allowAlcBags) return;
 		EntityHuman human = (EntityHuman) entity;
-		String name = human.name;
-		String datName = "bag_" + name + item.getData();
+		String datName;
+		
+		if (item.getData() > EEPatch.alcBagAmount){
+			human.a("You are not allowed to have more than " + (EEPatch.alcBagAmount+1) + " different bags!");
+			item.setData(EEPatch.alcBagAmount);
+			datName = "bag_" + (EEPatch.separateAlcBags?(world.worldData.name + "_"):"") + human.name + item.getData();
+		} else {
+			datName = "bag_" + (EEPatch.separateAlcBags?(world.worldData.name + "_"):"") + human.name + item.getData();
+		}
+		
 		AlchemyBagData bag = (AlchemyBagData) world.a(AlchemyBagData.class, datName);
-
+		
 		if (bag == null) {
 			bag = new AlchemyBagData(datName);
 			bag.a();
@@ -84,8 +93,18 @@ public class ItemAlchemyBag extends ItemEECharged {
 	}
 
 	public static AlchemyBagData getBagData(ItemStack item, EntityHuman human, World world) {
-		String name = human.name;
-		String datName = "bag_" + name + item.getData();
+		
+		String datName;
+		if (!EEPatch.allowAlcBags){
+			datName = "bag_global";
+		} else if (item.getData() > EEPatch.alcBagAmount){
+			human.a("You are not allowed to have more than " + (EEPatch.alcBagAmount+1) + " different bags!");
+			item.setData(EEPatch.alcBagAmount);
+			datName = "bag_" + (EEPatch.separateAlcBags?(world.worldData.name + "_"):"") + human.name + item.getData();
+		} else {
+			datName = "bag_" + (EEPatch.separateAlcBags?(world.worldData.name + "_"):"") + human.name + item.getData();
+		}
+		
 		AlchemyBagData bag = (AlchemyBagData) world.a(AlchemyBagData.class, datName);
 
 		if (bag == null) {
@@ -98,8 +117,17 @@ public class ItemAlchemyBag extends ItemEECharged {
 	}
 
 	public static AlchemyBagData getBagData(int color, EntityHuman human, World world) {
-		String name = human.name;
-		String datName = "bag_" + name + color;
+		//String name = human.name;
+		String datName; //= "bag_" + name + color;
+		if (!EEPatch.allowAlcBags){
+			datName = "bag_global";
+		} else if (color > EEPatch.alcBagAmount) {
+			human.a("You are not allowed to have more than " + (EEPatch.alcBagAmount+1) + " different bags!");
+			color = EEPatch.alcBagAmount;
+			datName = "bag_" + (EEPatch.separateAlcBags?(world.worldData.name + "_"):"") + human.name + color;
+		} else {
+			datName = "bag_" + (EEPatch.separateAlcBags?(world.worldData.name + "_"):"") + human.name + color;
+		}
 		AlchemyBagData bag = (AlchemyBagData) world.a(AlchemyBagData.class, datName);
 
 		if (bag == null) {
@@ -114,8 +142,15 @@ public class ItemAlchemyBag extends ItemEECharged {
 	/** Creates a new bag. If it already exists, this does nothing. */
 	public void d(ItemStack item, World world, EntityHuman human) {
 		if (EEProxy.isClient(world)) return;
-		String name = human.name;
-		String datName = "bag_" + name + item.getData();
+		if (!EEPatch.allowAlcBags) return;
+		
+		if (item.getData() > EEPatch.alcBagAmount){
+			human.a("You are not allowed to have more than " + (EEPatch.alcBagAmount+1) + " different bags!");
+			item.setData(EEPatch.alcBagAmount);
+		}
+		
+		String datName = "bag_" + (EEPatch.separateAlcBags?(world.worldData.name + "_"):"") + human.name + item.getData();
+
 		AlchemyBagData bag = (AlchemyBagData) world.a(AlchemyBagData.class, datName);
 
 		if (bag != null) return;

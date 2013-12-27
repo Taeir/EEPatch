@@ -12,18 +12,28 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import net.minecraft.server.EntityHuman;
 
 public class EEPatch {
-	public static final double version = 1.72;
+	public static final double version = 1.8;//1.8
+	public static int alcBagAmount = 15;
+	public static boolean allowAlcBags = true;
+	public static boolean separateAlcBags = false;
+	public static boolean applySidePatch = false;
 	
-	public static EEProps InitProps(EEProps props)
-	{
-		if (props.getInt("EEPatch_ApplyCondenserSidePatch", 1) == 1){
-			TileCondenser.applySidePatch = true;
+	
+	public static EEProps InitProps(EEProps props) {
+		int alcbag = props.getInt("EEPatch_AllowAlchemyBags", 1);
+		if (alcbag == 0){
+			allowAlcBags = false;
+			alcBagAmount = 0;
+		} else {
+			alcBagAmount = EEBase.props.getInt("EEPatch_AlchemyBagAmount", 16)-1;
 		}
+		separateAlcBags = props.getInt("EEPatch_SeparateAlcBagsPerWorld", 0) == 1;
+		
+		applySidePatch = props.getInt("EEPatch_ApplyCondenserSidePatch", 1) == 1;
 		return props;
 	}
 	
-	public static boolean attemptBreak(EntityHuman player, int x, int y, int z)
-	{
+	public static boolean attemptBreak(EntityHuman player, int x, int y, int z){
 		if (player == null) return false;
 		
 		CraftWorld craftWorld = player.world.getWorld();
@@ -41,8 +51,7 @@ public class EEPatch {
 		return false;
 	}
 
-	public static boolean attemptPlace(EntityHuman player, int x, int y, int z)
-	{
+	public static boolean attemptPlace(EntityHuman player, int x, int y, int z) {
 		if(player == null) return false;
 		CraftWorld craftWorld = player.world.getWorld();
 		CraftServer craftServer = player.world.getServer();

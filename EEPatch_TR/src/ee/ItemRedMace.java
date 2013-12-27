@@ -435,7 +435,7 @@ public class ItemRedMace extends ItemRedTool {
 		} else {
 			Material mat = world.getMaterial(x, y, z);
 			if (mat == Material.STONE){
-				if (EEEventManager.callEvent(new EERedMorningStarEvent(item, EEAction.RIGHTCLICK, human, x, y, z, EEAction2.BreakRadius))) return false;
+				if (EEEventManager.callEvent(new EERedMorningStarEvent(item, EEAction.RIGHTCLICK, human, x, y, z, chargeLevel(item)>=2?EEAction2.MegaBreak:EEAction2.BreakRadius))) return false;
 				onItemUseHammer(item, human, world, x, y, z, face);
 			} else if (mat == Material.EARTH || mat == Material.GRASS || mat == Material.CLAY || mat == Material.SAND || mat == Material.SNOW_LAYER){
 				if (EEEventManager.callEvent(new EERedMorningStarEvent(item, EEAction.RIGHTCLICK, human, x, y, z, EEAction2.BreakRadius))) return false;

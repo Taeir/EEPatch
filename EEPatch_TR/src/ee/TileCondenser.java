@@ -38,7 +38,6 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 	public int displayEnergy;
 	public int currentItemProgress;
 	private boolean attractionOn;
-	public static boolean applySidePatch = false;
 
 	public TileCondenser() {
 		items = new ItemStack[92];
@@ -82,43 +81,42 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 	}
 
 	public static boolean putInChest(TileEntity var0, ItemStack var1) {
-		if (var1 != null && var1.id != 0) {
-			if (var0 == null) return false;
-			if (var0 instanceof TileEntityChest) {
-				for (int var2 = 0; var2 < ((TileEntityChest) var0).getSize(); var2++) {
-					ItemStack var3 = ((TileEntityChest) var0).getItem(var2);
-					if (var3 != null && var3.doMaterialsMatch(var1) && var3.count + var1.count <= var3.getMaxStackSize()) {
-						var3.count += var1.count;
-						return true;
-					}
+		if (var1 == null || var1.id == 0 || var1.count > var1.getMaxStackSize() || var1.count > 64) return true;
+
+		if (var0 == null) return false;
+		if (var0 instanceof TileEntityChest) {
+			for (int var2 = 0; var2 < ((TileEntityChest) var0).getSize(); var2++) {
+				ItemStack var3 = ((TileEntityChest) var0).getItem(var2);
+				if (var3 != null && var3.doMaterialsMatch(var1) && var3.count + var1.count <= var3.getMaxStackSize()) {
+					var3.count += var1.count;
+					return true;
 				}
-
-				for (int var2 = 0; var2 < ((TileEntityChest) var0).getSize(); var2++)
-					if (((TileEntityChest) var0).getItem(var2) == null) {
-						((TileEntityChest) var0).setItem(var2, var1);
-						return true;
-					}
-
-			} else if (var0 instanceof TileAlchChest) {
-				for (int var2 = 0; var2 < ((TileAlchChest) var0).getSize(); var2++) {
-					ItemStack var3 = ((TileAlchChest) var0).getItem(var2);
-					if (var3 != null && var3.doMaterialsMatch(var1) && var3.count + var1.count <= var3.getMaxStackSize() && var3.getData() == var1.getData()) {
-						var3.count += var1.count;
-						return true;
-					}
-				}
-
-				for (int var2 = 0; var2 < ((TileAlchChest) var0).getSize(); var2++)
-					if (((TileAlchChest) var0).getItem(var2) == null) {
-						((TileAlchChest) var0).setItem(var2, var1);
-						return true;
-					}
-
 			}
-			return false;
-		}
 
-		return true;
+			for (int var2 = 0; var2 < ((TileEntityChest) var0).getSize(); var2++)
+				if (((TileEntityChest) var0).getItem(var2) == null) {
+					((TileEntityChest) var0).setItem(var2, var1);
+					return true;
+				}
+
+		} else if (var0 instanceof TileAlchChest) {
+			for (int var2 = 0; var2 < ((TileAlchChest) var0).getSize(); var2++) {
+				ItemStack var3 = ((TileAlchChest) var0).getItem(var2);
+				if (var3 != null && var3.doMaterialsMatch(var1) && var3.count + var1.count <= var3.getMaxStackSize() && var3.getData() == var1.getData()) {
+					var3.count += var1.count;
+					return true;
+				}
+			}
+
+			for (int var2 = 0; var2 < ((TileAlchChest) var0).getSize(); var2++)
+				if (((TileAlchChest) var0).getItem(var2) == null) {
+					((TileAlchChest) var0).setItem(var2, var1);
+					return true;
+				}
+
+		}
+		return false;
+
 	}
 
 	public boolean tryDropInChest(ItemStack var1) {
@@ -251,6 +249,8 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 				
 				if (items[var3].count <= 1)
 					items[var3] = null;
+				else if (items[var3].count > items[var3].getMaxStackSize() || items[var3].count > 64)
+					items[var3].count = items[var3].getMaxStackSize()>64?63:items[var3].getMaxStackSize()-1;
 				else
 					items[var3].count--;
 				return;
@@ -310,8 +310,8 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 	 */
 	public int getTargetValue(ItemStack var1) {
 		if (var1 == null) return 0;
-		int emc;
-		if ((emc = EEMaps.getEMC(var1.id, var1.getData())) != 0){
+		int emc = EEMaps.getEMC(var1.id, var1.getData());
+		if (emc != 0){
 			return emc;
 		} else {
 			if (var1.d()){
@@ -385,45 +385,60 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 
 	public boolean addItem(ItemStack item, boolean add, Orientations side) {
 		if (item == null) return false;
+		if (item.count > item.getMaxStackSize()) return false;
+		if (item.count > 64) return false;
 		
-		if (side == Orientations.YPos && applySidePatch){
-				if (items[0] == null) {
-					if (add){
-						items[0] = item.cloneItemStack();
-						//item.count = 0;
-						while (item.count > 0) item.count--;
-					}
-					return true;
-				}
-				if (!items[0].doMaterialsMatch(item) || items[0].count >= items[0].getMaxStackSize()) return false;
+		if (side == Orientations.YPos && EEPatch.applySidePatch){
+			if (items[0] == null) {
 				if (add){
-					while (items[0].count < items[0].getMaxStackSize() && item.count > 0){
+					items[0] = item.cloneItemStack();
+					item.count = 0;
+					//while (item.count > 0) item.count--;
+				}
+				return true;
+			}
+			if (items[0].doMaterialsMatch(item) && items[0].count < items[0].getMaxStackSize()){
+				int max = items[0].getMaxStackSize();
+				if (max > 64) max = 64;
+				if (add){
+					
+					while (items[0].count < max && item.count > 0){
 						item.count--;
 						items[0].count++;
 					}
 					
-					if (item.count != 0) return false;
+					if (item.count == 0) return true;
 				} else {
+					if (items[0].count >= max) return false;
 					return true;
 				}
-		} else {
-			for (int i = 1; i < items.length; i++) {
-				if (items[i] == null) {
-					if (add) {
-						items[i] = item.cloneItemStack();
-						while (item.count > 0) item.count--;
-					}
-					return true;
-				}
-				if (!items[i].doMaterialsMatch(item) || items[i].count >= items[i].getMaxStackSize()) continue;
+			}
+		}
+		
+		for (int i = 1; i < items.length; i++) {
+			if (items[i] == null) {
 				if (add) {
-					for (; items[i].count < items[i].getMaxStackSize() && item.count > 0; item.count--)
-						items[i].count++;
-
-					if (item.count != 0) continue;
-				} else {
-					return true;
+					items[i] = item.cloneItemStack();
+					item.count = 0;
+					if (items[i].count > items[i].getMaxStackSize()) items[i].count = items[i].getMaxStackSize();
+					if (items[i].count > 64) items[i].count = 64;
+					//while (item.count > 0) item.count--;
 				}
+				return true;
+			}
+			if (!items[i].doMaterialsMatch(item) || items[i].count >= items[i].getMaxStackSize()) continue;
+			if (add) {
+				int max = items[i].getMaxStackSize();
+				if (max > 64) max = 64;
+				while (items[i].count < max && item.count > 0){
+					item.count--;
+					items[i].count++;
+				}
+
+				if (item.count != 0) continue;
+			} else {
+				
+				return true;
 			}
 		}
 		
@@ -432,7 +447,7 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 
 	public ItemStack extractItem(boolean extract, Orientations side) {
 		int var3;
-		if (side == Orientations.YPos && applySidePatch){
+		if (side == Orientations.YPos && EEPatch.applySidePatch){
 			var3 = 0;
 		} else {
 			var3 = 1;
@@ -442,8 +457,12 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 				ItemStack var4 = items[var3].cloneItemStack();
 				var4.count = 1;
 				if (extract) {
-					if (items[var3].count <= 1) items[var3] = null;
-					else items[var3].count--;
+					if (items[var3].count <= 1)
+						items[var3] = null;
+					else if (items[var3].count > items[var3].getMaxStackSize() || items[var3].count > 64)
+						items[var3].count = items[var3].getMaxStackSize()>64?63:items[var3].getMaxStackSize()-1;
+					else
+						items[var3].count--;
 				}
 				return var4;
 			}
@@ -491,7 +510,11 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 
 	public ItemStack splitStack(int var1, int var2) {
 		if (items[var1] != null) {
+			if (items[var1].count > items[var1].getMaxStackSize() || items[var1].count > 64)
+				items[var1].count = items[var1].getMaxStackSize()>64?64:items[var1].getMaxStackSize();
+
 			ItemStack var3;
+			
 			if (items[var1].count <= var2) {
 				var3 = items[var1];
 				items[var1] = null;
@@ -507,7 +530,9 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 
 	public void setItem(int var1, ItemStack var2) {
 		items[var1] = var2;
-		if (var2 != null && var2.count > getMaxStackSize()) var2.count = getMaxStackSize();
+		if (var2 != null && var2.count > var2.getMaxStackSize()){
+			var2.count = var2.getMaxStackSize() > 64 ? 64 : var2.getMaxStackSize();
+		}
 	}
 
 	public void update() {
@@ -525,7 +550,7 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 				eternal = true;
 				bhb = true;
 			}
-			if (items[var3].getItem().id == EEItem.eternalDensity.id) {
+			else if (items[var3].getItem().id == EEItem.eternalDensity.id) {
 				eternalDensity = var3;
 				if ((items[var3].getData() & 1) == 0) {
 					items[var3].setData(items[var3].getData() + 1);
@@ -533,7 +558,7 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 				}
 				eternal = true;
 			}
-			if (items[var3].getItem() instanceof ItemAttractionRing) {
+			else if (items[var3].getItem() instanceof ItemAttractionRing) {
 				if ((items[var3].getData() & 1) == 0) {
 					items[var3].setData(items[var3].getData() + 1);
 					((ItemEECharged) items[var3].getItem()).setBoolean(items[var3], "active", true);
@@ -601,7 +626,7 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 		}
 		
 		if (canCondense()) {
-			while (scaledEnergy >= getTargetValue(target()) * 80 && roomFor(new ItemStack(target().id, 1, target().getData()))){
+			while ((scaledEnergy >= getTargetValue(target()) * 80) && roomFor(new ItemStack(target().id, 1, target().getData()))){
 				scaledEnergy -= getTargetValue(target()) * 80;
 				PushStack(new ItemStack(target().id, 1, target().getData()));
 			}
@@ -611,11 +636,15 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 					items[var9].doMaterialsMatch(target()) ||
 					items[var9].getItem() instanceof ItemKleinStar) continue;
 				int emc = EEMaps.getEMC(items[var9]);
-				if (scaledEnergy + emc * 80 > 800000000) continue;
+				if (scaledEnergy + (emc * 80) > 800000000) continue;
 				scaledEnergy += emc * 80;
 				
-				if (items[var9].count <= 1) items[var9] = null;
-				else items[var9].count--;
+				if (items[var9].count <= 1)
+					items[var9] = null;
+				else if (items[var9].count > items[var9].getMaxStackSize() || items[var9].count > 64)
+					items[var9].count = items[var9].getMaxStackSize()>64?63:items[var9].getMaxStackSize()-1;
+				else
+					items[var9].count--;
 				break;
 			}
 

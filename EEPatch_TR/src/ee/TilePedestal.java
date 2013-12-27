@@ -122,6 +122,8 @@ public class TilePedestal extends TileEE implements IInventory {
 		var1.set("Items", var2);
 	}
 
+	private boolean a, b, c, d, e, f, g, h, i, j, k, l;
+	private int counter;
 	public void update() {
 		super.update();
 
@@ -132,9 +134,17 @@ public class TilePedestal extends TileEE implements IInventory {
 			int var2 = items[0].getData();
 
 			if (EEMaps.isPedestalItem(var1)) {
+				if (activationPlayer == null){
+					return;
+				}
+				counter++;
 				if (var1 == EEBlock.eeTorch.id && var2 == 0) {
 					resetAll();
-					if (EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.Interdict))){
+					if (counter > 50){
+						a = EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.Interdict));
+						counter = 0;
+					}
+					if (a){
 						interdictionActive = false;
 					} else {
 						interdictionActive = true;
@@ -143,77 +153,121 @@ public class TilePedestal extends TileEE implements IInventory {
 					
 				} else if (var1 == EEItem.evertide.id) {
 					resetAll();
-					if (EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.Storm))){
+					if (counter > 50){
+						b = EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.Storm));
+						counter = 0;
+					}
+					if (b){
 						evertideActive = false;
 					} else {
 						evertideActive = true;
 					}
 				} else if (var1 == EEItem.grimarchRing.id) {
 					resetAll();
-					if (EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.ShootArrow))){
+					if (counter > 50){
+						c = EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.ShootArrow));
+						counter = 0;
+					}
+					if (c){
 						grimarchActive = false;
 					} else {
 						grimarchActive = true;
 					}
 				} else if (var1 == EEItem.harvestRing.id) {
 					resetAll();
-					if (EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.Harvest))){
+					if (counter > 50){
+						d = EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.Harvest));
+						counter = 0;
+					}
+					if (d){
 						harvestActive = false;
 					} else {
 						harvestActive = true;
 					}
 				} else if (var1 == EEItem.zeroRing.id) {
 					resetAll();
-					if (EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.None))){
+					if (counter > 100){
+						e = EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.None));
+						counter = 0;
+					}
+					if (e){
 						zeroActive = false;
 					} else {
 						zeroActive = true;
 					}
 				} else if (var1 == EEItem.ignitionRing.id) {
 					resetAll();
-					if (EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.Ignition))){
+					if (counter>50){
+						f = EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.Ignition));
+						counter = 0;
+					}
+					if (f){
 						ignitionActive = false;
 					} else {
 						ignitionActive = true;
 					}
 				} else if (var1 == EEItem.repairCharm.id) {
 					resetAll();
-					if (EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.Repair))){
+					if (counter>50){
+						g = EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.Repair));
+						counter = 0;
+					}
+					if (g){
 						repairActive = false;
 					} else {
 						repairActive = true;
 					}
 				} else if (var1 == EEItem.soulStone.id) {
 					resetAll();
-					if (EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.Heal))){
+					if (counter>50){
+						h = EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.Heal));
+						counter = 0;
+					}
+					if (h){
 						soulstoneActive = false;
 					} else {
 						soulstoneActive = true;
 					}
 				} else if (var1 == EEItem.swiftWolfRing.id) {
 					resetAll();
-					if (EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.StrikeLightning))){
+					if (counter>50){
+						i = EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.StrikeLightning));
+						counter = 0;
+					}
+					if (i){
 						swiftwolfActive = false;
 					} else {
 						swiftwolfActive = true;
 					}
 				} else if (var1 == EEItem.volcanite.id) {
 					resetAll();
-					if (EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.StopStorm))){
+					if (counter>50){
+						j = EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.StopStorm));
+						counter = 0;
+					}
+					if (j){
 						volcaniteActive = false;
 					} else {
 						volcaniteActive = true;
 					}
 				} else if (var1 == EEItem.watchOfTime.id) {
 					resetAll();
-					if (EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.Time))){
+					if (counter>50){
+						k = EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.Time));
+						counter = 0;
+					}
+					if (k){
 						watchActive = false;
 					} else {
 						watchActive = true;
 					}
 				} else if (var1 == EEItem.attractionRing.id) {
 					resetAll();
-					if (EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.Attract))){
+					if (counter>50){
+						l = EEEventManager.callEvent(new EEPedestalEvent(this, items[0], activationPlayer, EEPedestalAction.Attract));
+						counter = 0;
+					}
+					if (l){
 						attractionActive = false;
 					} else {
 						attractionActive = true;
@@ -882,12 +936,14 @@ public class TilePedestal extends TileEE implements IInventory {
 						}
 
 						if (var7 == Block.DIRT.id && world.getTypeId(var1 + var4, var2 + var5 + 1, var3 + var6) == 0 && world.random.nextInt(800) == 0) {
-							world.setTypeId(var1 + var4, var2 + var5, var3 + var6, Block.GRASS.id);
+							if (EEPatch.attemptBreak(activationPlayer, var5, var6, var7))
+								world.setTypeId(var1 + var4, var2 + var5, var3 + var6, Block.GRASS.id);
 						} else if ((var7 == Block.SUGAR_CANE_BLOCK.id || var7 == Block.CACTUS.id)
 								&& world.getTypeId(var1 + var4, var2 + var5 + 1, var3 + var6) == 0
 								&& world.getTypeId(var1 + var4, var2 + var5 - 4, var3 + var6) != Block.SUGAR_CANE_BLOCK.id
 								&& world.getTypeId(var1 + var4, var2 + var5 - 4, var3 + var6) != Block.CACTUS.id && world.random.nextInt(600) == 0) {
-							world.setTypeId(var1 + var4, var2 + var5 + 1, var3 + var6, var7);
+							if (EEPatch.attemptBreak(activationPlayer, var5, var6, var7))
+								world.setTypeId(var1 + var4, var2 + var5 + 1, var3 + var6, var7);
 							world.a("largesmoke", var1 + var4, var2 + var5, var3 + var6, 0.0D, 0.05D, 0.0D);
 						}
 					} else if (world.random.nextInt(2) == 0) {
@@ -1213,7 +1269,7 @@ public class TilePedestal extends TileEE implements IInventory {
 				}
 			}
 		}
-
+		
 		activationPlayer = null;
 	}
 

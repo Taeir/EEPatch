@@ -30,7 +30,8 @@ public class ItemDarkAxe extends ItemDarkTool
 	}
 
 	public void doBreak(ItemStack axe, World world, EntityHuman human) {
-		if (!(chargeLevel(axe) > 0)) return;
+		int charge = chargeLevel(axe);
+		if (charge < 1) return;
 		
 		double playerX = EEBase.playerX(human);
 		double playerY = EEBase.playerY(human);
@@ -39,10 +40,10 @@ public class ItemDarkAxe extends ItemDarkTool
 		if(chargeLevel(axe) < 1) return;
 		human.C_();
 		world.makeSound(human, "flash", 0.8F, 1.5F);
-		//TODO int charge = chargeLevel(axe)
-		for(int var11 = -(chargeLevel(axe) * 2) + 1; var11 <= chargeLevel(axe) * 2 - 1; var11++) {
-			for(int var12 = chargeLevel(axe) * 2 + 1; var12 >= -2; var12--) {
-				for(int var13 = -(chargeLevel(axe) * 2) + 1; var13 <= chargeLevel(axe) * 2 - 1; var13++) {
+		
+		for(int var11 = -(charge * 2) + 1; var11 <= charge * 2 - 1; var11++) {
+			for(int var12 = charge * 2 + 1; var12 >= -2; var12--) {
+				for(int var13 = -(charge * 2) + 1; var13 <= charge * 2 - 1; var13++) {
 					int nx = (int)(playerX + var11);
 					int ny = (int)(playerY + var12);
 					int nz = (int)(playerZ + var13);
