@@ -15,8 +15,7 @@ import net.minecraft.server.ItemStack;
 //import net.minecraft.server.ItemWorldMap;
 import net.minecraft.server.ModLoader;
 
-public class EEMaps
-{
+public class EEMaps {
 	public static HashMap<Integer, HashMap<Integer, Integer>> alchemicalValues = new HashMap<Integer, HashMap<Integer, Integer>>();
 	public static HashMap<Integer, String> modBlacklist = new HashMap<Integer, String>();
 	@SuppressWarnings("rawtypes")
@@ -35,60 +34,50 @@ public class EEMaps
 	public static HashMap<Integer, HashMap<Integer, Integer>> fuelItemRegistry = new HashMap<Integer, HashMap<Integer, Integer>>();
 	public static HashMap<Integer, Integer> metaMappings = new HashMap<Integer, Integer>();
 
-	public static boolean isBlacklisted(String var0)
-	{
+	public static boolean isBlacklisted(String var0) {
 		return modBlacklist.containsValue(var0);
 	}
 
-	public static void addNameToBlacklist(String var0)
-	{
-		int var1;
-		for (var1 = 0; modBlacklist.get(var1) != null; var1++);
+	public static void addNameToBlacklist(String var0) {
+		int var1 = 0;
+		for (; modBlacklist.get(var1) != null; var1++);
 		modBlacklist.put(var1, var0);
 	}
 
-	public static boolean isLeaf(int id)
-	{
+	public static boolean isLeaf(int id) {
 		return leafBlockRegistry.containsValue(id);
 	}
 
-	public static void addLeafBlock(int id)
-	{
-		int i;
-		for (i = 0; leafBlockRegistry.get(i) != null; i++);
+	public static void addLeafBlock(int id) {
+		int i = 0;
+		for (; leafBlockRegistry.get(i) != null; i++);
 		leafBlockRegistry.put(i, id);
 	}
 
-	public static boolean isWood(int id)
-	{
+	public static boolean isWood(int id) {
 		return woodBlockRegistry.containsValue(id);
 	}
 
-	public static void addWoodBlock(int id)
-	{
-		int i;
-		for (i = 0; woodBlockRegistry.get(i) != null; i++);
+	public static void addWoodBlock(int id) {
+		int i = 0;
+		for (; woodBlockRegistry.get(i) != null; i++);
 		woodBlockRegistry.put(i, id);
 	}
 
-	public static boolean isChestItem(int var0)
-	{
+	public static boolean isChestItem(int var0) {
 		return isChestItem(var0, 0);
 	}
 
-	public static boolean isChestItem(int id, int data)
-	{
+	public static boolean isChestItem(int id, int data) {
 		HashMap<Integer, Boolean> old = chestItems.get(id);
 		return old == null ? false : old.get(data).booleanValue();
 	}
 
-	private static void addChestItem(int id)
-	{
+	private static void addChestItem(int id) {
 		addChestItem(id, 0);
 	}
 
-	private static void addChestItem(int id, int data)
-	{
+	private static void addChestItem(int id, int data) {
 		HashMap<Integer, Boolean> var2 = chestItems.get(id);
 
 		if (var2 == null) {
@@ -99,17 +88,13 @@ public class EEMaps
 		chestItems.put(id, var2);
 	}
 
-	public static void AddRepairRecipe(ItemStack var0, Object[] var1)
-	{
-		if (var0 != null)
-		{
+	public static void AddRepairRecipe(ItemStack var0, Object[] var1) {
+		if (var0 != null) {
 			ItemStack var2 = var0.cloneItemStack();
 			Object[] var3 = new Object[var1.length + 1];
 
-			for (int var4 = 0; var4 < var3.length; var4++)
-			{
-				if (var4 >= var1.length)
-				{
+			for (int var4 = 0; var4 < var3.length; var4++) {
+				if (var4 >= var1.length) {
 					var3[var4] = var0;
 					break;
 				}
@@ -122,18 +107,16 @@ public class EEMaps
 		}
 	}
 
-	public static void AddPSRecipes(ItemStack var0, ItemStack var1, ItemStack var2, ItemStack var3, ItemStack var4, ItemStack var5, ItemStack var6, ItemStack var7, ItemStack var8)
-	{
-		ItemStack[] var9 = { var1, var2, var3, var4, var5, var6, var7, var8 };
+	public static void AddPSRecipes(ItemStack var0, ItemStack var1, ItemStack var2, ItemStack var3, ItemStack var4, ItemStack var5, ItemStack var6,
+			ItemStack var7, ItemStack var8) {
+		ItemStack[] var9 = {var1, var2, var3, var4, var5, var6, var7, var8};
 
-		for (int var10 = 2; var10 <= 9; var10++)
-		{
+		for (int var10 = 2; var10 <= 9; var10++) {
 			Object[] var11 = new Object[var10];
 			ItemStack[] var12 = new ItemStack[var10 - 1];
 			var11[0] = pstone();
 
-			for (int var13 = 1; var13 < var10; var13++)
-			{
+			for (int var13 = 1; var13 < var10; var13++) {
 				var11[var13] = var0;
 				var12[(var13 - 1)] = var0;
 			}
@@ -143,26 +126,21 @@ public class EEMaps
 		}
 	}
 
-	public static void checkRecipe(ItemStack var0, ItemStack[] var1)
-	{
-		if ((var0 != null) && (var1[0] != null))
-		{
+	public static void checkRecipe(ItemStack var0, ItemStack[] var1) {
+		if ((var0 != null) && (var1[0] != null)) {
 			int var2 = 0;
 			String var3 = var1[0].getItem().getName();
 			String var4 = var0.getItem().getName();
 			ItemStack[] var5 = var1;
 			int var6 = var1.length;
 
-			for (int var7 = 0; var7 < var6; var7++)
-			{
+			for (int var7 = 0; var7 < var6; var7++) {
 				ItemStack var8 = var5[var7];
 
-				if (var8 != null)
-				{
+				if (var8 != null) {
 					var2 += getEMC(var8.id, var8.getData() == -1 ? 0 : var8.getData());
 
-					if (var8.getItem().k())
-					{
+					if (var8.getItem().k()) {
 						var2 -= getEMC(var8.getItem().j().id);
 					}
 				}
@@ -170,53 +148,43 @@ public class EEMaps
 
 			int var9 = getEMC(var0.id, var0.getData()) * var0.count;
 
-			if (var0.getItem().k())
-			{
+			if (var0.getItem().k()) {
 				var9 -= getEMC(var0.getItem().j().id);
 			}
 
-			if (var2 != var9)
-			{
+			if (var2 != var9) {
 				System.out.println("Inconsistency when combining " + var1.length + " meta " + var1[0].getData() + " " + var3 + " to make " + var4);
 			}
-		}
-		else
-		{
+		} else {
 			System.out.println("EMC Consistency Check - error, output or first input returns null..");
 		}
 	}
 
-	public static boolean isChargedItem(int id)
-	{
+	public static boolean isChargedItem(int id) {
 		return chargedItems.containsValue(id);
 	}
 
-	public static void addChargedItem(int id)
-	{
-		int i;
-		for (i = 0; chargedItems.get(i) != null; i++);
+	public static void addChargedItem(int id) {
+		int i = 0;
+		for (; chargedItems.get(i) != null; i++);
 		chargedItems.put(i, id);
 	}
 
-	public static boolean isPedestalItem(int var0)
-	{
+	public static boolean isPedestalItem(int var0) {
 		return isPedestalItem(var0, 0);
 	}
 
-	public static boolean isPedestalItem(int id, int data)
-	{
+	public static boolean isPedestalItem(int id, int data) {
 		HashMap<Integer, Boolean> old = pedestalItems.get(id);
-		
+
 		return old == null ? false : old.get(data).booleanValue();
 	}
 
-	private static void addPedestalItem(int var0)
-	{
+	private static void addPedestalItem(int var0) {
 		addPedestalItem(var0, 0);
 	}
 
-	private static void addPedestalItem(int id, int data)
-	{
+	private static void addPedestalItem(int id, int data) {
 		HashMap<Integer, Boolean> var2 = pedestalItems.get(id);
 
 		if (var2 == null) {
@@ -227,90 +195,78 @@ public class EEMaps
 		pedestalItems.put(id, var2);
 	}
 
-	public static boolean isModItem(int var0)
-	{
+	public static boolean isModItem(int var0) {
 		return modItems.containsValue(var0);
 	}
 
-	public static void addModItem(int id)
-	{
-		int i;
-		for (i = 0; modItems.get(i) != null; i++);
+	public static void addModItem(int id) {
+		int i = 0;
+		for (; modItems.get(i) != null; i++);
 		modItems.put(i, id);
 	}
 
-	public static void addDurationEffectItem(int var0)
-	{
+	public static void addDurationEffectItem(int var0) {
 		durationEffectItems.put(var0, true);
 	}
 
-	public static boolean hasDurationEffect(Item var0)
-	{
+	public static boolean hasDurationEffect(Item var0) {
 		Boolean old = durationEffectItems.get(var0.id);
 		return old == null ? false : old.booleanValue();
 	}
 
-	public static boolean isFuel(ItemStack var0)
-	{
+	public static boolean isFuel(ItemStack var0) {
 		return isFuel(var0.id, var0.getData());
 	}
 
-	public static boolean isFuel(int var0, int var1)
-	{
+	public static boolean isFuel(int var0, int var1) {
 		HashMap<Integer, Integer> old = fuelItemRegistry.get(var0);
 		return old == null ? false : old.containsValue(var1);
 	}
 
-	public static void addFuelItem(int var0)
-	{
+	public static void addFuelItem(int var0) {
 		addFuelItem(var0, 0);
 	}
 
-	public static void addFuelItem(int id, int data)
-	{
+	public static void addFuelItem(int id, int data) {
 		HashMap<Integer, Integer> var2 = fuelItemRegistry.get(id);
 
 		if (var2 == null) {
 			var2 = new HashMap<Integer, Integer>();
 		}
-		
-		int i;
-		for (i = 0; var2.get(i) != null; i++);
+
+		int i = 0;
+		for (; var2.get(i) != null; i++);
 		var2.put(i, data);
 		fuelItemRegistry.put(id, var2);
 	}
 
-	public static boolean isOreBlock(int var0)
-	{
+	public static boolean isOreBlock(int var0) {
 		return oreBlockRegistry.containsValue(var0);
 	}
 
-	public static void addOreBlock(int id)
-	{
-		int i;
-		for (i = 0; oreBlockRegistry.get(i) != null; i++);
+	public static void addOreBlock(int id) {
+		int i = 0;
+		for (; oreBlockRegistry.get(i) != null; i++);
 		oreBlockRegistry.put(i, id);
 	}
 
-	public static int getEMC(ItemStack var0)
-	{
-		if (var0 != null){
-			int emc = getEMC(var0.id, var0.getData());
-			if (emc != 0){
-				return emc;
+	public static int getEMC(ItemStack var0) {
+		if (var0 == null) return 0;
+
+		int emc = getEMC(var0.id, var0.getData());
+		if (emc != 0) {
+			return emc;
+		} else {
+			emc = getEMC(var0.id);
+			if (emc <= 0) {
+				return 0;
 			} else {
-				if (getEMC(var0.id) <= 0){
-					return 0;
+				if (var0.d()) {
+					return (int) (emc * ((float) (var0.i() - var0.getData()) / (float) var0.i()));
 				} else {
-					if (var0.d()){
-						return (int)(getEMC(var0.id) * ((float)(var0.i() - var0.getData()) / (float)var0.i()));
-					} else {
-						return getEMC(var0.id);
-					}
+					return emc;
 				}
 			}
-		} else {
-			return 0;
 		}
 		/*
 		if (var0 == null) return 0;
@@ -320,26 +276,22 @@ public class EEMaps
 					getEMC(var0.id, var0.getData());*/
 	}
 
-	public static int getEMC(int id)
-	{
+	public static int getEMC(int id) {
 		return getEMC(id, 0);
 	}
 
-	public static int getEMC(int id, int data)
-	{
+	public static int getEMC(int id, int data) {
 		HashMap<Integer, Integer> old = alchemicalValues.get(id);
 		if (old == null) return 0;
 		Integer old2 = old.get(data);
 		return old2 == null ? 0 : old2.intValue();
 	}
 
-	public static void addEMC(int id, int emc)
-	{
+	public static void addEMC(int id, int emc) {
 		addEMC(id, 0, emc);
 	}
 
-	public static void addEMC(int id, int data, int emc)
-	{
+	public static void addEMC(int id, int data, int emc) {
 		if (emc == 0) {
 			System.out.println("Error: Alchemical Value of 0 being added to hashmap for item index " + id + " of meta " + data);
 		}
@@ -354,55 +306,46 @@ public class EEMaps
 		alchemicalValues.put(id, var3);
 	}
 
-	public static int getMeta(int var0)
-	{
+	public static int getMeta(int var0) {
 		Integer old = metaMappings.get(var0);
 		return old == null ? 0 : old.intValue();
 	}
 
-	public static void addMeta(int var0, int var1)
-	{
+	public static void addMeta(int var0, int var1) {
 		metaMappings.put(var0, var1);
 	}
 
-	public static boolean isFlyingItem(int var0)
-	{
+	public static boolean isFlyingItem(int var0) {
 		return flyingItems.containsValue(var0);
 	}
 
-	public static void addFlyingItem(int var0)
-	{
+	public static void addFlyingItem(int var0) {
 		int var1;
 		for (var1 = 0; flyingItems.get(var1) != null; var1++);
 		flyingItems.put(var1, var0);
 	}
 
-	public static boolean isFireImmuneItem(int var0)
-	{
+	public static boolean isFireImmuneItem(int var0) {
 		return fireImmuneItems.containsValue(var0);
 	}
 
-	public static void addFireImmuneItem(int var0)
-	{
+	public static void addFireImmuneItem(int var0) {
 		int var1;
 		for (var1 = 0; fireImmuneItems.get(var1) != null; var1++);
 		fireImmuneItems.put(var1, var0);
 	}
 
-	public static boolean isFireImmuneArmor(int var0)
-	{
+	public static boolean isFireImmuneArmor(int var0) {
 		return fireImmuneArmors.containsValue(var0);
 	}
 
-	public static void addFireImmuneArmor(int var0)
-	{
+	public static void addFireImmuneArmor(int var0) {
 		int var1;
 		for (var1 = 0; fireImmuneArmors.get(var1) != null; var1++);
 		fireImmuneArmors.put(var1, var0);
 	}
 
-	public static EEProps InitProps(EEProps var0)
-	{
+	public static EEProps InitProps(EEProps var0) {
 		var0.getInt("machineFactor", 4);
 		var0.getInt("CondenserGUI", 46);
 		var0.getInt("CollectorGUI", 47);
@@ -534,16 +477,14 @@ public class EEMaps
 		return var0;
 	}
 
-	public static void InitAlchemicalValues()
-	{
+	public static void InitAlchemicalValues() {
 		System.out.println("Initializing alchemy values for Equivalent Exchange..");
 
-		for (int var0 = 0; var0 < 4; var0++)
-		{
+		for (int var0 = 0; var0 < 4; var0++) {
 			addEMC(Block.LEAVES.id, var0, 1);
 			addEMC(Block.LOG.id, var0, 32);
 			addEMC(Block.SAPLING.id, var0, getEMC(Block.LOG.id));
-			addEMC(Block.WOOD.id, var0, 32/4);
+			addEMC(Block.WOOD.id, var0, 32 / 4);
 		}
 		addEMC(Item.COAL.id, 1, getEMC(Block.LOG.id));
 		int charcoal = getEMC(Item.COAL.id, 1);
@@ -574,22 +515,14 @@ public class EEMaps
 		addEMC(Item.WOOD_AXE.id, wood * 3 + stick * 2);
 		addEMC(Item.BONE.id, 96);
 
-		for (int var0 = 0; var0 < 16; var0++)
-		{
-			if (var0 == 15)
-			{
+		for (int var0 = 0; var0 < 16; var0++) {
+			if (var0 == 15) {
 				addEMC(Item.INK_SACK.id, var0, getEMC(Item.BONE.id) / 3);
-			}
-			else if (var0 == 4)
-			{
+			} else if (var0 == 4) {
 				addEMC(Item.INK_SACK.id, var0, 864);
-			}
-			else if (var0 == 3)
-			{
+			} else if (var0 == 3) {
 				addEMC(Item.INK_SACK.id, var0, 128);
-			}
-			else
-			{
+			} else {
 				addEMC(Item.INK_SACK.id, var0, 8);
 			}
 		}
@@ -636,8 +569,7 @@ public class EEMaps
 		addEMC(Block.STONE_PLATE.id, stone * 2);
 		addEMC(Block.STEP.id, 0, stone);
 
-		for (int var0 = 0; var0 < 4; var0++)
-		{
+		for (int var0 = 0; var0 < 4; var0++) {
 			addEMC(Block.SMOOTH_BRICK.id, var0, stone);
 		}
 		int smooth_brick = stone;
@@ -657,8 +589,7 @@ public class EEMaps
 		addEMC(Block.WEB.id, (string * 2 + slime) / 4);
 		addEMC(Block.MOSSY_COBBLESTONE.id, cobble + getEMC(Item.SEEDS.id) + slime * 6);
 
-		for (int var0 = 0; var0 < 16; var0++)
-		{
+		for (int var0 = 0; var0 < 16; var0++) {
 			addEMC(Block.WOOL.id, var0, string * 4);
 		}
 
@@ -823,63 +754,54 @@ public class EEMaps
 		InitModBlockValues();
 	}
 
-	public static void InitModBlockValues()
-	{
+	public static void InitModBlockValues() {
 		addEMC(EEBlock.eeStone.id, 8, getEMC(EEItem.darkMatter.id));
 		addEMC(EEBlock.eeStone.id, 9, getEMC(EEItem.redMatter.id));
 
-		if (EEBase.props.getInt("AllowCollectors") == 1)
-		{
+		if (EEBase.props.getInt("AllowCollectors") == 1) {
 			addEMC(EEBlock.eeStone.id, 0, getEMC(Block.GLOWSTONE.id) * 6 + getEMC(Block.GLASS.id) + getEMC(Block.DIAMOND_BLOCK.id) + getEMC(Block.FURNACE.id));
 			addEMC(EEBlock.eeStone.id, 1, getEMC(Block.GLOWSTONE.id) * 7 + getEMC(EEBlock.eeStone.id, 0) + getEMC(EEItem.darkMatter.id));
 			addEMC(EEBlock.eeStone.id, 2, getEMC(Block.GLOWSTONE.id) * 7 + getEMC(EEBlock.eeStone.id, 1) + getEMC(EEItem.redMatter.id));
 		}
 
-		if (EEBase.props.getInt("AllowFurnaces") == 1)
-		{
+		if (EEBase.props.getInt("AllowFurnaces") == 1) {
 			addEMC(EEBlock.eeStone.id, 3, getEMC(Block.FURNACE.id) + getEMC(EEBlock.eeStone.id, 8) * 8);
 			addEMC(EEBlock.eeStone.id, 4, getEMC(EEBlock.eeStone.id, 3) + getEMC(EEBlock.eeStone.id, 9) * 3);
 		}
 
-		if (EEBase.props.getInt("AllowRelays") == 1)
-		{
+		if (EEBase.props.getInt("AllowRelays") == 1) {
 			addEMC(EEBlock.eeStone.id, 5, getEMC(Block.OBSIDIAN.id) * 7 + getEMC(Block.DIAMOND_BLOCK.id) + getEMC(Block.GLASS.id));
 			addEMC(EEBlock.eeStone.id, 6, getEMC(Block.OBSIDIAN.id) * 7 + getEMC(EEBlock.eeStone.id, 5) + getEMC(EEItem.darkMatter.id));
 			addEMC(EEBlock.eeStone.id, 7, getEMC(Block.OBSIDIAN.id) * 7 + getEMC(EEBlock.eeStone.id, 6) + getEMC(EEItem.redMatter.id));
 		}
 
-		if (EEBase.props.getInt("AllowInterdiction") == 1)
-		{
+		if (EEBase.props.getInt("AllowInterdiction") == 1) {
 			addEMC(EEBlock.eeTorch.id, 0, (getEMC(Block.REDSTONE_TORCH_ON.id) * 2 + getEMC(Item.DIAMOND.id) * 3 + getEMC(Item.GLOWSTONE_DUST.id) * 3) / 2);
 		}
 
-		if (EEBase.props.getInt("AllowPedestals") == 1)
-		{
+		if (EEBase.props.getInt("AllowPedestals") == 1) {
 			addEMC(EEBlock.eePedestal.id, 0, getEMC(EEBlock.eeStone.id, 8) * 5 + getEMC(EEItem.redMatter.id) * 4);
 		}
 
-		if (EEBase.props.getInt("AllowChests") == 1)
-		{
-			addEMC(EEBlock.eeChest.id, 0, getEMC(Block.CHEST.id) + getEMC(Item.IRON_INGOT.id) * 2 + getEMC(Item.DIAMOND.id) + getEMC(Block.STONE.id) * 2 + getEMC(EEItem.covalenceDust.id, 0) + getEMC(EEItem.covalenceDust.id, 1) + getEMC(EEItem.covalenceDust.id, 2));
+		if (EEBase.props.getInt("AllowChests") == 1) {
+			addEMC(EEBlock.eeChest.id, 0, getEMC(Block.CHEST.id) + getEMC(Item.IRON_INGOT.id) * 2 + getEMC(Item.DIAMOND.id) + getEMC(Block.STONE.id) * 2
+					+ getEMC(EEItem.covalenceDust.id, 0) + getEMC(EEItem.covalenceDust.id, 1) + getEMC(EEItem.covalenceDust.id, 2));
 		}
 
-		if (EEBase.props.getInt("AllowCondensers") == 1)
-		{
+		if (EEBase.props.getInt("AllowCondensers") == 1) {
 			addEMC(EEBlock.eeChest.id, 1, getEMC(EEBlock.eeChest.id, 0) + getEMC(Block.OBSIDIAN.id) * 4 + getEMC(Item.DIAMOND.id) * 4);
 		}
 
 		addEMC(EEBlock.eeDevice.id, 0, getEMC(Block.OBSIDIAN.id) * 4 + getEMC(Block.STONE.id) * 4);
 	}
 
-	public static void InitChestItems()
-	{
+	public static void InitChestItems() {
 		addChestItem(EEItem.repairCharm.id);
 		addChestItem(EEBlock.eeTorch.id, 0);
 		addChestItem(EEItem.eternalDensity.id);
 	}
 
-	public static void InitBlacklist() {
-	}
+	public static void InitBlacklist() {}
 
 	public static void InitChargeditems() {
 		addChargedItem(EEItem.philStone.id);
@@ -918,8 +840,7 @@ public class EEMaps
 		addChargedItem(EEItem.mercurialEye.id);
 	}
 
-	public static void InitFuelItems()
-	{
+	public static void InitFuelItems() {
 		addFuelItem(Item.REDSTONE.id);
 		addFuelItem(Item.BLAZE_POWDER.id);
 		addFuelItem(Item.COAL.id);
@@ -933,14 +854,12 @@ public class EEMaps
 		addFuelItem(EEItem.aeternalisFuel.id);
 	}
 
-	public static void InitWoodAndLeafBlocks()
-	{
+	public static void InitWoodAndLeafBlocks() {
 		addLeafBlock(Block.LEAVES.id);
 		addWoodBlock(Block.LOG.id);
 	}
 
-	public static void InitPedestalItems()
-	{
+	public static void InitPedestalItems() {
 		addPedestalItem(EEItem.evertide.id);
 		addPedestalItem(EEItem.volcanite.id);
 		addPedestalItem(EEItem.soulStone.id);
@@ -955,8 +874,7 @@ public class EEMaps
 		addPedestalItem(EEBlock.eeTorch.id, 0);
 	}
 
-	public static void InitMetaData()
-	{
+	public static void InitMetaData() {
 		addMeta(Item.COAL.id, 1);
 		addMeta(Block.LOG.id, 2);
 		addMeta(Block.LOG.id, 3);
@@ -980,8 +898,7 @@ public class EEMaps
 		addMeta(EEItem.covalenceDust.id, 2);
 	}
 
-	public static void InitModItems()
-	{
+	public static void InitModItems() {
 		addModItem(EEItem.covalenceDust.id);
 		addModItem(EEItem.philStone.id);
 		addModItem(EEItem.catalystStone.id);
@@ -1028,8 +945,7 @@ public class EEMaps
 		addModItem(EEItem.redMace.id);
 	}
 
-	public static void InitOreBlocks()
-	{
+	public static void InitOreBlocks() {
 		addOreBlock(Block.COAL_ORE.id);
 		addOreBlock(Block.DIAMOND_ORE.id);
 		addOreBlock(Block.GOLD_ORE.id);
@@ -1039,8 +955,7 @@ public class EEMaps
 		addOreBlock(Block.GLOWING_REDSTONE_ORE.id);
 	}
 
-	public static void InitDurationEffectItems()
-	{
+	public static void InitDurationEffectItems() {
 		addDurationEffectItem(EEItem.harvestRing.id);
 		addDurationEffectItem(EEItem.ignitionRing.id);
 		addDurationEffectItem(EEItem.swiftWolfRing.id);
@@ -1056,30 +971,27 @@ public class EEMaps
 		addDurationEffectItem(EEItem.mindStone.id);
 	}
 
-	public static void InitFlyingItems()
-	{
+	public static void InitFlyingItems() {
 		addFlyingItem(EEItem.volcanite.id);
 		addFlyingItem(EEItem.evertide.id);
 		addFlyingItem(EEItem.swiftWolfRing.id);
 		addFlyingItem(EEItem.arcaneRing.id);
 	}
 
-	public static void InitFireImmunities()
-	{
+	public static void InitFireImmunities() {
 		addFireImmuneItem(EEItem.volcanite.id);
 		addFireImmuneItem(EEItem.ignitionRing.id);
 		addFireImmuneItem(EEItem.arcaneRing.id);
 		addFireImmuneArmor(EEItem.redMatterArmorP.id);
 	}
 
-	public static void InitRepairRecipes()
-	{
-		ModLoader.addShapelessRecipe(coval(40, 0), new Object[] { cobble(1), cobble(1), cobble(1), cobble(1), cobble(1), cobble(1), cobble(1), cobble(1), coal(1, 1) });
-		ModLoader.addShapelessRecipe(coval(40, 1), new Object[] { iing(1), redstone(1) });
-		ModLoader.addShapelessRecipe(coval(40, 2), new Object[] { diamond(1), coal(1, 0) });
+	public static void InitRepairRecipes() {
+		ModLoader.addShapelessRecipe(coval(40, 0),
+				new Object[] {cobble(1), cobble(1), cobble(1), cobble(1), cobble(1), cobble(1), cobble(1), cobble(1), coal(1, 1)});
+		ModLoader.addShapelessRecipe(coval(40, 1), new Object[] {iing(1), redstone(1)});
+		ModLoader.addShapelessRecipe(coval(40, 2), new Object[] {diamond(1), coal(1, 0)});
 
-		if (EEBase.props.getInt("AllowRepair") == 1)
-		{
+		if (EEBase.props.getInt("AllowRepair") == 1) {
 			AddRepairRecipe(new ItemStack(Item.LEATHER_CHESTPLATE, 1, -1), multiStack(lcov(), 8));
 			AddRepairRecipe(new ItemStack(Item.LEATHER_BOOTS, 1, -1), multiStack(lcov(), 4));
 			AddRepairRecipe(new ItemStack(Item.LEATHER_LEGGINGS, 1, -1), multiStack(lcov(), 7));
@@ -1132,285 +1044,378 @@ public class EEMaps
 		}
 	}
 
-	public static void InitEERecipes()
-	{
+	public static void InitEERecipes() {
 		debugRecipes();
-		ModLoader.addShapelessRecipe(new ItemStack(EEItem.mobiusFuel, 4), new Object[] { pstone(), EEItem.aeternalisFuel });
-		ModLoader.addShapelessRecipe(new ItemStack(EEItem.aeternalisFuel), new Object[] { pstone(), EEItem.mobiusFuel, EEItem.mobiusFuel, EEItem.mobiusFuel, EEItem.mobiusFuel });
-		ModLoader.addShapelessRecipe(new ItemStack(EEItem.alchemicalCoal, 4), new Object[] { pstone(), EEItem.mobiusFuel });
-		ModLoader.addShapelessRecipe(new ItemStack(EEItem.mobiusFuel), new Object[] { pstone(), EEItem.alchemicalCoal, EEItem.alchemicalCoal, EEItem.alchemicalCoal, EEItem.alchemicalCoal });
-		ModLoader.addShapelessRecipe(new ItemStack(Item.COAL, 4, 0), new Object[] { pstone(), EEItem.alchemicalCoal });
-		ModLoader.addShapelessRecipe(new ItemStack(EEItem.alchemicalCoal), new Object[] { pstone(), new ItemStack(Item.COAL, 1, 0), new ItemStack(Item.COAL, 1, 0), new ItemStack(Item.COAL, 1, 0), new ItemStack(Item.COAL, 1, 0) });
-		ModLoader.addShapelessRecipe(new ItemStack(Item.COAL, 4, 1), new Object[] { pstone(), new ItemStack(Item.COAL, 1, 0) });
-		ModLoader.addShapelessRecipe(new ItemStack(Item.COAL, 1, 0), new Object[] { pstone(), new ItemStack(Item.COAL, 1, 1), new ItemStack(Item.COAL, 1, 1), new ItemStack(Item.COAL, 1, 1), new ItemStack(Item.COAL, 1, 1) });
-		ModLoader.addShapelessRecipe(new ItemStack(Item.DIAMOND, 1), new Object[] { pstone(), Item.GOLD_INGOT, Item.GOLD_INGOT, Item.GOLD_INGOT, Item.GOLD_INGOT });
-		ModLoader.addShapelessRecipe(new ItemStack(Item.GOLD_INGOT, 4), new Object[] { pstone(), Item.DIAMOND });
-		ModLoader.addShapelessRecipe(new ItemStack(Item.GOLD_INGOT, 1), new Object[] { pstone(), Item.IRON_INGOT, Item.IRON_INGOT, Item.IRON_INGOT, Item.IRON_INGOT, Item.IRON_INGOT, Item.IRON_INGOT, Item.IRON_INGOT, Item.IRON_INGOT });
-		ModLoader.addShapelessRecipe(new ItemStack(Item.IRON_INGOT, 8), new Object[] { pstone(), Item.GOLD_INGOT });
-		ModLoader.addShapelessRecipe(new ItemStack(Block.ICE), new Object[] { new ItemStack(EEItem.zeroRing, 1, -1), Item.WATER_BUCKET });
-		ModLoader.addShapelessRecipe(new ItemStack(Block.ICE), new Object[] { new ItemStack(EEItem.arcaneRing, 1, -1), Item.WATER_BUCKET });
-		ModLoader.addShapelessRecipe(new ItemStack(Block.GRASS), new Object[] { new ItemStack(EEItem.harvestRing, 1, -1), Block.DIRT });
-		ModLoader.addShapelessRecipe(new ItemStack(Block.GRASS), new Object[] { new ItemStack(EEItem.arcaneRing, 1, -1), Block.DIRT });
-		ModLoader.addShapelessRecipe(new ItemStack(Item.WATER_BUCKET), new Object[] { new ItemStack(EEItem.evertide, 1, -1), Item.BUCKET });
-		ModLoader.addShapelessRecipe(new ItemStack(Item.LAVA_BUCKET), new Object[] { new ItemStack(EEItem.volcanite, 1, -1), Item.BUCKET, Item.REDSTONE });
+		ModLoader.addShapelessRecipe(new ItemStack(EEItem.mobiusFuel, 4), new Object[] {pstone(), EEItem.aeternalisFuel});
+		ModLoader.addShapelessRecipe(new ItemStack(EEItem.aeternalisFuel), new Object[] {pstone(), EEItem.mobiusFuel, EEItem.mobiusFuel, EEItem.mobiusFuel,
+				EEItem.mobiusFuel});
+		ModLoader.addShapelessRecipe(new ItemStack(EEItem.alchemicalCoal, 4), new Object[] {pstone(), EEItem.mobiusFuel});
+		ModLoader.addShapelessRecipe(new ItemStack(EEItem.mobiusFuel), new Object[] {pstone(), EEItem.alchemicalCoal, EEItem.alchemicalCoal,
+				EEItem.alchemicalCoal, EEItem.alchemicalCoal});
+		ModLoader.addShapelessRecipe(new ItemStack(Item.COAL, 4, 0), new Object[] {pstone(), EEItem.alchemicalCoal});
+		ModLoader.addShapelessRecipe(new ItemStack(EEItem.alchemicalCoal), new Object[] {pstone(), new ItemStack(Item.COAL, 1, 0),
+				new ItemStack(Item.COAL, 1, 0), new ItemStack(Item.COAL, 1, 0), new ItemStack(Item.COAL, 1, 0)});
+		ModLoader.addShapelessRecipe(new ItemStack(Item.COAL, 4, 1), new Object[] {pstone(), new ItemStack(Item.COAL, 1, 0)});
+		ModLoader.addShapelessRecipe(new ItemStack(Item.COAL, 1, 0), new Object[] {pstone(), new ItemStack(Item.COAL, 1, 1), new ItemStack(Item.COAL, 1, 1),
+				new ItemStack(Item.COAL, 1, 1), new ItemStack(Item.COAL, 1, 1)});
+		ModLoader.addShapelessRecipe(new ItemStack(Item.DIAMOND, 1),
+				new Object[] {pstone(), Item.GOLD_INGOT, Item.GOLD_INGOT, Item.GOLD_INGOT, Item.GOLD_INGOT});
+		ModLoader.addShapelessRecipe(new ItemStack(Item.GOLD_INGOT, 4), new Object[] {pstone(), Item.DIAMOND});
+		ModLoader.addShapelessRecipe(new ItemStack(Item.GOLD_INGOT, 1), new Object[] {pstone(), Item.IRON_INGOT, Item.IRON_INGOT, Item.IRON_INGOT,
+				Item.IRON_INGOT, Item.IRON_INGOT, Item.IRON_INGOT, Item.IRON_INGOT, Item.IRON_INGOT});
+		ModLoader.addShapelessRecipe(new ItemStack(Item.IRON_INGOT, 8), new Object[] {pstone(), Item.GOLD_INGOT});
+		ModLoader.addShapelessRecipe(new ItemStack(Block.ICE), new Object[] {new ItemStack(EEItem.zeroRing, 1, -1), Item.WATER_BUCKET});
+		ModLoader.addShapelessRecipe(new ItemStack(Block.ICE), new Object[] {new ItemStack(EEItem.arcaneRing, 1, -1), Item.WATER_BUCKET});
+		ModLoader.addShapelessRecipe(new ItemStack(Block.GRASS), new Object[] {new ItemStack(EEItem.harvestRing, 1, -1), Block.DIRT});
+		ModLoader.addShapelessRecipe(new ItemStack(Block.GRASS), new Object[] {new ItemStack(EEItem.arcaneRing, 1, -1), Block.DIRT});
+		ModLoader.addShapelessRecipe(new ItemStack(Item.WATER_BUCKET), new Object[] {new ItemStack(EEItem.evertide, 1, -1), Item.BUCKET});
+		ModLoader.addShapelessRecipe(new ItemStack(Item.LAVA_BUCKET), new Object[] {new ItemStack(EEItem.volcanite, 1, -1), Item.BUCKET, Item.REDSTONE});
 
-		if (EEBase.props.getInt("AllowPedestals") == 1)
-		{
-			ModLoader.addRecipe(EEBlock.pedestal, new Object[] { "R#R", "R#R", "###", Character.valueOf('R'), EEItem.redMatter, Character.valueOf('#'), EEBlock.dmBlock });
+		if (EEBase.props.getInt("AllowPedestals") == 1) {
+			ModLoader.addRecipe(EEBlock.pedestal, new Object[] {"R#R", "R#R", "###", Character.valueOf('R'), EEItem.redMatter, Character.valueOf('#'),
+					EEBlock.dmBlock});
 		}
 
-		ModLoader.addRecipe(new ItemStack(EEItem.philStone), new Object[] { "LRL", "RXR", "LRL", Character.valueOf('R'), Item.REDSTONE, Character.valueOf('L'), Item.GLOWSTONE_DUST, Character.valueOf('X'), Item.DIAMOND });
-		ModLoader.addRecipe(new ItemStack(EEItem.philStone), new Object[] { "RLR", "LXL", "RLR", Character.valueOf('R'), Item.REDSTONE, Character.valueOf('L'), Item.GLOWSTONE_DUST, Character.valueOf('X'), Item.DIAMOND });
+		ModLoader.addRecipe(new ItemStack(EEItem.philStone), new Object[] {"LRL", "RXR", "LRL", Character.valueOf('R'), Item.REDSTONE, Character.valueOf('L'),
+				Item.GLOWSTONE_DUST, Character.valueOf('X'), Item.DIAMOND});
+		ModLoader.addRecipe(new ItemStack(EEItem.philStone), new Object[] {"RLR", "LXL", "RLR", Character.valueOf('R'), Item.REDSTONE, Character.valueOf('L'),
+				Item.GLOWSTONE_DUST, Character.valueOf('X'), Item.DIAMOND});
 
-		if (EEBase.props.getInt("AllowTransmutationTable") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEBlock.eeDevice, 1, 0), new Object[] { "DSD", "SPS", "DSD", Character.valueOf('D'), Block.OBSIDIAN, Character.valueOf('S'), Block.STONE, Character.valueOf('P'), pstone() });
-			ModLoader.addRecipe(new ItemStack(EEItem.transTablet), new Object[] { "DSD", "SPS", "DSD", Character.valueOf('D'), EEBlock.dmBlock, Character.valueOf('S'), Block.STONE, Character.valueOf('P'), new ItemStack(EEBlock.eeDevice, 1, 0) });
+		if (EEBase.props.getInt("AllowTransmutationTable") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEBlock.eeDevice, 1, 0),
+					new Object[] {"DSD", "SPS", "DSD", Character.valueOf('D'), Block.OBSIDIAN, Character.valueOf('S'), Block.STONE, Character.valueOf('P'),
+							pstone()});
+			ModLoader.addRecipe(new ItemStack(EEItem.transTablet),
+					new Object[] {"DSD", "SPS", "DSD", Character.valueOf('D'), EEBlock.dmBlock, Character.valueOf('S'), Block.STONE, Character.valueOf('P'),
+							new ItemStack(EEBlock.eeDevice, 1, 0)});
 		}
 
-		ModLoader.addRecipe(new ItemStack(EEItem.darkMatter), new Object[] { "FFF", "FDF", "FFF", Character.valueOf('D'), Block.DIAMOND_BLOCK, Character.valueOf('F'), EEItem.aeternalisFuel });
-		ModLoader.addRecipe(new ItemStack(EEBlock.eeStone, 4, 8), new Object[] { "DD", "DD", Character.valueOf('D'), EEItem.darkMatter });
-		ModLoader.addRecipe(new ItemStack(EEItem.redMatter), new Object[] { "FFF", "DDD", "FFF", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('F'), EEItem.aeternalisFuel });
-		ModLoader.addRecipe(new ItemStack(EEBlock.eeStone, 4, 9), new Object[] { "DD", "DD", Character.valueOf('D'), EEItem.redMatter });
+		ModLoader.addRecipe(new ItemStack(EEItem.darkMatter),
+				new Object[] {"FFF", "FDF", "FFF", Character.valueOf('D'), Block.DIAMOND_BLOCK, Character.valueOf('F'), EEItem.aeternalisFuel});
+		ModLoader.addRecipe(new ItemStack(EEBlock.eeStone, 4, 8), new Object[] {"DD", "DD", Character.valueOf('D'), EEItem.darkMatter});
+		ModLoader.addRecipe(new ItemStack(EEItem.redMatter),
+				new Object[] {"FFF", "DDD", "FFF", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('F'), EEItem.aeternalisFuel});
+		ModLoader.addRecipe(new ItemStack(EEBlock.eeStone, 4, 9), new Object[] {"DD", "DD", Character.valueOf('D'), EEItem.redMatter});
 
-		if (EEBase.props.getInt("AllowDMTools") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.darkPickaxe), new Object[] { "###", " D ", " D ", Character.valueOf('#'), EEItem.darkMatter, Character.valueOf('D'), Item.DIAMOND });
-			ModLoader.addRecipe(new ItemStack(EEItem.darkSpade), new Object[] { " # ", " D ", " D ", Character.valueOf('#'), EEItem.darkMatter, Character.valueOf('D'), Item.DIAMOND });
-			ModLoader.addRecipe(new ItemStack(EEItem.darkHoe), new Object[] { "## ", " D ", " D ", Character.valueOf('#'), EEItem.darkMatter, Character.valueOf('D'), Item.DIAMOND });
-			ModLoader.addRecipe(new ItemStack(EEItem.darkSword), new Object[] { " # ", " # ", " D ", Character.valueOf('#'), EEItem.darkMatter, Character.valueOf('D'), Item.DIAMOND });
-			ModLoader.addRecipe(new ItemStack(EEItem.darkAxe), new Object[] { "## ", "#D ", " D ", Character.valueOf('#'), EEItem.darkMatter, Character.valueOf('D'), Item.DIAMOND });
-			ModLoader.addRecipe(new ItemStack(EEItem.darkShears), new Object[] { " # ", "D  ", Character.valueOf('#'), EEItem.darkMatter, Character.valueOf('D'), Item.DIAMOND });
-			ModLoader.addRecipe(new ItemStack(EEItem.darkHammer), new Object[] { "#D#", " D ", " D ", Character.valueOf('#'), EEItem.darkMatter, Character.valueOf('D'), Item.DIAMOND });
+		if (EEBase.props.getInt("AllowDMTools") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEItem.darkPickaxe),
+					new Object[] {"###", " D ", " D ", Character.valueOf('#'), EEItem.darkMatter, Character.valueOf('D'), Item.DIAMOND});
+			ModLoader.addRecipe(new ItemStack(EEItem.darkSpade),
+					new Object[] {" # ", " D ", " D ", Character.valueOf('#'), EEItem.darkMatter, Character.valueOf('D'), Item.DIAMOND});
+			ModLoader.addRecipe(new ItemStack(EEItem.darkHoe),
+					new Object[] {"## ", " D ", " D ", Character.valueOf('#'), EEItem.darkMatter, Character.valueOf('D'), Item.DIAMOND});
+			ModLoader.addRecipe(new ItemStack(EEItem.darkSword),
+					new Object[] {" # ", " # ", " D ", Character.valueOf('#'), EEItem.darkMatter, Character.valueOf('D'), Item.DIAMOND});
+			ModLoader.addRecipe(new ItemStack(EEItem.darkAxe),
+					new Object[] {"## ", "#D ", " D ", Character.valueOf('#'), EEItem.darkMatter, Character.valueOf('D'), Item.DIAMOND});
+			ModLoader.addRecipe(new ItemStack(EEItem.darkShears), new Object[] {" # ", "D  ", Character.valueOf('#'), EEItem.darkMatter,
+					Character.valueOf('D'), Item.DIAMOND});
+			ModLoader.addRecipe(new ItemStack(EEItem.darkHammer),
+					new Object[] {"#D#", " D ", " D ", Character.valueOf('#'), EEItem.darkMatter, Character.valueOf('D'), Item.DIAMOND});
 		}
 
-		if (EEBase.props.getInt("AllowRMTools") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.redPickaxe), new Object[] { "###", " T ", " D ", Character.valueOf('#'), EEItem.redMatter, Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('T'), new ItemStack(EEItem.darkPickaxe, 1, -1) });
-			ModLoader.addRecipe(new ItemStack(EEItem.redSpade), new Object[] { " # ", " T ", " D ", Character.valueOf('#'), EEItem.redMatter, Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('T'), new ItemStack(EEItem.darkSpade, 1, -1) });
-			ModLoader.addRecipe(new ItemStack(EEItem.redHoe), new Object[] { "## ", " T ", " D ", Character.valueOf('#'), EEItem.redMatter, Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('T'), new ItemStack(EEItem.darkHoe, 1, -1) });
-			ModLoader.addRecipe(new ItemStack(EEItem.redSword), new Object[] { " # ", " # ", " T ", Character.valueOf('#'), EEItem.redMatter, Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('T'), new ItemStack(EEItem.darkSword, 1, -1) });
-			ModLoader.addRecipe(new ItemStack(EEItem.redAxe), new Object[] { "## ", "#T ", " D ", Character.valueOf('#'), EEItem.redMatter, Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('T'), new ItemStack(EEItem.darkAxe, 1, -1) });
-			ModLoader.addRecipe(new ItemStack(EEItem.redShears), new Object[] { " #", "T ", Character.valueOf('#'), EEItem.redMatter, Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('T'), new ItemStack(EEItem.darkShears, 1, -1) });
-			ModLoader.addRecipe(new ItemStack(EEItem.redHammer), new Object[] { "#D#", " T ", " D ", Character.valueOf('#'), EEItem.redMatter, Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('T'), new ItemStack(EEItem.darkHammer, 1, -1) });
-			ModLoader.addShapelessRecipe(new ItemStack(EEItem.redKatar), new Object[] { new ItemStack(EEItem.redShears, 1, -1), new ItemStack(EEItem.redAxe, 1, -1), new ItemStack(EEItem.redSword, 1, -1), new ItemStack(EEItem.redHoe, 1, -1), EEItem.redMatter, EEItem.redMatter, EEItem.redMatter, EEItem.redMatter, EEItem.redMatter });
-			ModLoader.addShapelessRecipe(new ItemStack(EEItem.redMace), new Object[] { new ItemStack(EEItem.redHammer, 1, -1), new ItemStack(EEItem.redPickaxe, 1, -1), new ItemStack(EEItem.redSpade, 1, -1), EEItem.redMatter, EEItem.redMatter, EEItem.redMatter, EEItem.redMatter, EEItem.redMatter, EEItem.redMatter });
+		if (EEBase.props.getInt("AllowRMTools") == 1) {
+			ModLoader.addRecipe(
+					new ItemStack(EEItem.redPickaxe),
+					new Object[] {"###", " T ", " D ", Character.valueOf('#'), EEItem.redMatter, Character.valueOf('D'), EEItem.darkMatter,
+							Character.valueOf('T'), new ItemStack(EEItem.darkPickaxe, 1, -1)});
+			ModLoader.addRecipe(
+					new ItemStack(EEItem.redSpade),
+					new Object[] {" # ", " T ", " D ", Character.valueOf('#'), EEItem.redMatter, Character.valueOf('D'), EEItem.darkMatter,
+							Character.valueOf('T'), new ItemStack(EEItem.darkSpade, 1, -1)});
+			ModLoader.addRecipe(
+					new ItemStack(EEItem.redHoe),
+					new Object[] {"## ", " T ", " D ", Character.valueOf('#'), EEItem.redMatter, Character.valueOf('D'), EEItem.darkMatter,
+							Character.valueOf('T'), new ItemStack(EEItem.darkHoe, 1, -1)});
+			ModLoader.addRecipe(
+					new ItemStack(EEItem.redSword),
+					new Object[] {" # ", " # ", " T ", Character.valueOf('#'), EEItem.redMatter, Character.valueOf('D'), EEItem.darkMatter,
+							Character.valueOf('T'), new ItemStack(EEItem.darkSword, 1, -1)});
+			ModLoader.addRecipe(
+					new ItemStack(EEItem.redAxe),
+					new Object[] {"## ", "#T ", " D ", Character.valueOf('#'), EEItem.redMatter, Character.valueOf('D'), EEItem.darkMatter,
+							Character.valueOf('T'), new ItemStack(EEItem.darkAxe, 1, -1)});
+			ModLoader.addRecipe(new ItemStack(EEItem.redShears), new Object[] {" #", "T ", Character.valueOf('#'), EEItem.redMatter, Character.valueOf('D'),
+					EEItem.darkMatter, Character.valueOf('T'), new ItemStack(EEItem.darkShears, 1, -1)});
+			ModLoader.addRecipe(
+					new ItemStack(EEItem.redHammer),
+					new Object[] {"#D#", " T ", " D ", Character.valueOf('#'), EEItem.redMatter, Character.valueOf('D'), EEItem.darkMatter,
+							Character.valueOf('T'), new ItemStack(EEItem.darkHammer, 1, -1)});
+			ModLoader.addShapelessRecipe(new ItemStack(EEItem.redKatar), new Object[] {new ItemStack(EEItem.redShears, 1, -1),
+					new ItemStack(EEItem.redAxe, 1, -1), new ItemStack(EEItem.redSword, 1, -1), new ItemStack(EEItem.redHoe, 1, -1), EEItem.redMatter,
+					EEItem.redMatter, EEItem.redMatter, EEItem.redMatter, EEItem.redMatter});
+			ModLoader.addShapelessRecipe(new ItemStack(EEItem.redMace), new Object[] {new ItemStack(EEItem.redHammer, 1, -1),
+					new ItemStack(EEItem.redPickaxe, 1, -1), new ItemStack(EEItem.redSpade, 1, -1), EEItem.redMatter, EEItem.redMatter, EEItem.redMatter,
+					EEItem.redMatter, EEItem.redMatter, EEItem.redMatter});
 		}
 
-		if (EEBase.props.getInt("AllowDMArmor") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.darkMatterArmor, 1), new Object[] { "X X", "XXX", "XXX", Character.valueOf('X'), EEItem.darkMatter });
-			ModLoader.addRecipe(new ItemStack(EEItem.darkMatterHelmet, 1), new Object[] { "XXX", "X X", Character.valueOf('X'), EEItem.darkMatter });
-			ModLoader.addRecipe(new ItemStack(EEItem.darkMatterGreaves, 1), new Object[] { "XXX", "X X", "X X", Character.valueOf('X'), EEItem.darkMatter });
-			ModLoader.addRecipe(new ItemStack(EEItem.darkMatterBoots, 1), new Object[] { "X X", "X X", Character.valueOf('X'), EEItem.darkMatter });
+		if (EEBase.props.getInt("AllowDMArmor") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEItem.darkMatterArmor, 1), new Object[] {"X X", "XXX", "XXX", Character.valueOf('X'), EEItem.darkMatter});
+			ModLoader.addRecipe(new ItemStack(EEItem.darkMatterHelmet, 1), new Object[] {"XXX", "X X", Character.valueOf('X'), EEItem.darkMatter});
+			ModLoader.addRecipe(new ItemStack(EEItem.darkMatterGreaves, 1), new Object[] {"XXX", "X X", "X X", Character.valueOf('X'), EEItem.darkMatter});
+			ModLoader.addRecipe(new ItemStack(EEItem.darkMatterBoots, 1), new Object[] {"X X", "X X", Character.valueOf('X'), EEItem.darkMatter});
 		}
 
-		if (EEBase.props.getInt("AllowRMArmor") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.redMatterArmor), new Object[] { "XAX", "XXX", "XXX", Character.valueOf('X'), EEItem.redMatter, Character.valueOf('A'), EEItem.darkMatterArmor });
-			ModLoader.addRecipe(new ItemStack(EEItem.redMatterHelmet), new Object[] { "XXX", "XAX", Character.valueOf('X'), EEItem.redMatter, Character.valueOf('A'), EEItem.darkMatterHelmet });
-			ModLoader.addRecipe(new ItemStack(EEItem.redMatterBoots), new Object[] { "XAX", "X X", Character.valueOf('X'), EEItem.redMatter, Character.valueOf('A'), EEItem.darkMatterBoots });
-			ModLoader.addRecipe(new ItemStack(EEItem.redMatterGreaves), new Object[] { "XXX", "XAX", "X X", Character.valueOf('X'), EEItem.redMatter, Character.valueOf('A'), EEItem.darkMatterGreaves });
+		if (EEBase.props.getInt("AllowRMArmor") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEItem.redMatterArmor),
+					new Object[] {"XAX", "XXX", "XXX", Character.valueOf('X'), EEItem.redMatter, Character.valueOf('A'), EEItem.darkMatterArmor});
+			ModLoader.addRecipe(new ItemStack(EEItem.redMatterHelmet),
+					new Object[] {"XXX", "XAX", Character.valueOf('X'), EEItem.redMatter, Character.valueOf('A'), EEItem.darkMatterHelmet});
+			ModLoader.addRecipe(new ItemStack(EEItem.redMatterBoots),
+					new Object[] {"XAX", "X X", Character.valueOf('X'), EEItem.redMatter, Character.valueOf('A'), EEItem.darkMatterBoots});
+			ModLoader.addRecipe(new ItemStack(EEItem.redMatterGreaves),
+					new Object[] {"XXX", "XAX", "X X", Character.valueOf('X'), EEItem.redMatter, Character.valueOf('A'), EEItem.darkMatterGreaves});
 		}
 
-		if (EEBase.props.getInt("AllowRMArmorPlus") == 1)
-		{
-			ModLoader.addShapelessRecipe(new ItemStack(EEItem.redMatterArmorP), new Object[] { EEItem.redMatterArmor, new ItemStack(EEItem.kleinStar6, 1, 1), new ItemStack(EEItem.volcanite, 1, -1), EEItem.bodyStone });
-			ModLoader.addShapelessRecipe(new ItemStack(EEItem.redMatterHelmetP), new Object[] { EEItem.redMatterHelmet, new ItemStack(EEItem.kleinStar6, 1, 1), new ItemStack(EEItem.evertide, 1, -1), EEItem.soulStone });
-			ModLoader.addShapelessRecipe(new ItemStack(EEItem.redMatterGreavesP), new Object[] { EEItem.redMatterGreaves, new ItemStack(EEItem.kleinStar6, 1, 1), EEItem.eternalDensity, new ItemStack(EEItem.watchOfTime, 1, -1) });
-			ModLoader.addShapelessRecipe(new ItemStack(EEItem.redMatterBootsP), new Object[] { EEItem.redMatterBoots, new ItemStack(EEItem.kleinStar6, 1, 1), new ItemStack(EEItem.swiftWolfRing, 1, -1), new ItemStack(EEItem.swiftWolfRing, 1, -1) });
+		if (EEBase.props.getInt("AllowRMArmorPlus") == 1) {
+			ModLoader.addShapelessRecipe(new ItemStack(EEItem.redMatterArmorP), new Object[] {EEItem.redMatterArmor, new ItemStack(EEItem.kleinStar6, 1, 1),
+					new ItemStack(EEItem.volcanite, 1, -1), EEItem.bodyStone});
+			ModLoader.addShapelessRecipe(new ItemStack(EEItem.redMatterHelmetP), new Object[] {EEItem.redMatterHelmet, new ItemStack(EEItem.kleinStar6, 1, 1),
+					new ItemStack(EEItem.evertide, 1, -1), EEItem.soulStone});
+			ModLoader.addShapelessRecipe(new ItemStack(EEItem.redMatterGreavesP), new Object[] {EEItem.redMatterGreaves,
+					new ItemStack(EEItem.kleinStar6, 1, 1), EEItem.eternalDensity, new ItemStack(EEItem.watchOfTime, 1, -1)});
+			ModLoader.addShapelessRecipe(new ItemStack(EEItem.redMatterBootsP), new Object[] {EEItem.redMatterBoots, new ItemStack(EEItem.kleinStar6, 1, 1),
+					new ItemStack(EEItem.swiftWolfRing, 1, -1), new ItemStack(EEItem.swiftWolfRing, 1, -1)});
 		}
 
-		ModLoader.addRecipe(new ItemStack(EEItem.alchemyTome), new Object[] { "LMH", "KBK", "HML", Character.valueOf('L'), lcov(), Character.valueOf('M'), mcov(), Character.valueOf('H'), hcov(), Character.valueOf('K'), new ItemStack(EEItem.kleinStar6, 1, 1), Character.valueOf('B'), Item.BOOK });
-		ModLoader.addRecipe(new ItemStack(EEItem.alchemyTome), new Object[] { "HML", "KBK", "LMH", Character.valueOf('L'), lcov(), Character.valueOf('M'), mcov(), Character.valueOf('H'), hcov(), Character.valueOf('K'), new ItemStack(EEItem.kleinStar6, 1, 1), Character.valueOf('B'), Item.BOOK });
+		ModLoader.addRecipe(new ItemStack(EEItem.alchemyTome), new Object[] {"LMH", "KBK", "HML", Character.valueOf('L'), lcov(), Character.valueOf('M'),
+				mcov(), Character.valueOf('H'), hcov(), Character.valueOf('K'), new ItemStack(EEItem.kleinStar6, 1, 1), Character.valueOf('B'), Item.BOOK});
+		ModLoader.addRecipe(new ItemStack(EEItem.alchemyTome), new Object[] {"HML", "KBK", "LMH", Character.valueOf('L'), lcov(), Character.valueOf('M'),
+				mcov(), Character.valueOf('H'), hcov(), Character.valueOf('K'), new ItemStack(EEItem.kleinStar6, 1, 1), Character.valueOf('B'), Item.BOOK});
 
-		if (EEBase.props.getInt("AllowFurnaces") == 1)
-		{
-			ModLoader.addRecipe(EEBlock.dmFurnace, new Object[] { "DDD", "DFD", "DDD", Character.valueOf('D'), EEBlock.dmBlock, Character.valueOf('F'), Block.FURNACE });
-			ModLoader.addRecipe(EEBlock.rmFurnace, new Object[] { " R ", "RFR", "   ", Character.valueOf('R'), EEBlock.rmBlock, Character.valueOf('F'), EEBlock.dmFurnace });
+		if (EEBase.props.getInt("AllowFurnaces") == 1) {
+			ModLoader.addRecipe(EEBlock.dmFurnace, new Object[] {"DDD", "DFD", "DDD", Character.valueOf('D'), EEBlock.dmBlock, Character.valueOf('F'),
+					Block.FURNACE});
+			ModLoader.addRecipe(EEBlock.rmFurnace, new Object[] {" R ", "RFR", "   ", Character.valueOf('R'), EEBlock.rmBlock, Character.valueOf('F'),
+					EEBlock.dmFurnace});
 		}
 
-		if (EEBase.props.getInt("AllowCollectors") == 1)
-		{
-			ModLoader.addRecipe(EEBlock.collector, new Object[] { "#G#", "#D#", "#F#", Character.valueOf('#'), Block.GLOWSTONE, Character.valueOf('D'), Block.DIAMOND_BLOCK, Character.valueOf('G'), Block.GLASS, Character.valueOf('F'), Block.FURNACE });
-			ModLoader.addRecipe(EEBlock.collector2, new Object[] { "#D#", "#C#", "###", Character.valueOf('#'), Block.GLOWSTONE, Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('C'), EEBlock.collector });
-			ModLoader.addRecipe(EEBlock.collector3, new Object[] { "#D#", "#C#", "###", Character.valueOf('#'), Block.GLOWSTONE, Character.valueOf('D'), EEItem.redMatter, Character.valueOf('C'), EEBlock.collector2 });
+		if (EEBase.props.getInt("AllowCollectors") == 1) {
+			ModLoader.addRecipe(EEBlock.collector, new Object[] {"#G#", "#D#", "#F#", Character.valueOf('#'), Block.GLOWSTONE, Character.valueOf('D'),
+					Block.DIAMOND_BLOCK, Character.valueOf('G'), Block.GLASS, Character.valueOf('F'), Block.FURNACE});
+			ModLoader.addRecipe(EEBlock.collector2, new Object[] {"#D#", "#C#", "###", Character.valueOf('#'), Block.GLOWSTONE, Character.valueOf('D'),
+					EEItem.darkMatter, Character.valueOf('C'), EEBlock.collector});
+			ModLoader.addRecipe(EEBlock.collector3, new Object[] {"#D#", "#C#", "###", Character.valueOf('#'), Block.GLOWSTONE, Character.valueOf('D'),
+					EEItem.redMatter, Character.valueOf('C'), EEBlock.collector2});
 		}
 
-		if (EEBase.props.getInt("AllowCondensers") == 1)
-		{
-			ModLoader.addRecipe(EEBlock.condenser, new Object[] { "ODO", "DAD", "ODO", Character.valueOf('O'), Block.OBSIDIAN, Character.valueOf('A'), EEBlock.alchChest, Character.valueOf('D'), Item.DIAMOND });
+		if (EEBase.props.getInt("AllowCondensers") == 1) {
+			ModLoader.addRecipe(EEBlock.condenser, new Object[] {"ODO", "DAD", "ODO", Character.valueOf('O'), Block.OBSIDIAN, Character.valueOf('A'),
+					EEBlock.alchChest, Character.valueOf('D'), Item.DIAMOND});
 		}
 
-		if (EEBase.props.getInt("AllowChests") == 1)
-		{
-			ModLoader.addRecipe(EEBlock.alchChest, new Object[] { "LMH", "SDS", "ICI", Character.valueOf('L'), new ItemStack(EEItem.covalenceDust, 1, 0), Character.valueOf('M'), new ItemStack(EEItem.covalenceDust, 1, 1), Character.valueOf('H'), new ItemStack(EEItem.covalenceDust, 1, 2), Character.valueOf('C'), Block.CHEST, Character.valueOf('S'), Block.STONE, Character.valueOf('D'), Item.DIAMOND, Character.valueOf('I'), Item.IRON_INGOT });
+		if (EEBase.props.getInt("AllowChests") == 1) {
+			ModLoader.addRecipe(EEBlock.alchChest, new Object[] {"LMH", "SDS", "ICI", Character.valueOf('L'), new ItemStack(EEItem.covalenceDust, 1, 0),
+					Character.valueOf('M'), new ItemStack(EEItem.covalenceDust, 1, 1), Character.valueOf('H'), new ItemStack(EEItem.covalenceDust, 1, 2),
+					Character.valueOf('C'), Block.CHEST, Character.valueOf('S'), Block.STONE, Character.valueOf('D'), Item.DIAMOND, Character.valueOf('I'),
+					Item.IRON_INGOT});
 		}
 
-		if (EEBase.props.getInt("AllowAlchemyBags") == 1)
-		{
-			for (int var0 = 0; var0 < 16; var0++)
-			{
-				ModLoader.addShapelessRecipe(new ItemStack(EEItem.alchemyBag, 1, 15 - var0), new Object[] { new ItemStack(EEItem.alchemyBag, 1, -1), new ItemStack(Item.INK_SACK, 1, var0) });
-				ModLoader.addRecipe(new ItemStack(EEItem.alchemyBag, 1, var0), new Object[] { "HHH", "WCW", "WWW", Character.valueOf('H'), new ItemStack(EEItem.covalenceDust, 1, 2), Character.valueOf('W'), new ItemStack(Block.WOOL, 1, var0), Character.valueOf('C'), EEBlock.alchChest });
+		if (EEBase.props.getInt("AllowAlchemyBags") == 1) {
+			for (int var0 = 0; var0 < 16; var0++) {
+				ModLoader.addShapelessRecipe(new ItemStack(EEItem.alchemyBag, 1, 15 - var0), new Object[] {new ItemStack(EEItem.alchemyBag, 1, -1),
+						new ItemStack(Item.INK_SACK, 1, var0)});
+				ModLoader.addRecipe(new ItemStack(EEItem.alchemyBag, 1, var0), new Object[] {"HHH", "WCW", "WWW", Character.valueOf('H'),
+						new ItemStack(EEItem.covalenceDust, 1, 2), Character.valueOf('W'), new ItemStack(Block.WOOL, 1, var0), Character.valueOf('C'),
+						EEBlock.alchChest});
 			}
 		}
 
-		if (EEBase.props.getInt("AllowNovaC1") == 1)
-		{
-			ModLoader.addShapelessRecipe(new ItemStack(EEBlock.eeStone, 2, 10), new Object[] { Block.TNT, EEItem.mobiusFuel });
+		if (EEBase.props.getInt("AllowNovaC1") == 1) {
+			ModLoader.addShapelessRecipe(new ItemStack(EEBlock.eeStone, 2, 10), new Object[] {Block.TNT, EEItem.mobiusFuel});
 		}
 
-		if (EEBase.props.getInt("AllowNovaC2") == 1)
-		{
-			ModLoader.addShapelessRecipe(new ItemStack(EEBlock.eeStone, 2, 11), new Object[] { new ItemStack(EEBlock.eeStone, 1, 10), EEItem.aeternalisFuel });
+		if (EEBase.props.getInt("AllowNovaC2") == 1) {
+			ModLoader.addShapelessRecipe(new ItemStack(EEBlock.eeStone, 2, 11), new Object[] {new ItemStack(EEBlock.eeStone, 1, 10), EEItem.aeternalisFuel});
 		}
 
-		if (EEBase.props.getInt("AllowInterdiction") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEBlock.eeTorch, 2), new Object[] { "TDT", "DPD", "GGG", Character.valueOf('T'), Block.REDSTONE_TORCH_ON, Character.valueOf('D'), Item.DIAMOND, Character.valueOf('G'), Item.GLOWSTONE_DUST, Character.valueOf('P'), pstone() });
+		if (EEBase.props.getInt("AllowInterdiction") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEBlock.eeTorch, 2), new Object[] {"TDT", "DPD", "GGG", Character.valueOf('T'), Block.REDSTONE_TORCH_ON,
+					Character.valueOf('D'), Item.DIAMOND, Character.valueOf('G'), Item.GLOWSTONE_DUST, Character.valueOf('P'), pstone()});
 		}
 
-		if (EEBase.props.getInt("AllowRelays") == 1)
-		{
-			ModLoader.addRecipe(EEBlock.relay, new Object[] { "OGO", "OAO", "OOO", Character.valueOf('A'), Block.DIAMOND_BLOCK, Character.valueOf('O'), Block.OBSIDIAN, Character.valueOf('G'), Block.GLASS });
-			ModLoader.addRecipe(EEBlock.relay2, new Object[] { "ODO", "OAO", "OOO", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('A'), EEBlock.relay, Character.valueOf('O'), Block.OBSIDIAN });
-			ModLoader.addRecipe(EEBlock.relay3, new Object[] { "ODO", "OAO", "OOO", Character.valueOf('D'), EEItem.redMatter, Character.valueOf('A'), EEBlock.relay2, Character.valueOf('O'), Block.OBSIDIAN });
+		if (EEBase.props.getInt("AllowRelays") == 1) {
+			ModLoader.addRecipe(EEBlock.relay, new Object[] {"OGO", "OAO", "OOO", Character.valueOf('A'), Block.DIAMOND_BLOCK, Character.valueOf('O'),
+					Block.OBSIDIAN, Character.valueOf('G'), Block.GLASS});
+			ModLoader.addRecipe(EEBlock.relay2, new Object[] {"ODO", "OAO", "OOO", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('A'),
+					EEBlock.relay, Character.valueOf('O'), Block.OBSIDIAN});
+			ModLoader.addRecipe(EEBlock.relay3, new Object[] {"ODO", "OAO", "OOO", Character.valueOf('D'), EEItem.redMatter, Character.valueOf('A'),
+					EEBlock.relay2, Character.valueOf('O'), Block.OBSIDIAN});
 		}
 
-		if (EEBase.props.getInt("AllowDCatalyst") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.catalystStone), new Object[] { "#C#", "CFC", "#C#", Character.valueOf('#'), EEBlock.novaCatalyst, Character.valueOf('C'), EEItem.mobiusFuel, Character.valueOf('F'), new ItemStack(Item.FLINT_AND_STEEL, 1, -1) });
+		if (EEBase.props.getInt("AllowDCatalyst") == 1) {
+			ModLoader.addRecipe(
+					new ItemStack(EEItem.catalystStone),
+					new Object[] {"#C#", "CFC", "#C#", Character.valueOf('#'), EEBlock.novaCatalyst, Character.valueOf('C'), EEItem.mobiusFuel,
+							Character.valueOf('F'), new ItemStack(Item.FLINT_AND_STEEL, 1, -1)});
 		}
 
-		if (EEBase.props.getInt("AllowHKLens") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.hyperkineticLens), new Object[] { "DDD", "MCM", "DDD", Character.valueOf('D'), Item.DIAMOND, Character.valueOf('C'), EEBlock.novaCatalyst, Character.valueOf('M'), EEItem.darkMatter });
+		if (EEBase.props.getInt("AllowHKLens") == 1) {
+			ModLoader.addRecipe(
+					new ItemStack(EEItem.hyperkineticLens),
+					new Object[] {"DDD", "MCM", "DDD", Character.valueOf('D'), Item.DIAMOND, Character.valueOf('C'), EEBlock.novaCatalyst,
+							Character.valueOf('M'), EEItem.darkMatter});
 		}
 
-		if (EEBase.props.getInt("AllowHCLens") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.hyperCatalyst), new Object[] { "DDD", "CDL", "DDD", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('C'), new ItemStack(EEItem.catalystStone, 1, -1), Character.valueOf('L'), new ItemStack(EEItem.hyperkineticLens, 1, -1) });
-			ModLoader.addRecipe(new ItemStack(EEItem.hyperCatalyst), new Object[] { "DDD", "LDC", "DDD", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('C'), new ItemStack(EEItem.catalystStone, 1, -1), Character.valueOf('L'), new ItemStack(EEItem.hyperkineticLens, 1, -1) });
+		if (EEBase.props.getInt("AllowHCLens") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEItem.hyperCatalyst),
+					new Object[] {"DDD", "CDL", "DDD", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('C'),
+							new ItemStack(EEItem.catalystStone, 1, -1), Character.valueOf('L'), new ItemStack(EEItem.hyperkineticLens, 1, -1)});
+			ModLoader.addRecipe(new ItemStack(EEItem.hyperCatalyst),
+					new Object[] {"DDD", "LDC", "DDD", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('C'),
+							new ItemStack(EEItem.catalystStone, 1, -1), Character.valueOf('L'), new ItemStack(EEItem.hyperkineticLens, 1, -1)});
 		}
 
-		if (EEBase.props.getInt("AllowSoulstone") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.soulStone), new Object[] { "LLL", "DXD", "LLL", Character.valueOf('L'), Item.GLOWSTONE_DUST, Character.valueOf('X'), new ItemStack(Item.INK_SACK, 1, 4), Character.valueOf('D'), EEItem.redMatter });
+		if (EEBase.props.getInt("AllowSoulstone") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEItem.soulStone),
+					new Object[] {"LLL", "DXD", "LLL", Character.valueOf('L'), Item.GLOWSTONE_DUST, Character.valueOf('X'), new ItemStack(Item.INK_SACK, 1, 4),
+							Character.valueOf('D'), EEItem.redMatter});
 		}
 
-		if (EEBase.props.getInt("AllowBodystone") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.bodyStone), new Object[] { "LLL", "DXD", "LLL", Character.valueOf('L'), Item.SUGAR, Character.valueOf('X'), new ItemStack(Item.INK_SACK, 1, 4), Character.valueOf('D'), EEItem.redMatter });
+		if (EEBase.props.getInt("AllowBodystone") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEItem.bodyStone), new Object[] {"LLL", "DXD", "LLL", Character.valueOf('L'), Item.SUGAR, Character.valueOf('X'),
+					new ItemStack(Item.INK_SACK, 1, 4), Character.valueOf('D'), EEItem.redMatter});
 		}
 
-		if (EEBase.props.getInt("AllowLifestone") == 1)
-		{
-			ModLoader.addShapelessRecipe(new ItemStack(EEItem.lifeStone), new Object[] { EEItem.bodyStone, EEItem.soulStone });
+		if (EEBase.props.getInt("AllowLifestone") == 1) {
+			ModLoader.addShapelessRecipe(new ItemStack(EEItem.lifeStone), new Object[] {EEItem.bodyStone, EEItem.soulStone});
 		}
 
-		if (EEBase.props.getInt("AllowMindstone") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.mindStone), new Object[] { "LLL", "DXD", "LLL", Character.valueOf('L'), Item.BOOK, Character.valueOf('X'), new ItemStack(Item.INK_SACK, 1, 4), Character.valueOf('D'), EEItem.redMatter });
+		if (EEBase.props.getInt("AllowMindstone") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEItem.mindStone), new Object[] {"LLL", "DXD", "LLL", Character.valueOf('L'), Item.BOOK, Character.valueOf('X'),
+					new ItemStack(Item.INK_SACK, 1, 4), Character.valueOf('D'), EEItem.redMatter});
 		}
 
-		if (EEBase.props.getInt("AllowEvertide") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.evertide), new Object[] { "###", "DDD", "###", Character.valueOf('#'), Item.WATER_BUCKET, Character.valueOf('D'), EEItem.darkMatter });
+		if (EEBase.props.getInt("AllowEvertide") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEItem.evertide),
+					new Object[] {"###", "DDD", "###", Character.valueOf('#'), Item.WATER_BUCKET, Character.valueOf('D'), EEItem.darkMatter});
 		}
 
-		if (EEBase.props.getInt("AllowVolcanite") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.volcanite), new Object[] { "BBB", "###", "BBB", Character.valueOf('B'), Item.LAVA_BUCKET, Character.valueOf('#'), EEItem.darkMatter });
+		if (EEBase.props.getInt("AllowVolcanite") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEItem.volcanite),
+					new Object[] {"BBB", "###", "BBB", Character.valueOf('B'), Item.LAVA_BUCKET, Character.valueOf('#'), EEItem.darkMatter});
 		}
 
-		ModLoader.addRecipe(new ItemStack(EEItem.baseRing), new Object[] { "###", "#X#", "###", Character.valueOf('#'), Item.IRON_INGOT, Character.valueOf('X'), new ItemStack(EEItem.volcanite, 1, -1) });
-		ModLoader.addRecipe(new ItemStack(EEItem.baseRing), new Object[] { "###", "#X#", "###", Character.valueOf('#'), Item.IRON_INGOT, Character.valueOf('X'), Item.LAVA_BUCKET });
+		ModLoader.addRecipe(new ItemStack(EEItem.baseRing), new Object[] {"###", "#X#", "###", Character.valueOf('#'), Item.IRON_INGOT, Character.valueOf('X'),
+				new ItemStack(EEItem.volcanite, 1, -1)});
+		ModLoader.addRecipe(new ItemStack(EEItem.baseRing), new Object[] {"###", "#X#", "###", Character.valueOf('#'), Item.IRON_INGOT, Character.valueOf('X'),
+				Item.LAVA_BUCKET});
 
-		if (EEBase.props.getInt("AllowBlackHoleBand") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.attractionRing), new Object[] { "###", "DRD", "###", Character.valueOf('#'), Item.STRING, Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('R'), EEItem.baseRing });
+		if (EEBase.props.getInt("AllowBlackHoleBand") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEItem.attractionRing),
+					new Object[] {"###", "DRD", "###", Character.valueOf('#'), Item.STRING, Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('R'),
+							EEItem.baseRing});
 		}
 
-		if (EEBase.props.getInt("AllowArchangel") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.grimarchRing), new Object[] { "#F#", "DRD", "#F#", Character.valueOf('#'), Item.BOW, Character.valueOf('F'), Item.FEATHER, Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('R'), EEItem.baseRing });
+		if (EEBase.props.getInt("AllowArchangel") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEItem.grimarchRing), new Object[] {"#F#", "DRD", "#F#", Character.valueOf('#'), Item.BOW,
+					Character.valueOf('F'), Item.FEATHER, Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('R'), EEItem.baseRing});
 		}
 
-		if (EEBase.props.getInt("AllowIgnition") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.ignitionRing), new Object[] { "#F#", "DRD", "#F#", Character.valueOf('#'), Item.FLINT_AND_STEEL, Character.valueOf('F'), EEItem.mobiusFuel, Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('R'), EEItem.baseRing });
+		if (EEBase.props.getInt("AllowIgnition") == 1) {
+			ModLoader.addRecipe(
+					new ItemStack(EEItem.ignitionRing),
+					new Object[] {"#F#", "DRD", "#F#", Character.valueOf('#'), Item.FLINT_AND_STEEL, Character.valueOf('F'), EEItem.mobiusFuel,
+							Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('R'), EEItem.baseRing});
 		}
 
-		if (EEBase.props.getInt("AllowZeroRing") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.zeroRing), new Object[] { "#F#", "DRD", "#F#", Character.valueOf('#'), Block.SNOW_BLOCK, Character.valueOf('F'), Item.SNOW_BALL, Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('R'), EEItem.baseRing });
+		if (EEBase.props.getInt("AllowZeroRing") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEItem.zeroRing),
+					new Object[] {"#F#", "DRD", "#F#", Character.valueOf('#'), Block.SNOW_BLOCK, Character.valueOf('F'), Item.SNOW_BALL,
+							Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('R'), EEItem.baseRing});
 		}
 
-		if (EEBase.props.getInt("AllowArcana") == 1)
-		{
-			ModLoader.addShapelessRecipe(new ItemStack(EEItem.arcaneRing), new Object[] { new ItemStack(EEItem.ignitionRing, 1, -1), new ItemStack(EEItem.zeroRing, 1, -1), new ItemStack(EEItem.swiftWolfRing, 1, -1), new ItemStack(EEItem.harvestRing, 1, -1), EEItem.redMatter, EEItem.redMatter, EEItem.redMatter, EEItem.redMatter, EEItem.redMatter });
+		if (EEBase.props.getInt("AllowArcana") == 1) {
+			ModLoader.addShapelessRecipe(new ItemStack(EEItem.arcaneRing), new Object[] {new ItemStack(EEItem.ignitionRing, 1, -1),
+					new ItemStack(EEItem.zeroRing, 1, -1), new ItemStack(EEItem.swiftWolfRing, 1, -1), new ItemStack(EEItem.harvestRing, 1, -1),
+					EEItem.redMatter, EEItem.redMatter, EEItem.redMatter, EEItem.redMatter, EEItem.redMatter});
 		}
 
-		if (EEBase.props.getInt("AllowVoidRing") == 1)
-		{
-			ModLoader.addShapelessRecipe(new ItemStack(EEItem.voidRing), new Object[] { EEItem.attractionRing, EEItem.eternalDensity, EEItem.redMatter, EEItem.redMatter });
+		if (EEBase.props.getInt("AllowVoidRing") == 1) {
+			ModLoader.addShapelessRecipe(new ItemStack(EEItem.voidRing), new Object[] {EEItem.attractionRing, EEItem.eternalDensity, EEItem.redMatter,
+					EEItem.redMatter});
 		}
 
-		if (EEBase.props.getInt("AllowSwiftWolf") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.swiftWolfRing), new Object[] { "DFD", "FBF", "DFD", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('F'), Item.FEATHER, Character.valueOf('B'), EEItem.baseRing });
+		if (EEBase.props.getInt("AllowSwiftWolf") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEItem.swiftWolfRing),
+					new Object[] {"DFD", "FBF", "DFD", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('F'), Item.FEATHER, Character.valueOf('B'),
+							EEItem.baseRing});
 		}
 
-		if (EEBase.props.getInt("AllowHarvestBand") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.harvestRing), new Object[] { "SYS", "DBD", "SRS", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('B'), EEItem.baseRing, Character.valueOf('S'), Block.SAPLING, Character.valueOf('R'), BlockFlower.RED_ROSE, Character.valueOf('Y'), BlockFlower.YELLOW_FLOWER });
-			ModLoader.addRecipe(new ItemStack(EEItem.harvestRing), new Object[] { "SRS", "DBD", "SYS", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('B'), EEItem.baseRing, Character.valueOf('S'), Block.SAPLING, Character.valueOf('R'), BlockFlower.RED_ROSE, Character.valueOf('Y'), BlockFlower.YELLOW_FLOWER });
+		if (EEBase.props.getInt("AllowHarvestBand") == 1) {
+			ModLoader.addRecipe(
+					new ItemStack(EEItem.harvestRing),
+					new Object[] {"SYS", "DBD", "SRS", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('B'), EEItem.baseRing,
+							Character.valueOf('S'), Block.SAPLING, Character.valueOf('R'), BlockFlower.RED_ROSE, Character.valueOf('Y'),
+							BlockFlower.YELLOW_FLOWER});
+			ModLoader.addRecipe(
+					new ItemStack(EEItem.harvestRing),
+					new Object[] {"SRS", "DBD", "SYS", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('B'), EEItem.baseRing,
+							Character.valueOf('S'), Block.SAPLING, Character.valueOf('R'), BlockFlower.RED_ROSE, Character.valueOf('Y'),
+							BlockFlower.YELLOW_FLOWER});
 		}
 
-		if (EEBase.props.getInt("AllowDiviningRod") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.diviningRod, 1, 0), new Object[] { "LLL", "LSL", "LLL", Character.valueOf('S'), Item.STICK, Character.valueOf('L'), new ItemStack(EEItem.covalenceDust, 1, 0) });
-			ModLoader.addRecipe(new ItemStack(EEItem.diviningRod, 1, 1), new Object[] { "LLL", "LSL", "LLL", Character.valueOf('S'), new ItemStack(EEItem.diviningRod, 1, 0), Character.valueOf('L'), new ItemStack(EEItem.covalenceDust, 1, 1) });
-			ModLoader.addRecipe(new ItemStack(EEItem.diviningRod, 1, 2), new Object[] { "LLL", "LSL", "LLL", Character.valueOf('S'), new ItemStack(EEItem.diviningRod, 1, 1), Character.valueOf('L'), new ItemStack(EEItem.covalenceDust, 1, 2) });
+		if (EEBase.props.getInt("AllowDiviningRod") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEItem.diviningRod, 1, 0),
+					new Object[] {"LLL", "LSL", "LLL", Character.valueOf('S'), Item.STICK, Character.valueOf('L'), new ItemStack(EEItem.covalenceDust, 1, 0)});
+			ModLoader.addRecipe(new ItemStack(EEItem.diviningRod, 1, 1), new Object[] {"LLL", "LSL", "LLL", Character.valueOf('S'),
+					new ItemStack(EEItem.diviningRod, 1, 0), Character.valueOf('L'), new ItemStack(EEItem.covalenceDust, 1, 1)});
+			ModLoader.addRecipe(new ItemStack(EEItem.diviningRod, 1, 2), new Object[] {"LLL", "LSL", "LLL", Character.valueOf('S'),
+					new ItemStack(EEItem.diviningRod, 1, 1), Character.valueOf('L'), new ItemStack(EEItem.covalenceDust, 1, 2)});
 		}
 
-		if (EEBase.props.getInt("AllowRepair") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.repairCharm), new Object[] { "LMH", "SBS", "HML", Character.valueOf('S'), Item.STRING, Character.valueOf('B'), Item.PAPER, Character.valueOf('L'), new ItemStack(EEItem.covalenceDust, 1, 0), Character.valueOf('M'), new ItemStack(EEItem.covalenceDust, 1, 1), Character.valueOf('H'), new ItemStack(EEItem.covalenceDust, 1, 2) });
-			ModLoader.addRecipe(new ItemStack(EEItem.repairCharm), new Object[] { "HML", "SBS", "LMH", Character.valueOf('S'), Item.STRING, Character.valueOf('B'), Item.PAPER, Character.valueOf('L'), new ItemStack(EEItem.covalenceDust, 1, 0), Character.valueOf('M'), new ItemStack(EEItem.covalenceDust, 1, 1), Character.valueOf('H'), new ItemStack(EEItem.covalenceDust, 1, 2) });
+		if (EEBase.props.getInt("AllowRepair") == 1) {
+			ModLoader.addRecipe(
+					new ItemStack(EEItem.repairCharm),
+					new Object[] {"LMH", "SBS", "HML", Character.valueOf('S'), Item.STRING, Character.valueOf('B'), Item.PAPER, Character.valueOf('L'),
+							new ItemStack(EEItem.covalenceDust, 1, 0), Character.valueOf('M'), new ItemStack(EEItem.covalenceDust, 1, 1),
+							Character.valueOf('H'), new ItemStack(EEItem.covalenceDust, 1, 2)});
+			ModLoader.addRecipe(
+					new ItemStack(EEItem.repairCharm),
+					new Object[] {"HML", "SBS", "LMH", Character.valueOf('S'), Item.STRING, Character.valueOf('B'), Item.PAPER, Character.valueOf('L'),
+							new ItemStack(EEItem.covalenceDust, 1, 0), Character.valueOf('M'), new ItemStack(EEItem.covalenceDust, 1, 1),
+							Character.valueOf('H'), new ItemStack(EEItem.covalenceDust, 1, 2)});
 		}
 
-		if (EEBase.props.getInt("AllowWatchOfTime") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.watchOfTime), new Object[] { "DOD", "GCG", "DOD", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('O'), Block.OBSIDIAN, Character.valueOf('G'), Block.GLOWSTONE, Character.valueOf('C'), Item.WATCH });
-			ModLoader.addRecipe(new ItemStack(EEItem.watchOfTime), new Object[] { "DGD", "OCO", "DGD", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('O'), Block.OBSIDIAN, Character.valueOf('G'), Block.GLOWSTONE, Character.valueOf('C'), Item.WATCH });
+		if (EEBase.props.getInt("AllowWatchOfTime") == 1) {
+			ModLoader.addRecipe(
+					new ItemStack(EEItem.watchOfTime),
+					new Object[] {"DOD", "GCG", "DOD", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('O'), Block.OBSIDIAN,
+							Character.valueOf('G'), Block.GLOWSTONE, Character.valueOf('C'), Item.WATCH});
+			ModLoader.addRecipe(
+					new ItemStack(EEItem.watchOfTime),
+					new Object[] {"DGD", "OCO", "DGD", Character.valueOf('D'), EEItem.darkMatter, Character.valueOf('O'), Block.OBSIDIAN,
+							Character.valueOf('G'), Block.GLOWSTONE, Character.valueOf('C'), Item.WATCH});
 		}
 
-		if (EEBase.props.getInt("AllowMercurial") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.mercurialEye), new Object[] { "OBO", "BRB", "BDB", Character.valueOf('D'), Item.DIAMOND, Character.valueOf('O'), Block.OBSIDIAN, Character.valueOf('R'), EEItem.redMatter, Character.valueOf('B'), Block.BRICK });
+		if (EEBase.props.getInt("AllowMercurial") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEItem.mercurialEye),
+					new Object[] {"OBO", "BRB", "BDB", Character.valueOf('D'), Item.DIAMOND, Character.valueOf('O'), Block.OBSIDIAN, Character.valueOf('R'),
+							EEItem.redMatter, Character.valueOf('B'), Block.BRICK});
 		}
 
-		if (EEBase.props.getInt("AllowEternalDensity") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.eternalDensity), new Object[] { "DOD", "MDM", "DOD", Character.valueOf('M'), EEItem.darkMatter, Character.valueOf('D'), Item.DIAMOND, Character.valueOf('O'), Block.OBSIDIAN });
-			ModLoader.addRecipe(new ItemStack(EEItem.eternalDensity), new Object[] { "DMD", "ODO", "DMD", Character.valueOf('M'), EEItem.darkMatter, Character.valueOf('D'), Item.DIAMOND, Character.valueOf('O'), Block.OBSIDIAN });
+		if (EEBase.props.getInt("AllowEternalDensity") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEItem.eternalDensity),
+					new Object[] {"DOD", "MDM", "DOD", Character.valueOf('M'), EEItem.darkMatter, Character.valueOf('D'), Item.DIAMOND, Character.valueOf('O'),
+							Block.OBSIDIAN});
+			ModLoader.addRecipe(new ItemStack(EEItem.eternalDensity),
+					new Object[] {"DMD", "ODO", "DMD", Character.valueOf('M'), EEItem.darkMatter, Character.valueOf('D'), Item.DIAMOND, Character.valueOf('O'),
+							Block.OBSIDIAN});
 		}
 
-		if (EEBase.props.getInt("AllowKleinStar") == 1)
-		{
-			ModLoader.addRecipe(new ItemStack(EEItem.kleinStar1), new Object[] { "FFF", "FDF", "FFF", Character.valueOf('F'), EEItem.mobiusFuel, Character.valueOf('D'), Item.DIAMOND });
+		if (EEBase.props.getInt("AllowKleinStar") == 1) {
+			ModLoader.addRecipe(new ItemStack(EEItem.kleinStar1),
+					new Object[] {"FFF", "FDF", "FFF", Character.valueOf('F'), EEItem.mobiusFuel, Character.valueOf('D'), Item.DIAMOND});
 			addKleinForMerge(EEItem.kleinStar1);
-			ModLoader.addRecipe(new ItemStack(EEItem.kleinStar2), new Object[] { "FF", "FF", Character.valueOf('F'), new ItemStack(EEItem.kleinStar1, 1, -1) });
+			ModLoader.addRecipe(new ItemStack(EEItem.kleinStar2), new Object[] {"FF", "FF", Character.valueOf('F'), new ItemStack(EEItem.kleinStar1, 1, -1)});
 			addKleinForMerge(EEItem.kleinStar2);
-			ModLoader.addRecipe(new ItemStack(EEItem.kleinStar3), new Object[] { "FF", "FF", Character.valueOf('F'), new ItemStack(EEItem.kleinStar2, 1, -1) });
+			ModLoader.addRecipe(new ItemStack(EEItem.kleinStar3), new Object[] {"FF", "FF", Character.valueOf('F'), new ItemStack(EEItem.kleinStar2, 1, -1)});
 			addKleinForMerge(EEItem.kleinStar3);
-			ModLoader.addRecipe(new ItemStack(EEItem.kleinStar4), new Object[] { "FF", "FF", Character.valueOf('F'), new ItemStack(EEItem.kleinStar3, 1, -1) });
+			ModLoader.addRecipe(new ItemStack(EEItem.kleinStar4), new Object[] {"FF", "FF", Character.valueOf('F'), new ItemStack(EEItem.kleinStar3, 1, -1)});
 			addKleinForMerge(EEItem.kleinStar4);
-			ModLoader.addRecipe(new ItemStack(EEItem.kleinStar5), new Object[] { "FF", "FF", Character.valueOf('F'), new ItemStack(EEItem.kleinStar4, 1, -1) });
+			ModLoader.addRecipe(new ItemStack(EEItem.kleinStar5), new Object[] {"FF", "FF", Character.valueOf('F'), new ItemStack(EEItem.kleinStar4, 1, -1)});
 			addKleinForMerge(EEItem.kleinStar5);
-			ModLoader.addRecipe(new ItemStack(EEItem.kleinStar6), new Object[] { "FF", "FF", Character.valueOf('F'), new ItemStack(EEItem.kleinStar5, 1, -1) });
+			ModLoader.addRecipe(new ItemStack(EEItem.kleinStar6), new Object[] {"FF", "FF", Character.valueOf('F'), new ItemStack(EEItem.kleinStar5, 1, -1)});
 			addKleinForMerge(EEItem.kleinStar6);
 		}
 	}
@@ -1420,129 +1425,111 @@ public class EEMaps
 	public static ItemStack cobble(int var0) {
 		return new ItemStack(Block.COBBLESTONE, var0);
 	}
-	public static ItemStack iing(int var0)
-	{
+
+	public static ItemStack iing(int var0) {
 		return new ItemStack(Item.IRON_INGOT, var0);
 	}
-	public static ItemStack diamond(int var0)
-	{
+
+	public static ItemStack diamond(int var0) {
 		return new ItemStack(Item.DIAMOND, var0);
 	}
 
-	public static ItemStack redstone(int var0)
-	{
+	public static ItemStack redstone(int var0) {
 		return new ItemStack(Item.REDSTONE, var0);
 	}
-	public static ItemStack coal(int var0, int var1)
-	{
+
+	public static ItemStack coal(int var0, int var1) {
 		return new ItemStack(Item.COAL, var0, var1);
 	}
-	public static ItemStack glowdust(int var0)
-	{
+
+	public static ItemStack glowdust(int var0) {
 		return new ItemStack(Item.GLOWSTONE_DUST, var0);
 	}
-	public static ItemStack alcoal(int var0)
-	{
+
+	public static ItemStack alcoal(int var0) {
 		return new ItemStack(EEItem.alchemicalCoal, var0);
 	}
-	public static ItemStack glowblock(int var0)
-	{
+
+	public static ItemStack glowblock(int var0) {
 		return new ItemStack(Block.GLOWSTONE, var0);
 	}
-	public static ItemStack mobius(int var0)
-	{
+
+	public static ItemStack mobius(int var0) {
 		return new ItemStack(EEItem.mobiusFuel, var0);
 	}
-	public static ItemStack coval(int var0, int var1)
-	{
+
+	public static ItemStack coval(int var0, int var1) {
 		return new ItemStack(EEItem.covalenceDust, var0, var1);
 	}
 
-	public static ItemStack lcov()
-	{
+	public static ItemStack lcov() {
 		return coval(1, 0);
 	}
-	public static ItemStack mcov()
-	{
+
+	public static ItemStack mcov() {
 		return coval(1, 1);
 	}
-	public static ItemStack hcov()
-	{
+
+	public static ItemStack hcov() {
 		return coval(1, 2);
 	}
-	
-	public static ItemStack pstone()
-	{
+
+	public static ItemStack pstone() {
 		return new ItemStack(EEItem.philStone, 1, -1);
 	}
 
-	public static void addKleinForMerge(Item var0)
-	{
+	public static void addKleinForMerge(Item var0) {
 		EEMergeLib.addMergeOnCraft(var0);
 	}
 
-	public static void addRingDestroy(Item var0)
-	{
+	public static void addRingDestroy(Item var0) {
 		EEMergeLib.addDestroyOnCraft(var0);
 	}
 
-	public static Object[] multiStack(ItemStack var0, int var1)
-	{
+	public static Object[] multiStack(ItemStack var0, int var1) {
 		Object[] var2 = new Object[var1];
 
-		for (int var3 = 0; var3 < var1; var3++)
-		{
+		for (int var3 = 0; var3 < var1; var3++) {
 			var2[var3] = var0;
 		}
 
 		return var2;
 	}
 
-	public static boolean isValidEDItem(ItemStack var0)
-	{
+	public static boolean isValidEDItem(ItemStack var0) {
 		int var1 = var0.id;
-		return (var1 == Block.COBBLESTONE.id) || (var1 == Block.DIRT.id) || (var1 == Block.SAND.id) || (var1 == Block.NETHERRACK.id) ||
-			   (var1 == Block.SOUL_SAND.id) || (var1 == Block.GRAVEL.id) || (var1 == Block.SANDSTONE.id) || (var1 == Block.OBSIDIAN.id) ||
-			   (var1 == Block.LEAVES.id) || (var1 == Block.SNOW_BLOCK.id) || (var1 == Item.IRON_INGOT.id) || (var1 == Item.GOLD_INGOT.id) ||
-			   (var1 == Item.DIAMOND.id) || (var1 == EEItem.darkMatter.id);
+		return (var1 == Block.COBBLESTONE.id) || (var1 == Block.DIRT.id) || (var1 == Block.SAND.id) || (var1 == Block.NETHERRACK.id)
+				|| (var1 == Block.SOUL_SAND.id) || (var1 == Block.GRAVEL.id) || (var1 == Block.SANDSTONE.id) || (var1 == Block.OBSIDIAN.id)
+				|| (var1 == Block.LEAVES.id) || (var1 == Block.SNOW_BLOCK.id) || (var1 == Item.IRON_INGOT.id) || (var1 == Item.GOLD_INGOT.id)
+				|| (var1 == Item.DIAMOND.id) || (var1 == EEItem.darkMatter.id);
 	}
 
-	public static void addAlchemicalValue(ItemStack var0, int var1)
-	{
-		if (var0 != null)
-		{
+	public static void addAlchemicalValue(ItemStack var0, int var1) {
+		if (var0 != null) {
 			addEMC(var0.id, var0.getData(), var1);
 		}
 	}
 
-	public static void addChargedItem(ItemStack var0)
-	{
-		if (var0 != null)
-		{
+	public static void addChargedItem(ItemStack var0) {
+		if (var0 != null) {
 			addChargedItem(var0.id);
 		}
 	}
 
-	public static void addOreBlock(ItemStack var0)
-	{
-		if (var0 != null)
-		{
+	public static void addOreBlock(ItemStack var0) {
+		if (var0 != null) {
 			addOreBlock(var0.id);
 		}
 	}
 
-	public static void addLeafBlock(ItemStack var0)
-	{
-		if (var0 != null)
-		{
+	public static void addLeafBlock(ItemStack var0) {
+		if (var0 != null) {
 			addLeafBlock(var0.id);
 		}
 	}
 
-	public static void addWoodBlock(ItemStack var0)
-	{
-		if (var0 != null)
-		{
+	public static void addWoodBlock(ItemStack var0) {
+		if (var0 != null) {
 			addWoodBlock(var0.id);
 		}
 	}

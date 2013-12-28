@@ -23,27 +23,27 @@ public class ContainerDMFurnace extends Container {
 		a(new Slot(var2, 0, 49, 53));
 		a(new Slot(var2, 1, 49, 17));
 
-		for (int var3 = 0; var3 <= 1; ++var3) {
-			for (int var4 = 0; var4 <= 3; ++var4) {
+		for (int var3 = 0; var3 <= 1; var3++) {
+			for (int var4 = 0; var4 <= 3; var4++) {
 				a(new Slot(var2, var3 * 4 + var4 + 2, 13 + var3 * 18, 8 + var4 * 18));
 			}
 		}
 
 		a(new Slot(var2, 10, 109, 35));
 
-		for (int var3 = 0; var3 <= 1; ++var3) {
-			for (int var4 = 0; var4 <= 3; ++var4) {
+		for (int var3 = 0; var3 <= 1; var3++) {
+			for (int var4 = 0; var4 <= 3; var4++) {
 				a(new Slot(var2, var3 * 4 + var4 + 11, 131 + var3 * 18, 8 + var4 * 18));
 			}
 		}
 
-		for (int var3 = 0; var3 < 3; ++var3) {
-			for (int var4 = 0; var4 < 9; ++var4) {
+		for (int var3 = 0; var3 < 3; var3++) {
+			for (int var4 = 0; var4 < 9; var4++) {
 				a(new Slot(var1, var4 + var3 * 9 + 9, 8 + var4 * 18, 84 + var3 * 18));
 			}
 		}
 
-		for (int var3 = 0; var3 < 9; ++var3) {
+		for (int var3 = 0; var3 < 9; var3++) {
 			a(new Slot(var1, var3, 8 + var3 * 18, 142));
 		}
 	}
@@ -55,7 +55,7 @@ public class ContainerDMFurnace extends Container {
 	public void a() {
 		super.a();
 
-		for (int var1 = 0; var1 < this.listeners.size(); ++var1) {
+		for (int var1 = 0; var1 < this.listeners.size(); var1++) {
 			ICrafting var2 = (ICrafting) this.listeners.get(var1);
 
 			if ((this.cookTime != this.furnace.furnaceCookTime) || (!(this.initialized))) {

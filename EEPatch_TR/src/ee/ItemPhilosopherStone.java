@@ -1,7 +1,5 @@
 package ee;
 
-import nl.taico.fixpack.ee.TRUtil;
-
 import net.minecraft.server.Block;
 import net.minecraft.server.EEProxy;
 import net.minecraft.server.Entity;
@@ -187,16 +185,16 @@ public class ItemPhilosopherStone extends ItemEECharged {
 					if (attemptBreak(human, x, y, z)){
 						if (data > 0){
 							//world.setData(x, y, z, data-1);
-							TRUtil.setDataAndUpdate(human, x, y, z, 142, data-1);
+							EEPBase.setDataAndUpdate(human, x, y, z, 142, data-1);
 						} else if (data == 0){
 							//world.setData(x, y, z, 4);
-							TRUtil.setDataAndUpdate(human, x, y, z, 142, 4);
+							EEPBase.setDataAndUpdate(human, x, y, z, 142, 4);
 						}
 					}
 				} else {
 					if (attemptBreak(human, x, y, z)){
 						//world.setData(x, y, z, (data+1)%5);
-						TRUtil.setDataAndUpdate(human, x, y, z, 142, (data+1)%5);
+						EEPBase.setDataAndUpdate(human, x, y, z, 142, (data+1)%5);
 					}
 					//if (data < 4){
 					//	if (attemptBreak(entityPlayer, x, y, z)) world.setData(x, y, z, data+1);

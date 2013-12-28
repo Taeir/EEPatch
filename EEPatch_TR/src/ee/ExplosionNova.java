@@ -7,11 +7,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
 import net.minecraft.server.AxisAlignedBB;
@@ -52,23 +49,6 @@ public class ExplosionNova {
 		explosionX = var3;
 		explosionY = var5;
 		explosionZ = var7;
-	}
-
-	protected boolean attemptBreak(EntityHuman human, int i, int j, int k) {
-		if (human == null) return false;
-		Player player = (Player) human.getBukkitEntity();
-		if (player == null) return false;
-
-		CraftWorld craftWorld = human.world.getWorld();
-
-		org.bukkit.block.Block block = craftWorld.getBlockAt(i, j, k);
-		if (block == null) return false;
-
-		CraftServer craftServer = human.world.getServer();
-
-		BlockBreakEvent event = new BlockBreakEvent(block, player);
-		craftServer.getPluginManager().callEvent(event);
-		return !event.isCancelled();
 	}
 
 	public void doExplosionA() {
@@ -156,7 +136,7 @@ public class ExplosionNova {
 		Location location = new Location(worldObj.getWorld(), explosionX, explosionY, explosionZ);
 
 		EntityExplodeEvent event = new EntityExplodeEvent(explode, location, blockList, explosionSize);
-		worldObj.getServer().getPluginManager().callEvent(event);
+		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled()){
 			stopExplosion = true;
 			return;
@@ -222,7 +202,7 @@ public class ExplosionNova {
 					worldObj.a("smoke", var9, var11, var13, var15, var17, var19);
 				}
 			}
-			if (var7 > 0 && attemptBreak(player, var4, var5, var6)) {
+			if (var7 > 0 && EEPatch.attemptBreak(player, var4, var5, var6)) {
 				int var8 = worldObj.getData(var4, var5, var6);
 				ArrayList<ItemStack> var27 = Block.byId[var7].getBlockDropped(worldObj, var4, var5, var6, var8, 0);
 				for (Iterator<ItemStack> var10 = var27.iterator(); var10.hasNext();) {

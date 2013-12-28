@@ -2,11 +2,6 @@ package ee;
 
 import java.util.List;
 
-import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockBreakEvent;
-
 import net.minecraft.server.AxisAlignedBB;
 import net.minecraft.server.EEProxy;
 import net.minecraft.server.Entity;
@@ -166,12 +161,12 @@ public class EntityWaterEssence extends Entity {
 					if (world.getMaterial(nx + var5, ny + var6, nz + var7) == Material.LAVA) {
 						int data = world.getData(nx + var5, ny + var6, nz + var7);
 						if (data == 0) {
-							if (attemptBreak(player, nx + var5, ny + var6, nz + var7)) {
+							if (EEPatch.attemptBreak(player, nx + var5, ny + var6, nz + var7)) {
 								world.setTypeId(nx + var5, ny + var6, nz + var7, 49);
 								world.a("smoke", nx + var5, ny + var6, nz + var7, 0.0D, 0.1D, 0.0D);
 							}
 						} else if (data <= 4) {
-							if (attemptBreak(player, nx + var5, ny + var6, nz + var7)) {
+							if (EEPatch.attemptBreak(player, nx + var5, ny + var6, nz + var7)) {
 								world.setTypeId(nx + var5, ny + var6, nz + var7, 4);
 								world.a("smoke", nx + var5, ny + var6, nz + var7, 0.0D, 0.1D, 0.0D);
 							}
@@ -239,13 +234,13 @@ public class EntityWaterEssence extends Entity {
 		int id = world.getTypeId(x, y, z);
 		int data = world.getData(x, y, z);
 		if (id == 0) {
-			if (ItemEECharged.attemptPlace(player, x, y, z)) world.setTypeId(x, y, z, 8);
+			if (EEPatch.attemptPlace(player, x, y, z)) world.setTypeId(x, y, z, 8);
 		} else if (id != 11 && (id != 10 || data <= 14)) {
 			if (id == 10 || id == 11 && data < 15) {
-				if (attemptBreak(player, x, y, z)) world.setTypeId(x, y, z, 4);
+				if (EEPatch.attemptBreak(player, x, y, z)) world.setTypeId(x, y, z, 4);
 			}
 		} else {
-			if (attemptBreak(player, x, y, z)) world.setTypeId(x, y, z, 49);
+			if (EEPatch.attemptBreak(player, x, y, z)) world.setTypeId(x, y, z, 49);
 		}
 		die();
 	}
@@ -256,20 +251,5 @@ public class EntityWaterEssence extends Entity {
 
 	public float getShadowSize() {
 		return 0.0F;
-	}
-
-	protected boolean attemptBreak(EntityHuman human, int x, int y, int z) {
-		if (human == null) return false;
-		Player player = (Player) human.getBukkitEntity();
-		if (player == null) return false;
-
-		CraftWorld craftWorld = human.world.getWorld();
-		org.bukkit.block.Block block = craftWorld.getBlockAt(x, y, z);
-		if (block == null) return false;
-
-		CraftServer craftServer = human.world.getServer();
-		BlockBreakEvent event = new BlockBreakEvent(block, player);
-		craftServer.getPluginManager().callEvent(event);
-		return !event.isCancelled();
 	}
 }

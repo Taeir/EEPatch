@@ -66,17 +66,17 @@ public class Combustion {
 
 	public void doExplosionA() {
 		float var1 = explosionSize;
-		byte var2 = 16;
-		int var3;
-		int var4;
-		int var5;
-		for (var3 = 0; var3 < var2; var3++) {
-			for (var4 = 0; var4 < var2; var4++) {
-				for (var5 = 0; var5 < var2; var5++) {
-					if (var3 == 0 || var3 == var2 - 1 || var4 == 0 || var4 == var2 - 1 || var5 == 0 || var5 == var2 - 1) {
-						double var6 = (var3 / (var2 - 1.0F)) * 2.0F - 1.0F;
-						double var8 = (var4 / (var2 - 1.0F)) * 2.0F - 1.0F;
-						double var10 = (var5 / (var2 - 1.0F)) * 2.0F - 1.0F;
+		//byte var2 = 16;
+		int nx;
+		int ny;
+		int nz;
+		for (nx = 0; nx < 16; nx++) {
+			for (ny = 0; ny < 16; ny++) {
+				for (nz = 0; nz < 16; nz++) {
+					if (nx == 0 || nx == 15 || ny == 0 || ny == 15 || nz == 0 || nz == 15) {
+						double var6 = (nx / (15.0F)) * 2.0F - 1.0F;
+						double var8 = (ny / (15.0F)) * 2.0F - 1.0F;
+						double var10 = (nz / (15.0F)) * 2.0F - 1.0F;
 						double var12 = Math.sqrt(var6 * var6 + var8 * var8 + var10 * var10);
 						var6 /= var12;
 						var8 /= var12;
@@ -104,13 +104,13 @@ public class Combustion {
 			}
 		}
 		explosionSize *= 2.0F;
-		var3 = MathHelper.floor(explosionX - explosionSize - 1.0D);
-		var4 = MathHelper.floor(explosionX + explosionSize + 1.0D);
-		var5 = MathHelper.floor(explosionY - explosionSize - 1.0D);
+		nx = MathHelper.floor(explosionX - explosionSize - 1.0D);
+		ny = MathHelper.floor(explosionX + explosionSize + 1.0D);
+		nz = MathHelper.floor(explosionY - explosionSize - 1.0D);
 		int var29 = MathHelper.floor(explosionY + explosionSize + 1.0D);
 		int var7 = MathHelper.floor(explosionZ - explosionSize - 1.0D);
 		int var30 = MathHelper.floor(explosionZ + explosionSize + 1.0D);
-		List<Entity> var9 = worldObj.getEntities(exploder, AxisAlignedBB.b(var3, var5, var7, var4, var29, var30));
+		List<Entity> var9 = worldObj.getEntities(exploder, AxisAlignedBB.b(nx, nz, var7, ny, var29, var30));
 		Vec3D var31 = Vec3D.create(explosionX, explosionY, explosionZ);
 		for (int var11 = 0; var11 < var9.size(); var11++) {
 			Entity var32 = var9.get(var11);
@@ -138,13 +138,8 @@ public class Combustion {
 		if (isFlaming) {
 			for (int var33 = var34.size() - 1; var33 >= 0; var33--) {
 				ChunkPosition var35 = var34.get(var33);
-				int var36 = var35.x;
-				int var37 = var35.y;
-				int var16 = var35.z;
-				int var38 = worldObj.getTypeId(var36, var37, var16);
-				int var18 = worldObj.getTypeId(var36, var37 - 1, var16);
-				if (var38 == 0 && net.minecraft.server.Block.n[var18] && ExplosionRNG.nextInt(3) == 0)
-					worldObj.setTypeId(var36, var37, var16, net.minecraft.server.Block.FIRE.id);
+				if (worldObj.getTypeId(var35.x, var35.y, var35.z) == 0 && net.minecraft.server.Block.n[worldObj.getTypeId(var35.x, var35.y - 1, var35.z)] && ExplosionRNG.nextInt(3) == 0)
+					worldObj.setTypeId(var35.x, var35.y, var35.z, net.minecraft.server.Block.FIRE.id);
 			}
 
 		}

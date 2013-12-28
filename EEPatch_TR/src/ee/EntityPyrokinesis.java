@@ -3,9 +3,6 @@ package ee;
 import java.util.List;
 import java.util.Random;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockBreakEvent;
-
 import net.minecraft.server.AxisAlignedBB;
 import net.minecraft.server.Block;
 import net.minecraft.server.DamageSource;
@@ -222,7 +219,7 @@ public class EntityPyrokinesis extends Entity {
 				for (int var12 = -1; var12 <= 1; var12++) {
 					int id = world.getTypeId((int) var1 + var11, (int) var2 + var5, (int) var3 + var12);
 					if (id == 0 || id == 78) {
-						if (attemptBreak(player, (int) var1 + var11, (int) var2 + var5, (int) var3 + var12))
+						if (EEPatch.attemptBreak(player, (int) var1 + var11, (int) var2 + var5, (int) var3 + var12))
 							world.setTypeId((int) var1 + var11, (int) var2 + var5, (int) var3 + var12, Block.FIRE.id);
 					}
 				}
@@ -237,11 +234,11 @@ public class EntityPyrokinesis extends Entity {
 					int nz = (int) var3 + var12;
 					int id = world.getTypeId(nx, ny, nz);
 					if (id == Block.OBSIDIAN.id) {
-						if (attemptBreak(player, nx, ny, nz)) world.setTypeIdAndData(nx, ny, nz, Block.LAVA.id, 0);
+						if (EEPatch.attemptBreak(player, nx, ny, nz)) world.setTypeIdAndData(nx, ny, nz, Block.LAVA.id, 0);
 					} else if (id == Block.SAND.id) {
-						if (attemptBreak(player, nx, ny, nz)) world.setTypeId(nx, ny, nz, Block.GLASS.id);
+						if (EEPatch.attemptBreak(player, nx, ny, nz)) world.setTypeId(nx, ny, nz, Block.GLASS.id);
 					} else if (id == Block.ICE.id) {
-						if (attemptBreak(player, nx, ny, nz)) world.setTypeId(nx, ny, nz, Block.WATER.id);
+						if (EEPatch.attemptBreak(player, nx, ny, nz)) world.setTypeId(nx, ny, nz, Block.WATER.id);
 					}
 
 					if (world.random.nextInt(5) == 0 && world.getTypeId(nx, ny + 1, nz) == 0) {
@@ -263,17 +260,5 @@ public class EntityPyrokinesis extends Entity {
 		return 0.0F;
 	}
 
-	protected boolean attemptBreak(EntityHuman human, int x, int y, int z) {
-		if (human == null) return false;
 
-		org.bukkit.block.Block block = human.world.getWorld().getBlockAt(x, y, z);
-		if (block == null) return false;
-
-		Player player = (Player) human.getBukkitEntity();
-		if (player == null) return false;
-
-		BlockBreakEvent event = new BlockBreakEvent(block, player);
-		human.world.getServer().getPluginManager().callEvent(event);
-		return !event.isCancelled();
-	}
 }

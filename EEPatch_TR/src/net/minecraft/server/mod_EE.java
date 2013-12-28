@@ -14,6 +14,7 @@ import ee.EEBlock;
 import ee.EEGuiHandler;
 import ee.EEItem;
 import ee.EEMaps;
+import ee.EEPatch;
 import ee.EntityGrimArrow;
 import ee.EntityHyperkinesis;
 import ee.EntityLavaEssence;
@@ -38,7 +39,7 @@ public class mod_EE extends NetworkMod {
 	public static final String CHANNEL_NAME = "EE2";
 	public static final String SOUND_RESOURCE_LOCATION = "/ee/sound/";
 	public static final String SOUND_PREFIX = "ee.sound.";
-	private static HashMap<String, Integer> tickCounter = new HashMap<String, Integer>();
+	private static int[] tickCounter = new int[30];
 	private static mod_EE instance;
 	private int blackListTimer;
 	@SuppressWarnings("unused")
@@ -90,12 +91,13 @@ public class mod_EE extends NetworkMod {
 	}
 
 	public String getVersion() {
-		return String.format("%d.%d.%d.%d", new Object[] {Integer.valueOf(1), Integer.valueOf(4), Integer.valueOf(6), Integer.valueOf(5)});
+		return String.format("%d.%d.%d.%d", new Object[] {1, 4, 6, 5});
 	}
 
 	@SuppressWarnings("unchecked")
 	public boolean onTickInGame(MinecraftServer var1) {
 		EEProxy.Init(var1, this);
+		
 		World[] var2 = DimensionManager.getWorlds();
 		int var3 = var2.length;
 
@@ -130,11 +132,11 @@ public class mod_EE extends NetworkMod {
 
 		EEBase.validatePedestalCoords(var3);
 		
-		String name = var3.getWorld().getName();
-		Integer remaining = tickCounter.get(name);
-		if (remaining == null) remaining = 10;
+		//String name = var3.worldProvider.dimension.getWorld().getName();
+		//Integer remaining = tickCounter.get(name);
+		int remaining = tickCounter[var3.worldProvider.dimension];
 		
-		if (remaining.intValue() % 10 == 0) {
+		if (remaining % EEPatch.transTableInterval == 0) {
 			doTransGridUpdates(var2);
 			remaining = 0;
 		}
@@ -163,7 +165,7 @@ public class mod_EE extends NetworkMod {
 			blackListTimer -= 1;
 		}
 
-		tickCounter.put(name, remaining+1);
+		tickCounter[var3.worldProvider.dimension] = remaining+1;
 		return true;
 	}
 
@@ -197,8 +199,8 @@ public class mod_EE extends NetworkMod {
 					Entity var6 = var4.get(var5);
 
 					if (var6 instanceof EntityHuman || var6.motX <= 0.0D && var6.motZ <= 0.0D) continue;
-					var6.motX *= 0.1000000014901161D;
-					var6.motZ *= 0.1000000014901161D;
+					var6.motX *= 0.1D;
+					var6.motZ *= 0.1D;
 				}
 
 			}
@@ -209,7 +211,7 @@ public class mod_EE extends NetworkMod {
 				}
 
 				if (EEBase.getPlayerArmorMovement(var1)) {
-					var1.am = (float) (var1.am + 0.04000000000000001D);
+					var1.am = (float) (var1.am + 0.04D);
 
 					if (var1.am > 0.3F) {
 						var1.am = 0.3F;
@@ -244,7 +246,7 @@ public class mod_EE extends NetworkMod {
 
 			if (var4 instanceof EntityHuman) continue;
 			var4.motX += 0.2D / (var4.locX - var1.locX);
-			var4.motY += 0.05999999865889549D;
+			var4.motY += 0.06D;
 			var4.motZ += 0.2D / (var4.locZ - var1.locZ);
 		}
 
@@ -254,7 +256,7 @@ public class mod_EE extends NetworkMod {
 		for (int var8 = 0; var8 < var7.size(); ++var8) {
 			Entity var5 = var7.get(var8);
 			var5.motX += 0.2D / (var5.locX - var1.locX);
-			var5.motY += 0.05999999865889549D;
+			var5.motY += 0.06D;
 			var5.motZ += 0.2D / (var5.locZ - var1.locZ);
 		}
 
@@ -264,7 +266,7 @@ public class mod_EE extends NetworkMod {
 		for (int var9 = 0; var9 < var10.size(); ++var9) {
 			Entity var6 = var10.get(var9);
 			var6.motX += 0.2D / (var6.locX - var1.locX);
-			var6.motY += 0.05999999865889549D;
+			var6.motY += 0.06D;
 			var6.motZ += 0.2D / (var6.locZ - var1.locZ);
 		}
 	}
@@ -281,8 +283,7 @@ public class mod_EE extends NetworkMod {
 			for (int var8 = 0; var8 < var7; ++var8) {
 				ItemStack var9 = var6[var8];
 
-				if (var9 == null || !(var9.getItem() instanceof ItemEECharged) || !(var9.getItem() instanceof ItemWatchOfTime)
-						|| (var9.getData() & 0x1) != 1 || EEBase.getPlayerEffect(var9.getItem(), var5) <= 0) continue;
+				if (var9 == null || !(var9.getItem() instanceof ItemWatchOfTime) || (var9.getData() & 0x1) != 1 || EEBase.getPlayerEffect(var9.getItem(), var5) <= 0) continue;
 				var3 += ((ItemEECharged) var9.getItem()).chargeLevel(var9) + 1;
 				EEBase.playerWatchMagnitude.put(var5, ((ItemEECharged) var9.getItem()).chargeLevel(var9) + 1);
 			}
@@ -302,10 +303,10 @@ public class mod_EE extends NetworkMod {
 				return;
 			}
 
-			boolean var5 = false;
-			boolean var6 = false;
-			boolean var7 = false;
-			boolean var8 = false;
+			boolean arcana = false;
+			boolean volcaniteLava = false;
+			boolean evertideWater = false;
+			boolean swrg = false;
 			ItemStack[] var9 = EEBase.quickBar(var4);
 			int var10 = var9.length;
 
@@ -313,27 +314,27 @@ public class mod_EE extends NetworkMod {
 				ItemStack var12 = var9[var11];
 
 				if (var12 == null || !EEMaps.isFlyingItem(var12.id)) continue;
-				if (var12.getItem() == EEItem.arcaneRing) {
-					var5 = true;
+				Item item = var12.getItem();
+				if (item == EEItem.arcaneRing) {
+					arcana = true;
 					var4.abilities.canFly = true;
-				} else if (var12.getItem() == EEItem.evertide && EEBase.isPlayerInWater(var4)) {
-					var7 = true;
+				} else if (item == EEItem.evertide && EEBase.isPlayerInWater(var4)) {
+					evertideWater = true;
 					var4.abilities.isFlying = true;
-				} else if (var12.getItem() == EEItem.volcanite && EEBase.isPlayerInLava(var4)) {
-					var6 = true;
+				} else if (item == EEItem.volcanite && EEBase.isPlayerInLava(var4)) {
+					volcaniteLava = true;
 					var4.abilities.isFlying = true;
-				} else {
-					if (var12.getItem() != EEItem.swiftWolfRing) continue;
-					var8 = true;
+				} else if (item == EEItem.swiftWolfRing){
+					swrg = true;
 					var4.abilities.canFly = true;
 				}
 
 			}
 
-			if (var8 && (var7 || var6 || var5)) {
-				var8 = false;
+			if (swrg && (evertideWater || volcaniteLava || arcana)) {
+				swrg = false;
 				disableSWRG(var4);
-			} else if (var8 && !var6 && !var7 && !var5) {
+			} else if (swrg && !volcaniteLava && !evertideWater && !arcana) {
 				if (var4.abilities.isFlying) {
 					forceEnableSWRG(var4);
 				}
@@ -343,7 +344,7 @@ public class mod_EE extends NetworkMod {
 				}
 			}
 
-			if (!var8 && !var6 && !var7 && !var5) {
+			if (!swrg && !volcaniteLava && !evertideWater && !arcana) {
 				var4.abilities.canFly = false;
 				var4.abilities.isFlying = false;
 				var4.updateAbilities();
@@ -376,19 +377,19 @@ public class mod_EE extends NetworkMod {
 
 		for (int var4 = 0; var4 < var3; ++var4) {
 			ItemStack var5 = var2[var4];
-
-			if (var5 == null || var5.getItem() != EEItem.swiftWolfRing) continue;
+			Item item;
+			if (var5 == null || (item = var5.getItem()) != EEItem.swiftWolfRing) continue;
 			if (var1.abilities.isFlying) {
-				if (!((ItemEECharged) var5.getItem()).isActivated(var5)) continue;
-				if (EEBase.getPlayerEffect(var5.getItem(), var1) <= 0) {
-					((ItemEECharged) var5.getItem()).ConsumeReagent(var5, var1, false);
+				if (!((ItemEECharged) item).isActivated(var5)) continue;
+				if (EEBase.getPlayerEffect(item, var1) <= 0) {
+					((ItemEECharged) item).ConsumeReagent(var5, var1, false);
 				}
 
-				if (EEBase.getPlayerEffect(var5.getItem(), var1) > 0) continue;
-				((ItemEECharged) var5.getItem()).doToggle(var5, var1.world, var1);
+				if (EEBase.getPlayerEffect(item, var1) > 0) continue;
+				((ItemEECharged) item).doToggle(var5, var1.world, var1);
 			} else {
-				if (!((ItemEECharged) var5.getItem()).isActivated(var5)) continue;
-				((ItemEECharged) var5.getItem()).doToggle(var5, var1.world, var1);
+				if (!((ItemEECharged) item).isActivated(var5)) continue;
+				((ItemEECharged) item).doToggle(var5, var1.world, var1);
 			}
 		}
 	}
@@ -399,51 +400,47 @@ public class mod_EE extends NetworkMod {
 
 		for (int var5 = 0; var5 < var4; ++var5) {
 			ItemStack var6 = var3[var5];
-
-			if (var6 == null || !(var6.getItem() instanceof ItemEECharged)) continue;
+			Item item;
+			if (var6 == null || !((item = var6.getItem()) instanceof ItemEECharged)) continue;
 			if (var6 == var1.U()) {
-				((ItemEECharged) var6.getItem()).doHeld(var6, var2, var1);
+				((ItemEECharged) item).doHeld(var6, var2, var1);
 			}
 
-			((ItemEECharged) var6.getItem()).doPassive(var6, var2, var1);
+			((ItemEECharged) item).doPassive(var6, var2, var1);
 
-			if ((var6.getData() & 0x1) == 1 && EEMaps.hasDurationEffect(var6.getItem())) {
-				if (var6.getItem() instanceof ItemWatchOfTime) {
-					if (EEBase.getPlayerEffect(var6.getItem(), var1) > 0) {
-						EEBase.updatePlayerEffect(
-								var6.getItem(),
-								EEBase.getPlayerEffect(var6.getItem(), var1)
-								- (((ItemEECharged) var6.getItem()).chargeLevel(var6) + 1) * (((ItemEECharged) var6.getItem()).chargeLevel(var6) + 1),
-								var1);
+			if ((var6.getData() & 0x1) == 1 && EEMaps.hasDurationEffect(item)) {
+				if (item instanceof ItemWatchOfTime) {
+					if (EEBase.getPlayerEffect(item, var1) > 0) {
+						EEBase.updatePlayerEffect(item, EEBase.getPlayerEffect(item, var1) - (((ItemEECharged) item).chargeLevel(var6) + 1) * (((ItemEECharged) item).chargeLevel(var6) + 1), var1);
 					}
-				} else if (EEBase.getPlayerEffect(var6.getItem(), var1) > 0) {
-					EEBase.updatePlayerEffect(var6.getItem(), EEBase.getPlayerEffect(var6.getItem(), var1) - 1, var1);
+				} else if (EEBase.getPlayerEffect(item, var1) > 0) {
+					EEBase.updatePlayerEffect(item, EEBase.getPlayerEffect(item, var1) - 1, var1);
 				}
 
-				if (EEBase.getPlayerEffect(var6.getItem(), var1) <= 0) {
-					((ItemEECharged) var6.getItem()).ConsumeReagent(var6, var1, false);
+				if (EEBase.getPlayerEffect(item, var1) <= 0) {
+					((ItemEECharged) item).ConsumeReagent(var6, var1, false);
 				}
 
-				if (EEBase.getPlayerEffect(var6.getItem(), var1) <= 0) {
-					((ItemEECharged) var6.getItem()).doToggle(var6, var2, var1);
+				if (EEBase.getPlayerEffect(item, var1) <= 0) {
+					((ItemEECharged) item).doToggle(var6, var2, var1);
 				} else {
-					((ItemEECharged) var6.getItem()).doActive(var6, var2, var1);
+					((ItemEECharged) item).doActive(var6, var2, var1);
 				}
 			}
 
-			if ((var6.getData() & 0x2) != 2 || !(var6.getItem() instanceof ItemSwiftWolfRing)) continue;
-			if (EEBase.getPlayerEffect(var6.getItem(), var1) > 0) {
-				EEBase.updatePlayerEffect(var6.getItem(), EEBase.getPlayerEffect(var6.getItem(), var1) - 2, var1);
+			if ((var6.getData() & 0x2) != 2 || !(item instanceof ItemSwiftWolfRing)) continue;
+			if (EEBase.getPlayerEffect(item, var1) > 0) {
+				EEBase.updatePlayerEffect(item, EEBase.getPlayerEffect(item, var1) - 2, var1);
 			}
 
-			if (EEBase.getPlayerEffect(var6.getItem(), var1) <= 0) {
-				((ItemEECharged) var6.getItem()).ConsumeReagent(var6, var1, false);
+			if (EEBase.getPlayerEffect(item, var1) <= 0) {
+				((ItemEECharged) item).ConsumeReagent(var6, var1, false);
 			}
 
-			if (EEBase.getPlayerEffect(var6.getItem(), var1) <= 0) {
-				((ItemEECharged) var6.getItem()).doToggle(var6, var2, var1);
+			if (EEBase.getPlayerEffect(item, var1) <= 0) {
+				((ItemEECharged) item).doToggle(var6, var2, var1);
 			} else {
-				((ItemEECharged) var6.getItem()).doActive(var6, var2, var1);
+				((ItemEECharged) item).doActive(var6, var2, var1);
 			}
 		}
 	}

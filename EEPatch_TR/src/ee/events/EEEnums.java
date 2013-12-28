@@ -233,4 +233,8 @@ public class EEEnums {
 			return nr;
 		}
 	}
+	
+	public enum EEWatchAction {
+		TimeForward, TimeBackward
+	}
 }

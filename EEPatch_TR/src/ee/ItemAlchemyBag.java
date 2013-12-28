@@ -1,4 +1,3 @@
-/* Warning: No line numbers available in class file */
 package ee;
 
 import net.minecraft.server.EEProxy;
@@ -76,9 +75,15 @@ public class ItemAlchemyBag extends ItemEECharged {
 		if (item.getData() > EEPatch.alcBagAmount){
 			human.a("You are not allowed to have more than " + (EEPatch.alcBagAmount+1) + " different bags!");
 			item.setData(EEPatch.alcBagAmount);
-			datName = "bag_" + (EEPatch.separateAlcBags?(world.worldData.name + "_"):"") + human.name + item.getData();
+		}
+		
+		if (EEPatch.separateAlcBags){
+			if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
+				datName = "bag_"+EEPatch.mainSharedWorld+"_"+human.name+item.getData();
+			else
+				datName = "bag_" + world.worldData.name + "_" + human.name + item.getData();
 		} else {
-			datName = "bag_" + (EEPatch.separateAlcBags?(world.worldData.name + "_"):"") + human.name + item.getData();
+			datName = "bag_" + human.name + item.getData();
 		}
 		
 		AlchemyBagData bag = (AlchemyBagData) world.a(AlchemyBagData.class, datName);
@@ -93,16 +98,29 @@ public class ItemAlchemyBag extends ItemEECharged {
 	}
 
 	public static AlchemyBagData getBagData(ItemStack item, EntityHuman human, World world) {
-		
 		String datName;
 		if (!EEPatch.allowAlcBags){
 			datName = "bag_global";
 		} else if (item.getData() > EEPatch.alcBagAmount){
 			human.a("You are not allowed to have more than " + (EEPatch.alcBagAmount+1) + " different bags!");
 			item.setData(EEPatch.alcBagAmount);
-			datName = "bag_" + (EEPatch.separateAlcBags?(world.worldData.name + "_"):"") + human.name + item.getData();
+			if (EEPatch.separateAlcBags){
+				if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
+					datName = "bag_"+EEPatch.mainSharedWorld+"_"+human.name+item.getData();
+				else
+					datName = "bag_" + world.worldData.name + "_" + human.name + item.getData();
+			} else {
+				datName = "bag_" + human.name + item.getData();
+			}
 		} else {
-			datName = "bag_" + (EEPatch.separateAlcBags?(world.worldData.name + "_"):"") + human.name + item.getData();
+			if (EEPatch.separateAlcBags){
+				if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
+					datName = "bag_" + EEPatch.mainSharedWorld + "_" + human.name + item.getData();
+				else
+					datName = "bag_" + world.worldData.name + "_" + human.name + item.getData();
+			} else {
+				datName = "bag_" + human.name + item.getData();
+			}
 		}
 		
 		AlchemyBagData bag = (AlchemyBagData) world.a(AlchemyBagData.class, datName);
@@ -124,9 +142,24 @@ public class ItemAlchemyBag extends ItemEECharged {
 		} else if (color > EEPatch.alcBagAmount) {
 			human.a("You are not allowed to have more than " + (EEPatch.alcBagAmount+1) + " different bags!");
 			color = EEPatch.alcBagAmount;
-			datName = "bag_" + (EEPatch.separateAlcBags?(world.worldData.name + "_"):"") + human.name + color;
+			
+			if (EEPatch.separateAlcBags){
+				if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
+					datName = "bag_" + EEPatch.mainSharedWorld + "_" + human.name + color;
+				else
+					datName = "bag_" + world.worldData.name + "_" + human.name + color;
+			} else {
+				datName = "bag_" + human.name + color;
+			}
 		} else {
-			datName = "bag_" + (EEPatch.separateAlcBags?(world.worldData.name + "_"):"") + human.name + color;
+			if (EEPatch.separateAlcBags){
+				if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
+					datName = "bag_" + EEPatch.mainSharedWorld + "_" + human.name + color;
+				else
+					datName = "bag_" + world.worldData.name + "_" + human.name + color;
+			} else {
+				datName = "bag_" + human.name + color;
+			}
 		}
 		AlchemyBagData bag = (AlchemyBagData) world.a(AlchemyBagData.class, datName);
 
@@ -148,8 +181,15 @@ public class ItemAlchemyBag extends ItemEECharged {
 			human.a("You are not allowed to have more than " + (EEPatch.alcBagAmount+1) + " different bags!");
 			item.setData(EEPatch.alcBagAmount);
 		}
-		
-		String datName = "bag_" + (EEPatch.separateAlcBags?(world.worldData.name + "_"):"") + human.name + item.getData();
+		String datName;
+		if (EEPatch.separateAlcBags){
+			if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
+				datName = "bag_" + EEPatch.mainSharedWorld + "_" + human.name + item.getData();
+			else
+				datName = "bag_" + world.worldData.name + "_" + human.name + item.getData();
+		} else {
+			datName = "bag_" + human.name + item.getData();
+		}
 
 		AlchemyBagData bag = (AlchemyBagData) world.a(AlchemyBagData.class, datName);
 

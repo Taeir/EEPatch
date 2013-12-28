@@ -9,22 +9,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class TRUtil {
-	public static class world {
-		public static void setAir(int x, int y, int z, World world){
-			world.setTypeId(x, y, z, 0);
-		}
-		
-		public static void setTypeIdAndData(World world, int x, int y, int z, int id, int data){
-			world.setTypeIdAndData(x, y, z, id, data);
-		}
-	}
-	
-	public static class entityHuman {
-		public static ItemStack getItemInHand(EntityHuman human){
-			return human.U();
-		}
-	}
-	
 	private static Player getPlayer(EntityHuman human){
 		if (human == null) return null;
 		Player player = (Player) human.getBukkitEntity();
@@ -82,11 +66,5 @@ public class TRUtil {
 			return true;
 		}
 		return false;
-	}
-
-	public static void setDataAndUpdate(EntityHuman human, int x, int y, int z, int id, int data){
-		human.world.setData(x, y, z, data);
-		Player player = getPlayer(human);
-		player.sendBlockChange(new Location(player.getWorld(), x, y, z), id, (byte) data);
 	}
 }

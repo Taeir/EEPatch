@@ -94,37 +94,16 @@ public class TileEE extends TileEntity {
 	}
 
 	public boolean tryDropInChest(ItemStack var1) {
-		if (world != null && !EEProxy.isClient(world)) {
-			TileEntity var2 = null;
-			if (isChest(world.getTileEntity(x, y + 1, z))) {
-				var2 = world.getTileEntity(x, y + 1, z);
-				return putInChest(var2, var1);
-			}
-			if (isChest(world.getTileEntity(x, y - 1, z))) {
-				var2 = world.getTileEntity(x, y - 1, z);
-				return putInChest(var2, var1);
-			}
-			if (isChest(world.getTileEntity(x + 1, y, z))) {
-				var2 = world.getTileEntity(x + 1, y, z);
-				return putInChest(var2, var1);
-			}
-			if (isChest(world.getTileEntity(x - 1, y, z))) {
-				var2 = world.getTileEntity(x - 1, y, z);
-				return putInChest(var2, var1);
-			}
-			if (isChest(world.getTileEntity(x, y, z + 1))) {
-				var2 = world.getTileEntity(x, y, z + 1);
-				return putInChest(var2, var1);
-			}
-			if (isChest(world.getTileEntity(x, y, z - 1))) {
-				var2 = world.getTileEntity(x, y, z - 1);
-				return putInChest(var2, var1);
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
+		if (world == null || EEProxy.isClient(world)) return false;
+		TileEntity var2;
+			 if (isChest(var2 = EEPBase.getTileEntity2(world, x, y + 1, z, false))) return putInChest(var2, var1);
+		else if (isChest(var2 = EEPBase.getTileEntity2(world, x, y - 1, z, false))) return putInChest(var2, var1);
+		else if (isChest(var2 = EEPBase.getTileEntity2(world, x + 1, y, z, false))) return putInChest(var2, var1);
+		else if (isChest(var2 = EEPBase.getTileEntity2(world, x - 1, y, z, false))) return putInChest(var2, var1);
+		else if (isChest(var2 = EEPBase.getTileEntity2(world, x, y, z + 1, false))) return putInChest(var2, var1);
+		else if (isChest(var2 = EEPBase.getTileEntity2(world, x, y, z - 1, false))) return putInChest(var2, var1);
+		else return false;
+
 	}
 
 	private boolean isChest(TileEntity var1) {
@@ -176,7 +155,9 @@ public class TileEE extends TileEntity {
 	public void onBlockClicked(EntityHuman entityhuman) {}
 
 	public boolean clientFail() {
-		return world != null ? world.getTileEntity(x, y, z) == this ? EEProxy.isClient(world) : true : true;
+		if (world == null || EEProxy.isClient(world)) return true;
+		
+		return EEPBase.getTileEntity2(world, x, y, z, false) != this;
 	}
 
 	public void onBlockAdded() {}
@@ -245,7 +226,7 @@ public class TileEE extends TileEntity {
 	}
 
 	public Packet d() {
-		TileEntity t = this.world.getTileEntity(x, y, z);
+		TileEntity t = EEPBase.getTileEntity2(this.world, x, y, z, false);
 		if (!(t instanceof TileEE)) return null;
 		TileEntityPacket var1 = (TileEntityPacket) PacketHandler.getPacket(PacketTypeHandler.TILE);
 		var1.setCoords(x, y, z);

@@ -46,10 +46,6 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 		currentItemProgress = 0;
 	}
 
-	private boolean isChest(TileEntity var1) {
-		return var1 instanceof TileEntityChest || var1 instanceof TileAlchChest;
-	}
-
 	@SuppressWarnings("null")
 	public void onBlockRemoval() {
 		for (HumanEntity h : this.getViewers()) h.closeInventory();
@@ -80,6 +76,11 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 
 	}
 
+	private boolean isChest(TileEntity var1) {
+		return (var1 instanceof TileEntityChest) || (var1 instanceof TileAlchChest);
+	}
+	
+	
 	public static boolean putInChest(TileEntity var0, ItemStack var1) {
 		if (var1 == null || var1.id == 0 || var1.count > var1.getMaxStackSize() || var1.count > 64) return true;
 
@@ -120,29 +121,28 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 	}
 
 	public boolean tryDropInChest(ItemStack var1) {
-		TileEntity var2 = null;
-		if (isChest(world.getTileEntity(x, y + 1, z))) {
-			var2 = world.getTileEntity(x, y + 1, z);
+		TileEntity var2 = EEPBase.getTileEntity2(world, x, y + 1, z, false);
+		if (isChest(var2)) {
 			return putInChest(var2, var1);
 		}
-		if (isChest(world.getTileEntity(x, y - 1, z))) {
-			var2 = world.getTileEntity(x, y - 1, z);
+		var2 = EEPBase.getTileEntity2(world, x, y - 1, z, false);
+		if (isChest(var2)) {
 			return putInChest(var2, var1);
 		}
-		if (isChest(world.getTileEntity(x + 1, y, z))) {
-			var2 = world.getTileEntity(x + 1, y, z);
+		var2 = EEPBase.getTileEntity2(world, x + 1, y, z, false);
+		if (isChest(var2)) {
 			return putInChest(var2, var1);
 		}
-		if (isChest(world.getTileEntity(x - 1, y, z))) {
-			var2 = world.getTileEntity(x - 1, y, z);
+		var2 = EEPBase.getTileEntity2(world, x - 1, y, z, false);
+		if (isChest(var2)) {
 			return putInChest(var2, var1);
 		}
-		if (isChest(world.getTileEntity(x, y, z + 1))) {
-			var2 = world.getTileEntity(x, y, z + 1);
+		var2 = EEPBase.getTileEntity2(world, x, y, z + 1, false);
+		if (isChest(var2)) {
 			return putInChest(var2, var1);
 		}
-		if (isChest(world.getTileEntity(x, y, z - 1))) {
-			var2 = world.getTileEntity(x, y, z - 1);
+		var2 = EEPBase.getTileEntity2(world, x, y, z - 1, false);
+		if (isChest(var2)) {
 			return putInChest(var2, var1);
 		}
 
@@ -530,7 +530,9 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 
 	public void setItem(int var1, ItemStack var2) {
 		items[var1] = var2;
-		if (var2 != null && var2.count > var2.getMaxStackSize()){
+		if (var2 == null) return;
+		if (var2.count > 64) var2.count = 1;
+		if (var2.count > var2.getMaxStackSize()){
 			var2.count = var2.getMaxStackSize() > 64 ? 64 : var2.getMaxStackSize();
 		}
 	}
@@ -641,7 +643,9 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 				
 				if (items[var9].count <= 1)
 					items[var9] = null;
-				else if (items[var9].count > items[var9].getMaxStackSize() || items[var9].count > 64)
+				else if (items[var9].count > 64)
+					items[var9] = null;
+				else if (items[var9].count > items[var9].getMaxStackSize())
 					items[var9].count = items[var9].getMaxStackSize()>64?63:items[var9].getMaxStackSize()-1;
 				else
 					items[var9].count--;
@@ -853,7 +857,7 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 	}
 
 	public boolean a(EntityHuman var1) {
-		return world.getTileEntity(x, y, z) == this ? var1.e(x + 0.5D, y + 0.5D, z + 0.5D) <= 64D : false;
+		return EEPBase.getTileEntity2(world, x, y, z, false) == this ? var1.e(x + 0.5D, y + 0.5D, z + 0.5D) <= 64D : false;
 	}
 
 	public int getStartInventorySide(int var1) {

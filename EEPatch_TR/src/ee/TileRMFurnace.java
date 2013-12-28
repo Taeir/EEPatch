@@ -518,7 +518,7 @@ public class TileRMFurnace extends TileEE implements ISpecialInventory, ISidedIn
 
 	public boolean a(EntityHuman var1)
 	{
-		return world.getTileEntity(x, y, z) == this ? var1.e(x + 0.5D, y + 0.5D, z + 0.5D) <= 64D : false;
+		return EEPBase.getTileEntity2(world, x, y, z, false) == this ? var1.e(x + 0.5D, y + 0.5D, z + 0.5D) <= 64D : false;
 	}
 
 	public int getStartInventorySide(int var1)

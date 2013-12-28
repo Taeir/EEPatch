@@ -6,8 +6,6 @@ import java.util.*;
 
 import net.minecraft.server.*;
 
-import nl.taico.fixpack.ee.TRUtil;
-
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.InventoryHolder;
@@ -27,7 +25,7 @@ public class AlchemyBagData extends WorldMapBase implements IInventory {
 	private boolean initialized;
 	public static List<AlchemyBagData> datas = new LinkedList<AlchemyBagData>();
 	private List<HumanEntity> transaction = new ArrayList<HumanEntity>();
-	public boolean keepRepairOff = false;
+	//public boolean keepRepairOff = false;
 
 	public AlchemyBagData(String var1) {
 		super(var1);
@@ -39,12 +37,12 @@ public class AlchemyBagData extends WorldMapBase implements IInventory {
 			initialized = true;
 			update();
 			
-			if (keepRepairOff){
-				repairOn = false;
-			} else if (!TRUtil.isAllowed(var2, "Disabler_RepairCharm_InBag", "disabler.repaircharm.inbag")){
-				keepRepairOff = true;
-				repairOn = false;
-			}
+			//if (keepRepairOff){
+			//	repairOn = false;
+			//} else if (!TRUtil.isAllowed(var2, "Disabler_RepairCharm_InBag", "disabler.repaircharm.inbag")){
+			//	keepRepairOff = true;
+			//	repairOn = false;
+			//}
 		}
 		
 		if (repairOn) doRepair();
@@ -201,7 +199,8 @@ public class AlchemyBagData extends WorldMapBase implements IInventory {
 		 * 1); ((ItemEECharged)items[var4].getItem()).setBoolean(items[var4], "active", true); } } } }
 		 */
 
-		if (!keepRepairOff && repair != repairOn) repairOn = repair;
+		//if (!keepRepairOff && repair != repairOn) repairOn = repair;
+		if (repair != repairOn) repairOn = repair;
 		if (condense != condenseOn) condenseOn = condense;
 		if (voidring != voidOn) voidOn = voidring;
 		

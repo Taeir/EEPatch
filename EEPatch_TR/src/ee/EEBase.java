@@ -34,13 +34,13 @@ import net.minecraft.server.PlayerInventory;
 import net.minecraft.server.Vec3D;
 import net.minecraft.server.World;
 
-import nl.taico.fixpack.ee.TRUtil;
-
 import ee.events.EEChargeEvent;
 import ee.events.EEEnums.EEAction;
 import ee.events.EEEnums.EEArmorAction;
+import ee.events.EEEnums.EEWatchAction;
 import ee.events.EEEventManager;
 import ee.events.armor.EEArmorEvent;
+import ee.events.other.EEWOFTEvent;
 import forge.ICraftingHandler;
 import forge.MinecraftForge;
 
@@ -139,7 +139,7 @@ public class EEBase {
 
 	public static boolean isCurrentItem(Item var0, EntityHuman var1) {
 		ItemStack temp = var1.inventory.getItemInHand();
-		if (temp != null) return temp.getItem().equals(var0);// FIXME is this correct now?
+		if (temp != null) return temp.getItem() == var0;// FIXME is this correct now?
 		return var0 == null;
 	}
 
@@ -243,18 +243,16 @@ public class EEBase {
 	public static void setDisplayEnergy(ItemStack var0, int var1) {
 		if (var0 == null) return;
 
-		if (((var0.getItem() instanceof ItemEECharged)) && ((var0.getItem() instanceof ItemTransTablet))) {
-			ItemEECharged var2 = (ItemEECharged) var0.getItem();
-			var2.setInteger(var0, "displayEnergy", var1);
+		if (var0.getItem() instanceof ItemTransTablet) {
+			((ItemEECharged) var0.getItem()).setInteger(var0, "displayEnergy", var1);
 		}
 	}
 
 	public static int getLatentEnergy(ItemStack var0) {
 		if (var0 == null) return 0;
 
-		if (((var0.getItem() instanceof ItemEECharged)) && ((var0.getItem() instanceof ItemTransTablet))) {
-			ItemEECharged var1 = (ItemEECharged) var0.getItem();
-			return var1.getInteger(var0, "latentEnergy");
+		if (var0.getItem() instanceof ItemTransTablet) {
+			return ((ItemEECharged) var0.getItem()).getInteger(var0, "latentEnergy");
 		}
 
 		return 0;
@@ -262,18 +260,15 @@ public class EEBase {
 
 	public static void setLatentEnergy(ItemStack var0, int var1) {
 		if (var0 != null) {
-			if (((var0.getItem() instanceof ItemEECharged)) && ((var0.getItem() instanceof ItemTransTablet))) {
-				ItemEECharged var2 = (ItemEECharged) var0.getItem();
-				var2.setInteger(var0, "latentEnergy", var1);
+			if (var0.getItem() instanceof ItemTransTablet) {
+				((ItemEECharged) var0.getItem()).setInteger(var0, "latentEnergy", var1);
 			}
 		}
 	}
 
 	public static boolean canIncreaseKleinStarPoints(ItemStack var0, World var1) {
-		if (EEProxy.isClient(var1)) return false;
-
-		// byte var2 = 1;
-		return var0 != null;
+		if (EEProxy.isClient(var1) || var0 == null || !isKleinStar(var0.id)) return false;
+		return var0.getData() - 1 != 0;
 	}
 
 	public static boolean isKleinStar(int itemId) {
@@ -287,9 +282,7 @@ public class EEBase {
 	}
 
 	public static boolean addKleinStarPoints(ItemStack var0, int var1, World var2) {
-		if (EEProxy.isClient(var2)) return false;
-		if (var0 == null) return false;
-		if (!isKleinStar(var0.id)) return false;
+		if (EEProxy.isClient(var2) || var0 == null || !isKleinStar(var0.id)) return false;
 
 		ItemKleinStar var3 = (ItemKleinStar) var0.getItem();
 
@@ -303,8 +296,7 @@ public class EEBase {
 	}
 
 	public static boolean addKleinStarPoints(ItemStack var0, int var1) {
-		if (var0 == null) return false;
-		if (!isKleinStar(var0.id)) return false;
+		if (var0 == null || !isKleinStar(var0.id)) return false;
 
 		ItemKleinStar var2 = (ItemKleinStar) var0.getItem();
 
@@ -318,9 +310,7 @@ public class EEBase {
 	}
 
 	public static boolean takeKleinStarPoints(ItemStack var0, int var1, World var2) {
-		if (EEProxy.isClient(var2)) return false;
-		if (var0 == null) return false;
-		if (!isKleinStar(var0.id)) return false;
+		if (EEProxy.isClient(var2) || var0 == null || !isKleinStar(var0.id)) return false;
 
 		ItemKleinStar var3 = (ItemKleinStar) var0.getItem();
 		int points = var3.getKleinPoints(var0);
@@ -334,45 +324,37 @@ public class EEBase {
 	}
 
 	public static boolean consumeKleinStarPoint(EntityHuman var0, int var1) {
-		if (var0 == null) return false;
-		if (EEProxy.isClient(var0.world)) return false;
+		if (var0 == null || EEProxy.isClient(var0.world)) return false;
 
 		PlayerInventory var2 = var0.inventory;
+		/*
+		for (int var3 = 0; var3 < var2.items.length; var3++) {
+			ItemStack var4 = var2.getItem(var3);
+			if (var4 != null) {
+				if (isKleinStar(var4.id) && takeKleinStarPoints(var4, var1, var0.world))
+					return true;
+			}
+		}*/
 		for (ItemStack current : var2.items) {
 			if (current == null) continue;
 			if ((isKleinStar(current.id)) && (takeKleinStarPoints(current, var1, var0.world))) return true;
 		}
-		/*for (int var3 = 0; var3 < var2.items.length; var3++)
-		{
-			if (var2.getItem(var3) != null)
-			{
-				ItemStack var4 = var2.getItem(var3);
-
-				if ((isKleinStar(var4.id)) && (takeKleinStarPoints(var4, var1, var0.world)))
-				{
-					return true;
-				}
-			}
-		}*/
 
 		return false;
 	}
 
 	public static boolean Consume(ItemStack item, EntityHuman human, boolean notifyUser) {
-		if (human == null) return false;
-		if (EEProxy.isClient(human.world)) return false;
+		if (human == null || EEProxy.isClient(human.world)) return false;
 		
 		int amount = item.count;
 		int var4 = 0;
-		boolean dataMinusOne = false;
-
-		if (item.getData() == -1) dataMinusOne = true;
+		boolean dataMinusOne = (item.getData() == -1);
 
 		ItemStack[] items = human.inventory.items;
 
 		for (int i = 0; i < items.length; i++) {// for each item in inventory
 			if (items[i] == null) continue;
-			if (item.count <= var4) break; // if the amount of items in the given stack <= 0
+			if (amount <= var4) break; // if the amount of items in the given stack <= 0
 
 			if (items[i].doMaterialsMatch(item) || (dataMinusOne && items[i].id == item.id))
 				var4 += items[i].count;
@@ -386,13 +368,10 @@ public class EEBase {
 			if (items[i] == null  || (!items[i].doMaterialsMatch(item)  && (!dataMinusOne || items[i].id  != item.id))) continue;
 
 			for (int var8 = items[i].count; var8 > 0; var8--) {
-				items[i].count--;
+				if (items[i].count <= 1) items[i] = null;
+				else items[i].count--;
 
-				if (items[i].count == 0) items[i] = null;
-
-				var4++;
-
-				if (var4 >= amount) return true;
+				if (++var4 >= amount) return true;
 			}
 
 		}
@@ -402,9 +381,14 @@ public class EEBase {
 		return false;
 	}
 
-	public static double direction(EntityHuman var0) {
-		return var0.pitch <= -55.0F ? 1.0D : (var0.pitch > -55.0F) && (var0.pitch < 55.0F) ? (MathHelper.floor(var0.yaw * 4.0F / 360.0F + 0.5D) & 0x3) + 2
-				: 0.0D;
+	public static double direction(EntityHuman var0) {		
+		if (var0.pitch <= -55F)
+			return 1.0D;
+		else if ((var0.pitch > -55.0F) && (var0.pitch < 55.0F))
+			return (MathHelper.floor(var0.yaw * 4.0F / 360.0F + 0.5D) & 0x3) + 2;
+		else
+			return 0.0D;
+				
 	}
 	public static double heading(EntityHuman var0) {
 		return (MathHelper.floor(var0.yaw * 4.0F / 360.0F + 0.5D) & 0x3) + 2;
@@ -420,9 +404,9 @@ public class EEBase {
 	}
 
 	public static void doLeftClick(World var0, EntityHuman var1) {
-		ItemStack old = var1.U();
+		ItemStack old = var1.U();//iteminhand
 		if (old != null) {
-			if ((old.getItem() instanceof ItemEECharged)) {
+			if (old.getItem() instanceof ItemEECharged) {
 				((ItemEECharged) old.getItem()).doLeftClick(old, var0, var1);
 			}
 		}
@@ -431,18 +415,16 @@ public class EEBase {
 	public static void doAlternate(World var0, EntityHuman human) {
 		ItemStack var2 = human.U();
 
-		if (var2 == null) {
+		if (var2 == null || !(var2.getItem() instanceof ItemEECharged)) {
 			armorCheck(human);
-		} else if ((var2.getItem() instanceof ItemEECharged)) {
-			((ItemEECharged) var2.getItem()).doAlternate(var2, var0, human);
 		} else {
-			armorCheck(human);
+			((ItemEECharged) var2.getItem()).doAlternate(var2, var0, human);
 		}
 	}
 
 	/** Gem armor explodes if offensive turned on. Calls event. */
 	private static void armorCheck(EntityHuman human) {
-		if ((hasRedArmor(human)) && (getPlayerArmorOffensive(human))) {
+		if (hasRedArmor(human) && getPlayerArmorOffensive(human)) {
 			if (EEEventManager.callEvent(new EEArmorEvent(human, EEAction.ALTERNATE, EEArmorAction.OffensiveExplode))) return;
 			Combustion var1 = new Combustion(human.world, human, human.locX, human.locY, human.locZ, 4.0F);
 			var1.doExplosionA();
@@ -502,7 +484,7 @@ public class EEBase {
 		for (Entity var3 : var1) {
 			if (!(var3 instanceof EntityHuman)) {
 				var3.motX += 0.2D / (var3.locX - var0.locX);
-				var3.motY += 0.05999999865889549D;
+				var3.motY += 0.06D;
 				var3.motZ += 0.2D / (var3.locZ - var0.locZ);
 			}
 		}
@@ -525,7 +507,7 @@ public class EEBase {
 
 		for (Entity var4 : var6) {
 			var4.motX += 0.2D / (var4.locX - var0.locX);
-			var4.motY += 0.05999999865889549D;
+			var4.motY += 0.06D;
 			var4.motZ += 0.2D / (var4.locZ - var0.locZ);
 		}
 
@@ -543,7 +525,7 @@ public class EEBase {
 
 		for (Entity var5 : var8) {
 			var5.motX += 0.2D / (var5.locX - var0.locX);
-			var5.motY += 0.05999999865889549D;
+			var5.motY += 0.06D;
 			var5.motZ += 0.2D / (var5.locZ - var0.locZ);
 		}
 
@@ -564,12 +546,10 @@ public class EEBase {
 	public static void doRelease(World var0, EntityHuman var1) {
 		ItemStack var2 = var1.U();
 
-		if (var2 == null) {
+		if (var2 == null || !(var2.getItem() instanceof ItemEECharged)) {
 			helmetCheck(var1);
-		} else if ((var2.getItem() instanceof ItemEECharged)) {
-			((ItemEECharged) var2.getItem()).doRelease(var2, var0, var1);
 		} else {
-			helmetCheck(var1);
+			((ItemEECharged) var2.getItem()).doRelease(var2, var0, var1);
 		}
 	}
 
@@ -613,12 +593,12 @@ public class EEBase {
 	public static void doCharge(World world, EntityHuman human) {
 		ItemStack itemInHand = human.U();
 
-		if (itemInHand == null) {
+		if (itemInHand == null || !(itemInHand.getItem() instanceof ItemEECharged)) {
 			if (hasOffensiveArmor(human) && (getPlayerToggleCooldown(human) <= 0)) {
 				updatePlayerArmorOffensive(human, true);
 				setPlayerToggleCooldown(human, 20);
 			}
-		} else if (itemInHand.getItem() instanceof ItemEECharged) {
+		} else {
 			ItemEECharged var3 = (ItemEECharged) itemInHand.getItem();
 
 			if (!human.isSneaking()) {
@@ -633,9 +613,6 @@ public class EEBase {
 			} else {
 				var3.doUncharge(itemInHand, world, human);
 			}
-		} else if ((hasOffensiveArmor(human)) && (getPlayerToggleCooldown(human) <= 0)) {
-			updatePlayerArmorOffensive(human, true);
-			setPlayerToggleCooldown(human, 20);
 		}
 	}
 
@@ -724,8 +701,8 @@ public class EEBase {
 			return;
 		}*/
 		Integer old = playerBuildMode.get(var0);
-		int mode = 0;
-		if (old != null) mode = (old.intValue() + 1)%4;
+		
+		int mode = (old != null ? (old.intValue() + 1)%4:0);
 
 		playerBuildMode.put(var0, mode);
 
@@ -844,18 +821,14 @@ public class EEBase {
 
 	/** Toggle the watch mode */
 	public static void updateWatchCycle(EntityHuman human) {
-		if (TRUtil.checkAndBlock(human, "Disabler_WatchOfFlowingTime", "disabler.watch")) return;
-		/*HumanEntity bukkitEntity = human.getBukkitEntity();
-		boolean canUse = true;
-		if (bukkitEntity.hasMetadata("CanUseWatchOfFlowingTime")) canUse = bukkitEntity.getMetadata("CanUseWatchOfFlowingTime").get(0).asBoolean();
-		if (!canUse){
-			human.a("You dont have permission to use the Watch of Flowing Time.");
-			return;
-		}*/
 		Integer old = playerWatchCycle.get(human);
-		int mode = 0;
-		
-		if (old != null) mode = (old.intValue()+1)%3;
+		int mode = (old != null? (old.intValue() + 1)%3 : 0);
+
+		if (mode == 1){
+			if (EEEventManager.callEvent(new EEWOFTEvent(EEAction.RELEASE, human, EEWatchAction.TimeForward))) return;
+		} else if (mode == 2) {
+			if (EEEventManager.callEvent(new EEWOFTEvent(EEAction.RELEASE, human, EEWatchAction.TimeBackward))) return;
+		}
 		
 		 playerWatchCycle.put(human, mode);
 
