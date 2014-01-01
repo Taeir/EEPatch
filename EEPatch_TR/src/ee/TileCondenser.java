@@ -386,14 +386,14 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 	public boolean addItem(ItemStack item, boolean add, Orientations side) {
 		if (item == null) return false;
 		if (item.count > item.getMaxStackSize()) return false;
-		if (item.count > 64) return false;
+		if (item.count > 64 || item.count < 1) return false;
 		
 		if (side == Orientations.YPos && EEPatch.applySidePatch){
 			if (items[0] == null) {
 				if (add){
 					items[0] = item.cloneItemStack();
-					item.count = 0;
-					//while (item.count > 0) item.count--;
+					//item.count = 0;
+					while (item.count > 0) item.count--;
 				}
 				return true;
 			}
@@ -401,7 +401,6 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 				int max = items[0].getMaxStackSize();
 				if (max > 64) max = 64;
 				if (add){
-					
 					while (items[0].count < max && item.count > 0){
 						item.count--;
 						items[0].count++;
@@ -419,13 +418,15 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 			if (items[i] == null) {
 				if (add) {
 					items[i] = item.cloneItemStack();
-					item.count = 0;
+					while (item.count > 0) item.count--;
+					//item.count = 0;
 					if (items[i].count > items[i].getMaxStackSize()) items[i].count = items[i].getMaxStackSize();
 					if (items[i].count > 64) items[i].count = 64;
 					//while (item.count > 0) item.count--;
 				}
 				return true;
 			}
+			
 			if (!items[i].doMaterialsMatch(item) || items[i].count >= items[i].getMaxStackSize()) continue;
 			if (add) {
 				int max = items[i].getMaxStackSize();
@@ -434,10 +435,9 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 					item.count--;
 					items[i].count++;
 				}
-
-				if (item.count != 0) continue;
-			} else {
 				
+				if (item.count == 0) return true;
+			} else {
 				return true;
 			}
 		}

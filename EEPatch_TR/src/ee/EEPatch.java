@@ -14,7 +14,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import net.minecraft.server.EntityHuman;
 
 public class EEPatch {
-	public static final double version = 1.82;//1.8 Dev 2
+	public static double version = 1.9;//1.9
 	public static int alcBagAmount = 15;
 	public static boolean allowAlcBags = true;
 	public static boolean separateAlcBags = false;
@@ -43,6 +43,7 @@ public class EEPatch {
 		}
 		applySidePatch = props.getInt("EEPatch_ApplyCondenserSidePatch", 1) == 1;
 		transTableInterval = props.getInt("EEPatch_TransmutionTableInterval", 10);
+		if (transTableInterval < 1) transTableInterval = 1;
 
 		return props;
 	}

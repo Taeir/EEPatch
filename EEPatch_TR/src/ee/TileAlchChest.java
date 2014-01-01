@@ -786,7 +786,6 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 	@SuppressWarnings("null")
 	public void onBlockRemoval() {
 		for (HumanEntity h : this.getViewers()) h.closeInventory();
-		
 		removed = true;
 		for (int var1 = 0; var1 < getSize(); var1++) {
 			ItemStack var2 = getItem(var1);

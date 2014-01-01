@@ -25,6 +25,18 @@ public abstract class ItemEECharged extends ItemModEE
 	protected int weaponDamage;
 	private int maxCharge;
 	
+	protected ItemEECharged(int var1, int var2)
+	{
+		super(var1);
+		maxStackSize = 1;
+		maxCharge = var2;
+		if(var2 == 0)
+			setMaxDurability(0);
+		else
+			setMaxDurability(10 * var2 + 1 + (canActivate2() ? 2 : ((int) (canActivate() ? 1 : 0))) << 1 * (canActivate2() ? 2 : ((int) (canActivate() ? 1 : 0))));
+		weaponDamage = 1;
+	}
+	
 	public void ConsumeReagent(ItemStack var1, EntityHuman var2, boolean var3)
 	{
 		EEBase.ConsumeReagent(var1, var2, var3);
@@ -57,18 +69,6 @@ public abstract class ItemEECharged extends ItemModEE
 
 	/** Effect when you left click with this item. */
 	public void doLeftClick(ItemStack itemstack1, World world1, EntityHuman entityhuman1) {}
-
-	protected ItemEECharged(int var1, int var2)
-	{
-		super(var1);
-		maxStackSize = 1;
-		maxCharge = var2;
-		if(var2 == 0)
-			setMaxDurability(0);
-		else
-			setMaxDurability(10 * var2 + 1 + (canActivate2() ? 2 : ((int) (canActivate() ? 1 : 0))) << 1 * (canActivate2() ? 2 : ((int) (canActivate() ? 1 : 0))));
-		weaponDamage = 1;
-	}
 
 	public boolean isItemOut(ItemStack var1, EntityHuman var2)
 	{

@@ -5,6 +5,8 @@
 
 package ee;
 
+import org.bukkit.entity.HumanEntity;
+
 import buildcraft.api.ISpecialInventory;
 import buildcraft.api.Orientations;
 import ee.core.GuiIds;
@@ -42,6 +44,7 @@ public class TileCollector extends TileEE implements ISpecialInventory, ISidedIn
 
 	@SuppressWarnings("null")
 	public void onBlockRemoval() {
+		for (HumanEntity h : getViewers()) h.closeInventory();
 		for (int var1 = 0; var1 < getSize(); var1++) {
 			ItemStack var2 = getItem(var1);
 			if (var2 != null) {
@@ -120,7 +123,7 @@ public class TileCollector extends TileEE implements ISpecialInventory, ISidedIn
 
 			return false;
 		}
-		if (!EEBase.isKleinStar(var1.id) || items[0] != null) return false;
+		if (!EEBase.isKleinStar(var1) || items[0] != null) return false;
 		if (var2) {
 			items[0] = var1.cloneItemStack();
 			for (; var1.count > 0; var1.count--);
@@ -131,7 +134,7 @@ public class TileCollector extends TileEE implements ISpecialInventory, ISidedIn
 	public ItemStack extractItem(boolean var1, Orientations var2) {
 		for (int var3 = 0; var3 < items.length; var3++)
 			if (items[var3] != null && var3 != items.length - 1) if (var3 == 0) {
-				if (EEBase.isKleinStar(items[var3].id)) {
+				if (EEBase.isKleinStar(items[var3])) {
 					ItemStack var4 = items[var3].cloneItemStack();
 					if (var1) items[var3] = null;
 					return var4;
@@ -189,7 +192,7 @@ public class TileCollector extends TileEE implements ISpecialInventory, ISidedIn
 
 	public int getSunProgressScaled(int var1) {
 		return canUpgrade() ? getFuelDifference() > 0 ? (collectorSunTime * var1) / (getFuelDifference() * 80) <= 24 ? (collectorSunTime * var1)
-				/ (getFuelDifference() * 80) : 24 : items[0] == null || !EEBase.isKleinStar(items[0].id) ? 0 : 24 : 0;
+				/ (getFuelDifference() * 80) : 24 : items[0] == null || !EEBase.isKleinStar(items[0]) ? 0 : 24 : 0;
 	}
 
 	public boolean canUpgrade() {
@@ -211,7 +214,7 @@ public class TileCollector extends TileEE implements ISpecialInventory, ISidedIn
 			}
 		}
 		if (items[0] == null) return false;
-		if (EEBase.isKleinStar(items[0].id)) {
+		if (EEBase.isKleinStar(items[0])) {
 			if (EEBase.canIncreaseKleinStarPoints(items[0], world)) return true;
 			if (items[items.length - 2] == null) {
 				items[items.length - 2] = items[0].cloneItemStack();
@@ -304,9 +307,8 @@ public class TileCollector extends TileEE implements ISpecialInventory, ISidedIn
 					collectorSunTime += accumulate;
 					accumulate = 0;
 				}
-				if (EEBase.isKleinStar(items[0].id)) {
-					for (int var1 = getFactoredProduction() * EEBase.getKleinLevel(items[0].id); var1 > 0 && collectorSunTime >= 80
-							&& EEBase.addKleinStarPoints(items[0], 1, world); var1--)
+				if (EEBase.isKleinStar(items[0])) {
+					for (int var1 = getFactoredProduction() * ItemKleinStar.getLevel_s(items[0]); var1 > 0 && collectorSunTime >= 80 && EEBase.addKleinStarPoints(items[0], 1, world); var1--)
 						collectorSunTime -= 80;
 
 				} else {
@@ -397,7 +399,7 @@ public class TileCollector extends TileEE implements ISpecialInventory, ISidedIn
 
 			if (items[0] == null) return false;
 		}
-		if (EEBase.isKleinStar(items[0].id)) return true;
+		if (EEBase.isKleinStar(items[0])) return true;
 		if (getNextFuel(items[0]) == null) return false;
 		ItemStack var3 = getNextFuel(items[0]).cloneItemStack();
 		

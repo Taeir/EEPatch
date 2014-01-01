@@ -5,11 +5,12 @@
 
 package ee;
 
+import org.bukkit.entity.HumanEntity;
+
 import buildcraft.api.ISpecialInventory;
 import buildcraft.api.Orientations;
 import ee.core.GuiIds;
 import forge.ISidedInventory;
-
 import net.minecraft.server.*;
 
 // Referenced classes of package ee:
@@ -52,37 +53,30 @@ public class TileCollector2 extends TileEE
 	@SuppressWarnings("null")
 	public void onBlockRemoval()
 	{
-		for (int i = 0; i < getSize(); i++)
-		{
-			ItemStack itemstack = getItem(i);
-			if (itemstack != null)
-			{
-				float f = world.random.nextFloat() * 0.8F + 0.1F;
-				float f1 = world.random.nextFloat() * 0.8F + 0.1F;
-				float f2 = world.random.nextFloat() * 0.8F + 0.1F;
-				do
-				{
-					if (itemstack.count <= 0)
-						break;
-					int j = world.random.nextInt(21) + 10;
-					if (j > itemstack.count)
-						j = itemstack.count;
-					itemstack.count -= j;
-					EntityItem entityitem = new EntityItem(world, x + f, y + f1, z + f2, new ItemStack(itemstack.id, j, itemstack.getData()));
-					if (entityitem != null)
-					{
-						float f3 = 0.05F;
-						entityitem.motX = (float)world.random.nextGaussian() * f3;
-						entityitem.motY = (float)world.random.nextGaussian() * f3 + 0.2F;
-						entityitem.motZ = (float)world.random.nextGaussian() * f3;
-						if (entityitem.itemStack.getItem() instanceof ItemKleinStar)
-							((ItemKleinStar)entityitem.itemStack.getItem()).setKleinPoints(entityitem.itemStack, ((ItemKleinStar)itemstack.getItem()).getKleinPoints(itemstack));
-						world.addEntity(entityitem);
+		for (HumanEntity h : getViewers()) h.closeInventory();
+		for (int var1 = 0; var1 < getSize(); var1++) {
+			ItemStack var2 = getItem(var1);
+			if (var2 != null) {
+				float var3 = world.random.nextFloat() * 0.8F + 0.1F;
+				float var4 = world.random.nextFloat() * 0.8F + 0.1F;
+				float var5 = world.random.nextFloat() * 0.8F + 0.1F;
+				while (var2.count > 0) {
+					int var6 = world.random.nextInt(21) + 10;
+					if (var6 > var2.count) var6 = var2.count;
+					var2.count -= var6;
+					EntityItem var7 = new EntityItem(world, x + var3, y + var4, z + var5, new ItemStack(var2.id, var6, var2.getData()));
+					if (var7 != null) {
+						float var8 = 0.05F;
+						var7.motX = (float) world.random.nextGaussian() * var8;
+						var7.motY = (float) world.random.nextGaussian() * var8 + 0.2F;
+						var7.motZ = (float) world.random.nextGaussian() * var8;
+						if (var7.itemStack.getItem() instanceof ItemKleinStar)
+							((ItemKleinStar) var7.itemStack.getItem()).setKleinPoints(var7.itemStack, ((ItemKleinStar) var2.getItem()).getKleinPoints(var2));
+						world.addEntity(var7);
 					}
-				} while (true);
+				}
 			}
 		}
-
 	}
 
 	public int getMaxStackSize()
@@ -124,8 +118,7 @@ public class TileCollector2 extends TileEE
 
 	public boolean addItem(ItemStack var1, boolean var2, Orientations var3)
 	{
-		if (var1 == null)
-			return false;
+		if (var1 == null) return false;
 		if (EEMaps.isFuel(var1))
 		{
 			for (int var4 = 0; var4 <= items.length - 3; var4++)
@@ -154,7 +147,7 @@ public class TileCollector2 extends TileEE
 
 			return false;
 		}
-		if (!EEBase.isKleinStar(var1.id) || items[0] != null)
+		if (!EEBase.isKleinStar(var1) || items[0] != null)
 			return false;
 		if (var2)
 		{
@@ -170,7 +163,7 @@ public class TileCollector2 extends TileEE
 			if (items[i] != null && i != items.length - 1)
 				if (i == 0)
 				{
-					if (EEBase.isKleinStar(items[i].id))
+					if (EEBase.isKleinStar(items[i]))
 					{
 						ItemStack itemstack = items[i].cloneItemStack();
 						if (flag)
@@ -243,7 +236,7 @@ public class TileCollector2 extends TileEE
 		if (canUpgrade())
 		{
 			if (getFuelDifference() <= 0)
-				return items[0] != null && EEBase.isKleinStar(items[0].id) ? 24 : 0;
+				return items[0] != null && EEBase.isKleinStar(items[0]) ? 24 : 0;
 			if ((collectorSunTime * i) / (getFuelDifference() * 80) > 24)
 				return 24;
 			else
@@ -254,61 +247,42 @@ public class TileCollector2 extends TileEE
 		}
 	}
 
-	public boolean canUpgrade()
-	{
-		if (items[0] == null)
-		{
-			int i = items.length - 3;
-			do
-			{
-				if (i < 1)
-					break;
-				if (items[i] != null && (items[items.length - 1] == null || !items[i].doMaterialsMatch(items[items.length - 1])) && EEMaps.isFuel(items[i]) && items[i].getItem().id != EEItem.aeternalisFuel.id)
-				{
-					items[0] = items[i].cloneItemStack();
-					items[i] = null;
-					break;
-				}
-				i--;
-			} while (true);
-		}
-		if (items[0] == null)
-			if (items[items.length - 2] != null)
-			{
-				if (EEMaps.isFuel(items[items.length - 2]) && items[items.length - 2].getItem().id != EEItem.aeternalisFuel.id)
-				{
-					items[0] = items[items.length - 2].cloneItemStack();
-					items[items.length - 2] = null;
-				}
-			} else
-			{
-				return false;
+	public boolean canUpgrade() {
+		if (items[0] == null) {
+			for (int var1 = items.length - 3; var1 >= 1; var1--) {
+				if (items[var1] == null || items[items.length - 1] != null && items[var1].doMaterialsMatch(items[items.length - 1])
+						|| !EEMaps.isFuel(items[var1]) || items[var1].getItem().id == EEItem.aeternalisFuel.id) continue;
+				items[0] = items[var1].cloneItemStack();
+				items[var1] = null;
+				break;
 			}
-		if (items[0] == null)
-			return false;
-		if (EEBase.isKleinStar(items[0].id))
-		{
-			if (EEBase.canIncreaseKleinStarPoints(items[0], world))
-				return true;
-			if (items[items.length - 2] == null)
-			{
+
+		}
+		if (items[0] == null) {
+			if (items[items.length - 2] == null) return false;
+			if (EEMaps.isFuel(items[items.length - 2]) && items[items.length - 2].getItem().id != EEItem.aeternalisFuel.id) {
+				items[0] = items[items.length - 2].cloneItemStack();
+				items[items.length - 2] = null;
+			}
+		}
+		if (items[0] == null) return false;
+		if (EEBase.isKleinStar(items[0])) {
+			if (EEBase.canIncreaseKleinStarPoints(items[0], world)) return true;
+			if (items[items.length - 2] == null) {
 				items[items.length - 2] = items[0].cloneItemStack();
 				items[0] = null;
 				return false;
 			}
-			for (int j = 1; j <= items.length - 3; j++)
-				if (items[j] == null)
-				{
-					items[j] = items[items.length - 2].cloneItemStack();
+			for (int var1 = 1; var1 <= items.length - 3; var1++)
+				if (items[var1] == null) {
+					items[var1] = items[items.length - 2].cloneItemStack();
 					items[items.length - 2] = items[0].cloneItemStack();
 					items[0] = null;
 					return false;
 				}
 
 		}
-		if (items[0].getItem().id != EEItem.aeternalisFuel.id && EEMaps.isFuel(items[0]))
-			return true;
-		return items[0].getItem().id == EEItem.darkMatter.id;
+		return items[0].getItem().id == EEItem.aeternalisFuel.id || !EEMaps.isFuel(items[0]) ? items[0].getItem().id == EEItem.darkMatter.id : true;
 	}
 
 	public boolean receiveEnergy(int i, byte byte0, boolean flag)
@@ -384,57 +358,52 @@ public class TileCollector2 extends TileEE
 
 	public void q_()
 	{
-		if (clientFail())
-			return;
-		if (!world.isStatic)
+		if (clientFail() || world.isStatic) return;
+
+		if (collectorSunTime < 0) collectorSunTime = 0;
+		if (items[0] != null && (items[0].getItem() instanceof ItemKleinStar))
 		{
-			if (collectorSunTime < 0)
-				collectorSunTime = 0;
-			if (items[0] != null && (items[0].getItem() instanceof ItemKleinStar))
+			kleinProgressScaled = getKleinProgressScaled(48);
+			kleinPoints = getKleinPoints(items[0]);
+		}
+		sunTimeScaled = getSunTimeScaled(48);
+		currentFuelProgress = getSunProgressScaled(24);
+		currentSunStatus = getSunStatus(12);
+		isUsingPower = isUsingPower();
+		for (int i = items.length - 3; i >= 2; i--)
+			if (items[i] == null && items[i - 1] != null)
 			{
-				kleinProgressScaled = getKleinProgressScaled(48);
-				kleinPoints = getKleinPoints(items[0]);
+				items[i] = items[i - 1].cloneItemStack();
+				items[i - 1] = null;
 			}
-			sunTimeScaled = getSunTimeScaled(48);
-			currentFuelProgress = getSunProgressScaled(24);
-			currentSunStatus = getSunStatus(12);
-			isUsingPower = isUsingPower();
-			for (int i = items.length - 3; i >= 2; i--)
-				if (items[i] == null && items[i - 1] != null)
-				{
-					items[i] = items[i - 1].cloneItemStack();
-					items[i - 1] = null;
-				}
 
-			woftFactor = EEBase.getPedestalFactor(world) * EEBase.getPlayerWatchFactor();
-			if (isUsingPower())
+		woftFactor = EEBase.getPedestalFactor(world) * EEBase.getPlayerWatchFactor();
+		if (isUsingPower())
+		{
+			collectorSunTime += getFactoredProduction();
+			if (accumulate > 0)
 			{
-				collectorSunTime += getFactoredProduction();
-				if (accumulate > 0)
-				{
-					collectorSunTime += accumulate;
-					accumulate = 0;
-				}
-				if (EEBase.isKleinStar(items[0].id))
-				{
-					for (int j = getFactoredProduction() * EEBase.getKleinLevel(items[0].id); j > 0 && collectorSunTime >= 80 && EEBase.addKleinStarPoints(items[0], 1, world); j--)
-						collectorSunTime -= 80;
+				collectorSunTime += accumulate;
+				accumulate = 0;
+			}
+			if (EEBase.isKleinStar(items[0]))
+			{
+				for (int j = getFactoredProduction() * ItemKleinStar.getLevel_s(items[0]); j > 0 && collectorSunTime >= 80 && EEBase.addKleinStarPoints(items[0], 1, world); j--)
+					collectorSunTime -= 80;
 
-				} else
-				{
-					for (; getFuelDifference() > 0 && collectorSunTime >= getFuelDifference() * 80; uptierFuel())
-						collectorSunTime -= getFuelDifference() * 80;
-
-				}
 			} else
 			{
-				if (accumulate > 0)
-				{
-					collectorSunTime += accumulate;
-					accumulate = 0;
-				}
-				sendAllPackets(getFactoredProduction());
+				for (; getFuelDifference() > 0 && collectorSunTime >= getFuelDifference() * 80; uptierFuel())
+					collectorSunTime -= getFuelDifference() * 80;
+
 			}
+		} else {
+			if (accumulate > 0)
+			{
+				collectorSunTime += accumulate;
+				accumulate = 0;
+			}
+			sendAllPackets(getFactoredProduction());
 		}
 	}
 
@@ -516,182 +485,123 @@ public class TileCollector2 extends TileEE
 				if (i == EEItem.mobiusFuel.id)
 					return new ItemStack(EEItem.aeternalisFuel.id, 1, 0);
 			}
-		} else
-		if (EEMaps.isFuel(items[items.length - 1]))
-		{
+			return null;
+		} else if (EEMaps.isFuel(items[items.length - 1])) {
 			if (EEMaps.getEMC(i, j) < EEMaps.getEMC(items[items.length - 1].id, items[items.length - 1].getData()))
 				return items[items.length - 1];
 			else
 				return null;
-		} else
-		{
+		} else {
 			EntityItem entityitem = new EntityItem(world, x, y, z, items[items.length - 1].cloneItemStack());
 			items[items.length - 1] = null;
 			entityitem.pickupDelay = 10;
 			world.addEntity(entityitem);
 			return null;
 		}
-		return null;
 	}
 
-	private boolean canCollect()
-	{
-		if (items[0] == null)
-		{
-			int i = 1;
-			do
-			{
-				if (i > items.length - 3)
-					break;
-				if (items[i] != null && (items[items.length - 1] == null || items[items.length - 1] != null && items[items.length - 1].doMaterialsMatch(items[i])))
-				{
-					items[0] = items[i].cloneItemStack();
-					items[i] = null;
-					break;
-				}
-				i++;
-			} while (true);
-			if (items[0] == null)
-				return false;
+	private boolean canCollect() {
+		if (items[0] == null) {
+			for (int var1 = 1; var1 <= items.length - 3; var1++) {
+				if (items[var1] == null || items[items.length - 1] != null
+						&& (items[items.length - 1] == null || !items[items.length - 1].doMaterialsMatch(items[var1]))) continue;
+				items[0] = items[var1].cloneItemStack();
+				items[var1] = null;
+				break;
+			}
+
+			if (items[0] == null) return false;
 		}
-		if (EEBase.isKleinStar(items[0].id))
-			return true;
-		if (getNextFuel(items[0]) == null)
-			return false;
-		ItemStack itemstack = getNextFuel(items[0]).cloneItemStack();
-		if (items[items.length - 2] == null)
-			return true;
-		if (!items[items.length - 2].doMaterialsMatch(itemstack))
-		{
-label0:
-			for (int j = 1; j <= items.length - 3; j++)
-				if (items[j] != null)
-				{
-					if (!items[j].doMaterialsMatch(items[items.length - 2]))
-						continue;
-					do
-					{
-						if (items[items.length - 2] == null || items[j].count >= 64)
-							continue label0;
+		if (EEBase.isKleinStar(items[0])) return true;
+		if (getNextFuel(items[0]) == null) return false;
+		ItemStack var3 = getNextFuel(items[0]).cloneItemStack();
+		
+		if (items[items.length - 2] == null) return true;
+		if (!items[items.length - 2].doMaterialsMatch(var3)) {
+			for (int var2 = 1; var2 <= items.length - 3; var2++) {
+				if (items[var2] == null) {
+					items[var2] = items[items.length - 2].cloneItemStack();
+					items[items.length - 2] = null;
+					return true;
+				}
+				if (items[var2].doMaterialsMatch(items[items.length - 2])){
+					while (items[items.length - 2] != null && items[var2].count < 64) {
 						items[items.length - 2].count--;
-						items[j].count++;
-					} while (items[items.length - 2].count != 0);
-					items[items.length - 2] = null;
-					return true;
-				} else
-				{
-					items[j] = items[items.length - 2].cloneItemStack();
-					items[items.length - 2] = null;
-					return true;
+						items[var2].count++;
+						if (items[items.length - 2].count == 0) {
+							items[items.length - 2] = null;
+							return true;
+						}
+					}
 				}
+			}
 
 		}
-		if (items[items.length - 2] != null && !items[items.length - 2].doMaterialsMatch(itemstack))
-			return false;
-		if (items[items.length - 2].count < getMaxStackSize() && items[items.length - 2].count < items[items.length - 2].getMaxStackSize())
-			return true;
-		for (int k = 1; k <= items.length - 2; k++)
-			if (items[k] != null && (items[k].getItem().id == EEItem.mobiusFuel.id || items[items.length - 1] != null && items[k].doMaterialsMatch(items[items.length - 1])) && items[k].count >= items[k].getMaxStackSize() && tryDropInChest(new ItemStack(items[k].getItem(), items[k].count)))
-				items[k] = null;
+		if (items[items.length - 2] != null && !items[items.length - 2].doMaterialsMatch(var3)) return false;
+		if (items[items.length - 2].count < getMaxStackSize() && items[items.length - 2].count < items[items.length - 2].getMaxStackSize()) return true;
+		for (int var2 = 1; var2 <= items.length - 2; var2++)
+			if (items[var2] != null
+					&& (items[var2].getItem().id == EEItem.mobiusFuel.id || items[items.length - 1] != null
+							&& items[var2].doMaterialsMatch(items[items.length - 1])) && items[var2].count >= items[var2].getMaxStackSize()
+					&& tryDropInChest(new ItemStack(items[var2].getItem(), items[var2].count))) items[var2] = null;
 
-		if (items[items.length - 2] == null)
-			return true;
-label1:
-		for (int l = 1; l <= items.length - 3; l++)
-			if (items[l] != null)
-			{
-				if (!items[l].doMaterialsMatch(items[items.length - 2]))
-					continue;
-				do
-				{
-					if (items[items.length - 2] == null || items[l].count >= 64)
-						continue label1;
-					items[items.length - 2].count--;
-					items[l].count++;
-				} while (items[items.length - 2].count != 0);
-				items[items.length - 2] = null;
-				return true;
-			} else
-			{
-				items[l] = items[items.length - 2].cloneItemStack();
+		if (items[items.length - 2] == null) return true;
+		for (int var2 = 1; var2 <= items.length - 3; var2++) {
+			if (items[var2] == null) {
+				items[var2] = items[items.length - 2].cloneItemStack();
 				items[items.length - 2] = null;
 				return true;
 			}
+			if (items[var2].doMaterialsMatch(items[items.length - 2])) {
+				while (items[items.length - 2] != null && items[var2].count < 64) {
+					items[items.length - 2].count--;
+					items[var2].count++;
+					if (items[items.length - 2].count == 0) {
+						items[items.length - 2] = null;
+						return true;
+					}
+				}
+			}
+		}
 
-		return items[items.length - 2].count < itemstack.getMaxStackSize();
+		return items[items.length - 2].count < var3.getMaxStackSize();
 	}
 
-	public void uptierFuel()
-	{
-		if (!canCollect())
-			return;
-		if (getNextFuel(items[0]) == null)
-			return;
-		ItemStack itemstack = getNextFuel(items[0]).cloneItemStack();
-		itemstack.count = 1;
-		if (items[items.length - 2] == null)
-		{
-			if (items[items.length - 1] != null && itemstack.doMaterialsMatch(items[items.length - 1]) || itemstack.getItem() == EEItem.aeternalisFuel)
-			{
-				if (!tryDropInChest(itemstack))
-					items[items.length - 2] = itemstack.cloneItemStack();
-			} else
-			{
-				items[items.length - 2] = itemstack.cloneItemStack();
-			}
-		} else
-		if (items[items.length - 2].id == itemstack.id)
-		{
-			if (items[items.length - 2].count == itemstack.getMaxStackSize())
-			{
-				if (items[items.length - 2].getItem().id == EEItem.aeternalisFuel.id || items[items.length - 1] != null && items[items.length - 2].doMaterialsMatch(items[items.length - 1]))
-				{
-					if (tryDropInChest(items[items.length - 2].cloneItemStack()))
-						items[items.length - 2] = null;
-				} else
-				{
-					int i = 1;
-					do
-					{
-						if (i > items.length - 3)
-							break;
-						if (items[i] == null)
-						{
-							items[i] = items[items.length - 2].cloneItemStack();
-							items[items.length - 2] = null;
-							break;
+	public void uptierFuel() {
+		if (canCollect() && getNextFuel(items[0]) != null) {
+			ItemStack var1 = getNextFuel(items[0]).cloneItemStack();
+			var1.count = 1;
+			if (items[items.length - 2] == null) {
+				if ((items[items.length - 1] == null || !var1.doMaterialsMatch(items[items.length - 1])) && var1.getItem() != EEItem.aeternalisFuel) items[items.length - 2] = var1
+						.cloneItemStack();
+				else if (!tryDropInChest(var1)) items[items.length - 2] = var1.cloneItemStack();
+			} else if (items[items.length - 2].id == var1.id) {
+				if (items[items.length - 2].count == var1.getMaxStackSize()) {
+					if (items[items.length - 2].getItem().id != EEItem.aeternalisFuel.id
+							&& (items[items.length - 1] == null || !items[items.length - 2].doMaterialsMatch(items[items.length - 1]))) {
+						for (int var2 = 1; var2 <= items.length - 3; var2++) {
+							if (items[var2] == null) {
+								items[var2] = items[items.length - 2].cloneItemStack();
+								items[items.length - 2] = null;
+								break;
+							}
+							if (items[var2].doMaterialsMatch(items[items.length - 2]))
+								while (items[var2].count < items[var2].getMaxStackSize() && items[items.length - 2] != null) {
+									items[items.length - 2].count--;
+									items[var2].count++;
+									if (items[items.length - 2].count == 0) items[items.length - 2] = null;
+								}
 						}
-						if (items[i].doMaterialsMatch(items[items.length - 2]))
-							do
-							{
-								if (items[i].count >= items[i].getMaxStackSize() || items[items.length - 2] == null)
-									break;
-								items[items.length - 2].count--;
-								items[i].count++;
-								if (items[items.length - 2].count == 0)
-									items[items.length - 2] = null;
-							} while (true);
-						i++;
-					} while (true);
-				}
-			} else
-			if (items[items.length - 1] != null && itemstack.doMaterialsMatch(items[items.length - 1]) || itemstack.getItem() == EEItem.aeternalisFuel)
-			{
-				if (!tryDropInChest(itemstack))
-					items[items.length - 2].count += itemstack.count;
-			} else
-			{
-				items[items.length - 2].count += itemstack.count;
-			}
-		} else
-		if ((items[items.length - 1] != null && itemstack.doMaterialsMatch(items[items.length - 1]) || itemstack.getItem() == EEItem.aeternalisFuel) && tryDropInChest(items[items.length - 2].cloneItemStack()))
-			items[items.length - 2] = null;
-		if (items[0].getItem().k())
-			items[0] = new ItemStack(items[0].getItem().j());
-		else
-			items[0].count--;
-		if (items[0].count <= 0)
-			items[0] = null;
+
+					} else if (tryDropInChest(items[items.length - 2].cloneItemStack())) items[items.length - 2] = null;
+				} else if ((items[items.length - 1] == null || !var1.doMaterialsMatch(items[items.length - 1])) && var1.getItem() != EEItem.aeternalisFuel) items[items.length - 2].count += var1.count;
+				else if (!tryDropInChest(var1)) items[items.length - 2].count += var1.count;
+			} else if ((items[items.length - 1] != null && var1.doMaterialsMatch(items[items.length - 1]) || var1.getItem() == EEItem.aeternalisFuel)
+					&& tryDropInChest(items[items.length - 2].cloneItemStack())) items[items.length - 2] = null;
+			if (items[0].getItem().k()) items[0] = new ItemStack(items[0].getItem().j());
+			else items[0].count--;
+			if (items[0].count <= 0) items[0] = null;
+		}
 	}
 
 	public void f()

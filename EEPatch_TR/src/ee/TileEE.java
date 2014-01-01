@@ -103,7 +103,6 @@ public class TileEE extends TileEntity {
 		else if (isChest(var2 = EEPBase.getTileEntity2(world, x, y, z + 1, false))) return putInChest(var2, var1);
 		else if (isChest(var2 = EEPBase.getTileEntity2(world, x, y, z - 1, false))) return putInChest(var2, var1);
 		else return false;
-
 	}
 
 	private boolean isChest(TileEntity var1) {

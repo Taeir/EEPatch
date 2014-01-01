@@ -153,7 +153,7 @@ public class ItemMercurialEye extends ItemEECharged {
 
 		if ((eyedata.getItem(0) != null) && (eyedata.getItem(1) != null)) {
 			if (EEMaps.getEMC(eyedata.getItem(1)) == 0) return false;
-			if (!EEBase.isKleinStar(eyedata.getItem(0).id)) return false;
+			if (!EEBase.isKleinStar(eyedata.getItem(0))) return false;
 			if (eyedata.getItem(1).id >= Block.byId.length) return false;
 
 			if (Block.byId[world.getTypeId(x, y, z)].hasTileEntity(world.getData(x, y, z))) {

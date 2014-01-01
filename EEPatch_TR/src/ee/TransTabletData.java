@@ -39,6 +39,7 @@ public class TransTabletData extends WorldMapBase implements IInventory {
 	}
 
 	public void onUpdate(World var1, EntityHuman var2) {
+		System.out.println("Update");
 		if (EEProxy.isClient(var1)) return;
 		if (player == null) player = var2;
 
@@ -94,7 +95,17 @@ public class TransTabletData extends WorldMapBase implements IInventory {
 		return var1;
 	}
 
+	private int lastEmc, lastId;
 	public void displayResults(int var1) {
+		//clear grid
+		if (lastEmc == var1) return;
+		int newid;
+		if (lastId == (newid= (items[9] == null?0:items[9].id))) return;
+		lastEmc = var1;
+		lastId = newid;
+		for (int var2 = 10; var2 < items.length; var2++){
+			items[var2] = null;
+		}
 		for (int var2 = 10; var2 < items.length; var2++) {
 			if (items[var2] != null && (var1 < EEMaps.getEMC(items[var2]) || !matchesLock(items[var2]) || isOnGridBut(items[var2], var2) || target() != null && EEMaps.getEMC(items[var2]) > targetEMC())) {
 				items[var2] = null;
@@ -112,7 +123,7 @@ public class TransTabletData extends WorldMapBase implements IInventory {
 				if (Item.byId[var3] == null) continue;
 				int var4 = EEMaps.getMeta(var3);
 
-				for (int var5 = 0; var5 <= var4; ++var5) {
+				for (int var5 = 0; var5 <= var4; var5++) {
 					ItemStack var6 = new ItemStack(var3, 1, var5);
 
 					if (isOnGrid(var6) || !matchesLock(var6)) continue;
@@ -128,6 +139,17 @@ public class TransTabletData extends WorldMapBase implements IInventory {
 
 		update();
 	}
+	
+	public void quickCalculateEMC(){
+		int var1 = 0;
+		for (int var3 = 0; var3 < 8; var3++) {
+			ItemStack itemstack = items[var3];
+			if (itemstack == null) continue;
+			if (!(itemstack.getItem() instanceof ItemKleinStar))
+					var1 += EEMaps.getEMC(itemstack);
+		}
+		currentEnergy = var1;
+	}
 
 	public void calculateEMC() {
 		int var1 = 0;
@@ -138,14 +160,10 @@ public class TransTabletData extends WorldMapBase implements IInventory {
 			if (itemstack == null) continue;
 			
 			int emc = EEMaps.getEMC(itemstack);
-			if (emc == 0 && !EEBase.isKleinStar(itemstack.id)) {
+			if (emc == 0 && !EEBase.isKleinStar(itemstack)) {
 				rejectItem(var3);
-			} else if (EEBase.isKleinStar(itemstack.id)) {
+			} else if (EEBase.isKleinStar(itemstack)) {
 				if (!playerKnows(itemstack.id, itemstack.getData()) && emc > 0) {
-					if (itemstack.id == EEItem.alchemyTome.id) {
-						pushTome();
-					}
-
 					pushKnowledge(itemstack.id, itemstack.getData());
 					learned = 60;
 				}
@@ -453,7 +471,9 @@ public class TransTabletData extends WorldMapBase implements IInventory {
 		return items;
 	}
 
-	public void onOpen(CraftHumanEntity who) {}
+	public void onOpen(CraftHumanEntity who) {
+		
+	}
 
 	public void onClose(CraftHumanEntity who) {}
 

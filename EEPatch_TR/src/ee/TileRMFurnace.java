@@ -34,7 +34,6 @@ public class TileRMFurnace extends TileEE implements ISpecialInventory, ISidedIn
 	public void onBlockRemoval()
 	{
 		for (HumanEntity h : getViewers()) h.closeInventory();
-		
 		for(int var1 = 0; var1 < getSize(); var1++)
 		{
 			ItemStack var2 = getItem(var1);
@@ -316,13 +315,13 @@ public class TileRMFurnace extends TileEE implements ISpecialInventory, ISidedIn
 				{
 					doUpdate = true;
 					notifyWorld = true;
-					if(items[0] != null && !EEBase.isKleinStar(items[0].id)) {
+					if(items[0] != null && !EEBase.isKleinStar(items[0])) {
 						if(items[0].getItem().k())
 							items[0] = new ItemStack(items[0].getItem().j());
 						else
 							items[0].count--;
 						
-						if(items[0].count == 0) items[0] = null;
+						if(items[0].count <= 0) items[0] = null;
 					}
 				}
 			}

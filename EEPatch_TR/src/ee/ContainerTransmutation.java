@@ -76,6 +76,10 @@ public class ContainerTransmutation extends Container {
 		return transGrid;
 	}
 
+	/**
+	 * Does not appear to be called.
+	 * @see net.minecraft.server.Container#setItem(int, net.minecraft.server.ItemStack)
+	 */
 	public void setItem(int var1, ItemStack var2) {
 		super.setItem(var1, var2);
 
@@ -90,6 +94,11 @@ public class ContainerTransmutation extends Container {
 		a(transGrid);
 	}
 
+	
+	/**
+	 * Called when the inventory is opened.
+	 * @see net.minecraft.server.Container#a(net.minecraft.server.IInventory)
+	 */
 	public void a(IInventory var1) {
 		a();
 		if (!EEProxy.isClient(EEProxy.theWorld)) {
@@ -98,7 +107,10 @@ public class ContainerTransmutation extends Container {
 		}
 	}
 
+
 	public void a() {
+		//Random r = new Random();
+		//if (r.nextInt(21)!=20) return;
 		super.a();
 
 		for (int var1 = 0; var1 < listeners.size(); var1++) {
@@ -136,6 +148,10 @@ public class ContainerTransmutation extends Container {
 		initialized = true;
 	}
 
+	
+	/**
+	 * Client side only
+	 */
 	public void updateProgressBar(int var1, int var2) {
 		if (var1 == 0) transGrid.latentEnergy = transGrid.latentEnergy & 0xFFFF0000 | var2;
 		else if (var1 == 1) transGrid.latentEnergy = transGrid.latentEnergy & 0xFFFF | var2 << 16;
@@ -155,6 +171,10 @@ public class ContainerTransmutation extends Container {
 		}
 	}
 
+	/**
+	 * Can interact with
+	 * @see net.minecraft.server.Container#b(net.minecraft.server.EntityHuman)
+	 */
 	public boolean b(EntityHuman var1) {
 		return true;
 	}
@@ -164,6 +184,7 @@ public class ContainerTransmutation extends Container {
 	 * @see net.minecraft.server.Container#a(net.minecraft.server.EntityHuman)
 	 */
 	public void a(EntityHuman var1) {
+		
 		super.a(var1);
 		EEBase.closeTransGrid(player);
 		
@@ -177,277 +198,334 @@ public class ContainerTransmutation extends Container {
 		}
 		
 	}
+	
+	/**
+	 * merges provided ItemStack with the first available one in the container/player inventory
+	 * @param flag If false, goes from i to j, if true, goes from j to i.
+	 * @return If the item was successfully put in one of the given slots.
+	 * @see net.minecraft.server.Container#a(net.minecraft.server.ItemStack, int, int, boolean)
+	 */
+	protected boolean a(ItemStack itemstack, int i, int j, boolean flag){
+		return super.a(itemstack, i, j, flag);
+	}
 
+	/**
+	 * For shift clicking
+	 * @return The item obtained from the clicked slot.
+	 * @see net.minecraft.server.Container#a(int)
+	 */
 	public ItemStack a(int slotNr) {
 		Slot slot = (Slot) e.get(slotNr);
 		if (slot == null) return null;
 		
-		ItemStack var2 = null;
-		ItemStack var4 = null;
+		ItemStack item = slot.getItem();
+		if (item == null) return null;//if slot has no item, return no item.
+		
+		ItemStack cloneOfItemInOutputSlot = null;
 
-		if (slotNr > 9 && slotNr < 26 && slot.c()) {//output
-			var4 = slot.getItem().cloneItemStack();
+		if (slotNr > 9 && slotNr < 26) {//output slots
+			cloneOfItemInOutputSlot = item.cloneItemStack();
 		}
 
-		if (slot.c()) {
-			ItemStack item = slot.getItem();
-			var2 = item.cloneItemStack();
+		ItemStack tbr = item.cloneItemStack();
 
-			if (slotNr <= 8) {//Input
-				if (!a(item, 26, 62, true)) {
-					slot.set(null);
-				}
-			} else if (slotNr > 9 && slotNr < 26) {
-				if (!grabResult(item, slot, 26, 62, false)) {
-					slot.set(null);
-				}
-			} else if (slotNr >= 26 && slotNr < 62) {
-				if ((EEMaps.getEMC(item) > 0 || EEBase.isKleinStar(item.id)) && !a(item, 0, 8, false)) {
-					if (item.count <= 0) {
-						slot.set(null);
-					}
-
-					return null;
-				}
-			} else if (!a(item, 26, 62, false)) {
+		//if shiftclicking on InputSlot
+		if (slotNr <= 8) {
+			//if there is no spot free in the inventory, set the slot to null
+			if (!a(item, 26, 62, true)) {//from hotbar to rest of inventory
+				slot.set(null);//item becomes null
+			}
+		}
+		//output slots
+		else if (slotNr > 9 && slotNr < 26) {
+			//if the item cannot be put into the inventory of the player, STILL set it to null.
+			if (!grabResult(item, slot, 26, 62, false)) {//if the player cannot take this item right now, set the contents of the slot to null (item disappears on shift click with full inventory)
+				slot.set(null);
+			}
+			
+			//FIXME should it not return null here? Item in slot is set to null, player was not allowed to grab this item.
+		}
+		//Handles clicks from the player inventory into the given slot, for shift clicks.
+		else if (slotNr >= 26 && slotNr < 62) {//player inventory slots
+			if ((EEMaps.getEMC(item) > 0 || EEBase.isKleinStar(item)) && !a(item, 0, 8, false)) {//if has emc and cannot merge with input slots
 				if (item.count <= 0) {
 					slot.set(null);
 				}
 
 				return null;
 			}
-
+		}
+		//if slot == 9 or not available, return nothing
+		else if (!a(item, 26, 62, false)) {
 			if (item.count <= 0) {
-				if (slotNr > 9 && slotNr < 26) {
-					item.count = 1;
-				} else {
-					slot.set(null);
-				}
-			} else {
-				slot.d();
+				slot.set(null);
 			}
 
-			if (item.count == var2.count) {
-				if (slotNr > 9 && slotNr < 26 && var4 != null) {
-					return var4;
-				}
-
-				return null;
-			}
-
-			if (slotNr > 9 && slotNr < 26 && transGrid.latentEnergy + transGrid.currentEnergy < EEMaps.getEMC(item)) {
-				return null;
-			}
-
-			slot.c(item);
-		}
-
-		if (var4 != null && slotNr > 9 && slotNr < 26) {
-			slot.set(var4);
-		}
-
-		return var2;
-	}
-
-	/**
-	 * @param var1 The item the player is taking
-	 * @param slot The slot
-	 * @param var3
-	 * @param var4
-	 * @param var5
-	 * @return
-	 */
-	protected boolean grabResult(ItemStack var1, Slot slot, int var3, int var4, boolean var5) {
-		if (transGrid.latentEnergy + transGrid.currentEnergy < EEMaps.getEMC(var1)) return false;
-
-		slot.c(var1);
-		boolean var6 = false;
-		int var7 = var3;
-
-		if (var5) {
-			var7 = var4 - 1;
-		}
-
-		if (var1.isStackable()) {
-			while (var1.count > 0 && ((!var5 && var7 < var4) || (var5 && var7 >= var3))) {
-				Slot var8 = (Slot) e.get(var7);
-				ItemStack var9 = var8.getItem();
-
-				if (var9 != null && var9.id == var1.id && (!var1.usesData() || var1.getData() == var9.getData()) && ItemStack.equals(var1, var9)) {
-					int var10 = var9.count + var1.count;
-
-					if (var10 <= var1.getMaxStackSize()) {
-						var1.count = 0;
-						var9.count = var10;
-						var8.d();
-						var6 = true;
-					} else if (var9.count < var1.getMaxStackSize()) {
-						var1.count -= var1.getMaxStackSize() - var9.count;
-						var9.count = var1.getMaxStackSize();
-						var8.d();
-						var6 = true;
-					}
-				}
-
-				if (var5) {
-					var7--;
-				} else {
-					var7++;
-				}
-			}
-		}
-
-		if (var1.count > 0) {
-			int var11;
-			if (var5) {
-				var11 = var4 - 1;
-			} else {
-				var11 = var3;
-			}
-
-			while ((!var5 && var11 < var4) || (var5 && var11 >= var3)) {
-				Slot var12 = (Slot) e.get(var11);
-				ItemStack var13 = var12.getItem();
-
-				if (var13 == null) {
-					var12.set(var1.cloneItemStack());
-					var12.d();
-					var1.count = 0;
-					var6 = true;
-					break;
-				}
-
-				if (var5) {
-					var11--;
-				} else {
-					var11++;
-				}
-			}
-		}
-
-		var1.count = 1;
-		return var6;
-	}
-
-	public ItemStack clickItem(int var1, int var2, boolean var3, EntityHuman human) {
-		ItemStack var5 = null;
-
-		if (var2 > 1) {
 			return null;
 		}
 
-		if (var2 == 0 || var2 == 1) {
-			PlayerInventory var6 = human.inventory;
+		if (item.count <= 0) {
+			if (slotNr > 9 && slotNr < 26) {//output slots
+				item.count = 1;//sets count back to 1 whenever item is taken out. - FIXME dupe can happen here
+			} else {
+				slot.set(null);
+			}
+		} else {
+			slot.d();//update slot
+		}
+		
+		if (slotNr < 26) transGrid.calculateEMC();
 
-			if (var1 == -999) {
-				if (var6.getCarried() != null && var1 == -999) {
-					if (var2 == 0) {
-						human.drop(var6.getCarried());
-						var6.setCarried(null);
-					}
+		if (item.count == tbr.count) {//if the item was unchanged
+			if (slotNr > 9 && slotNr < 26 && cloneOfItemInOutputSlot != null) {
+				return cloneOfItemInOutputSlot;
+			}
 
-					if (var2 == 1) {
-						human.drop(var6.getCarried().a(1));
+			return null;
+		}
 
-						if (var6.getCarried().count == 0) {
-							var6.setCarried(null);
-						}
+		if (slotNr > 9 && slotNr < 26 && transGrid.latentEnergy + transGrid.currentEnergy < EEMaps.getEMC(item)) {
+			return null;
+		}
+
+		slot.c(item);
+		
+
+		if (cloneOfItemInOutputSlot != null && slotNr > 9 && slotNr < 26) {
+			slot.set(cloneOfItemInOutputSlot);
+		}
+
+		return tbr;
+	}
+
+	/**
+	 * @param item The item the player is taking
+	 * @param slot The slot
+	 * @param i 
+	 * @param j
+	 * @param reversed If true, looks from j to i instead of from i to j.
+	 * @return If the item was successfully put away in a slot between i and j
+	 */
+	protected boolean grabResult(ItemStack item, Slot slot, int i, int j, boolean reversed) {
+		if (transGrid.latentEnergy + transGrid.currentEnergy < EEMaps.getEMC(item)) return false;
+
+		slot.c(item);//update slot
+		boolean flag = false;
+		int k = i;
+
+		if (reversed) {
+			k = j - 1;
+		}
+
+		//Tries to find places to stack the item
+		if (item.isStackable()) {
+			while (item.count > 0 && ((!reversed && k < j) || (reversed && k >= i))) {
+				Slot curSlot = (Slot) e.get(k);
+				ItemStack curItem = curSlot.getItem();
+
+				if (curItem != null && curItem.id == item.id && (!item.usesData() || item.getData() == curItem.getData()) && ItemStack.equals(item, curItem)) {//if the current item is the same as the given item
+					int amount = curItem.count + item.count;
+
+					if (amount <= item.getMaxStackSize()) {
+						item.count = 0;//set inputitem count to 0 (breaks loop)
+						curItem.count = amount;//The item in the slot is 
+						curSlot.d();//update
+						flag = true;
+					} else if (curItem.count < item.getMaxStackSize()) {
+						item.count -= item.getMaxStackSize() - curItem.count;
+						curItem.count = item.getMaxStackSize();
+						curSlot.d();//update
+						flag = true;
 					}
 				}
-			} else if (var3) {
-				ItemStack var7 = a(var1);
+
+				if (reversed) {
+					k--;
+				} else {
+					k++;
+				}
+			}
+		}
+
+		//Tries to find an empty spot to put the item
+		if (item.count > 0) {
+			int k2;
+			if (reversed) {
+				k2 = j - 1;
+			} else {
+				k2 = i;
+			}
+
+			while ((!reversed && k2 < j) || (reversed && k2 >= i)) {
+				Slot curSlot = (Slot) e.get(k2);
+				ItemStack curItem = curSlot.getItem();
+
+				if (curItem == null) {
+					curSlot.set(item.cloneItemStack());
+					curSlot.d();//update
+					item.count = 0;
+					flag = true;
+					break;
+				}
+
+				if (reversed) {
+					k2--;
+				} else {
+					k2++;
+				}
+			}
+		}
+
+		item.count = 1;
+		return flag;
+	}
+
+	/**
+	 * @param clickType 0 = left click, 1 = right click, 2 = middle mouse
+	 * @see net.minecraft.server.Container#clickItem(int, int, boolean, net.minecraft.server.EntityHuman)
+	 * Container.slotClick(int, int, boolean, human) <br>(Container.clickItem(int, int, boolean, human))
+	 */
+	public ItemStack clickItem(int slotNr, int clickType, boolean shift, EntityHuman human) {
+		ItemStack var5 = null;
+		if (clickType > 1) {
+			return null;
+		}
+
+		if (clickType == 0 || clickType == 1) {
+			PlayerInventory inventory = human.inventory;
+
+			if (slotNr == -999) {
+				if (inventory.getCarried() != null) {
+					if (clickType == 0) {
+						human.drop(inventory.getCarried());
+						inventory.setCarried(null);
+					}
+
+					if (clickType == 1) {
+						human.drop(inventory.getCarried().a(1));//takes one of the stack being held
+
+						if (inventory.getCarried().count == 0) inventory.setCarried(null);
+						
+					}
+				}
+			} else if (shift) {
+				ItemStack var7 = a(slotNr);
 
 				if (var7 != null) {
 					int var8 = var7.id;
 					var5 = var7.cloneItemStack();
-					Slot slot = (Slot) e.get(var1);
-
+					Slot slot = (Slot) e.get(slotNr);
+					
 					if (slot != null && slot.getItem() != null && slot.getItem().id == var8 && slot.getItem().isStackable()) {
-						retrySlotClick(var1, var2, 1, slot.getItem().getMaxStackSize(), var3, human);
+						retrySlotClick(slotNr, clickType, 1, slot.getItem().getMaxStackSize(), shift, human);
 					}
 				}
 			} else {
-				if (var1 < 0) {
-					return null;
-				}
+				if (slotNr < 0) return null;
 
-				Slot slot = (Slot) e.get(var1);
+				Slot slot = (Slot) e.get(slotNr);
 
 				if (slot != null) {
 					slot.d();
-					ItemStack var13 = slot.getItem();
-					ItemStack var14 = var6.getCarried();
+					ItemStack currentItem = slot.getItem();
+					ItemStack heldItem = inventory.getCarried();
 
-					if (var13 != null) {
-						var5 = var13.cloneItemStack();
+					if (currentItem != null) {
+						var5 = currentItem.cloneItemStack();
 					}
 
-					if (var13 == null) {
-						if (var14 != null && slot.isAllowed(var14)) {
-							int var10 = var2 != 0 ? 1 : var14.count;
+					if (currentItem == null) {//if there is nothing in the slot yet.
+						//putting in an item
+						if (heldItem != null && slot.isAllowed(heldItem)) {
+							int amount = (clickType == 0 ? heldItem.count : 1);
 
-							if (var10 > slot.a()) {
-								var10 = slot.a();
-							}
+							if (amount > slot.a()) amount = slot.a();//if bigger than the max stack size, amount is the max stack size.
+							
+							slot.set(heldItem.a(amount));//set the contents of the slot to what was taken from the held item.
 
-							slot.set(var14.a(var10));
-
-							if (var14.count == 0) {
-								var6.setCarried(null);
+							if (heldItem.count == 0) {
+								inventory.setCarried(null);
 							}
 						}
-					} else if (var14 == null) {
-						int var10 = var2 != 0 ? (var13.count + 1) / 2 : var13.count;
-						ItemStack var11 = slot.a(var10);
-						var6.setCarried(var11);
-
-						if (var1 >= 10 && var1 <= 25) {
-							slot.set(new ItemStack(var11.id, 1, var11.getData()));
-						} else if (var13.count == 0) {
-							slot.set(null);
+					}
+					//If nothing is being held (taking out an item) AND there is something in the clicked slot
+					else if (heldItem == null) {
+						if (slotNr < 10 || slotNr > 25 || transGrid.latentEnergy + transGrid.currentEnergy >= EEMaps.getEMC(currentItem)){
+							int amount = (clickType == 0 ? currentItem.count : (currentItem.count + 1) / 2);
+							ItemStack var11 = slot.a(amount);//take amount from the clicked slot
+							inventory.setCarried(var11);//put it in hand
+	
+							if (slotNr >= 10 && slotNr <= 25) {//if one of the output slots
+								slot.set(new ItemStack(var11.id, 1, var11.getData()));//set new stack in output slot - FIXME dupe can happen here
+							} else if (currentItem.count == 0) {
+								slot.set(null);
+							}
+	
+							slot.c(inventory.getCarried());//update
 						}
+					}
+					//if input or inventory slot (!output slots)
+					else if (slot.isAllowed(heldItem)) {
+						//if the stacks match, merge them
+						if (currentItem.id == heldItem.id && (!currentItem.usesData() || currentItem.getData() == heldItem.getData()) && ItemStack.equals(currentItem, heldItem)) {
+							int amount = (clickType == 0 ? heldItem.count : 1);
 
-						slot.c(var6.getCarried());
-					} else if (slot.isAllowed(var14)) {
-						if (var13.id == var14.id && (!var13.usesData() || var13.getData() == var14.getData()) && ItemStack.equals(var13, var14)) {
-							int var10 = var2 != 0 ? 1 : var14.count;
-
-							if (var10 > slot.a() - var13.count) {
-								var10 = slot.a() - var13.count;
+							//if it doesnt fit, make it fit
+							if (amount > slot.a() - currentItem.count) {
+								amount = slot.a() - currentItem.count;
 							}
 
-							if (var10 > var14.getMaxStackSize() - var13.count) {
-								var10 = var14.getMaxStackSize() - var13.count;
+							if (amount > heldItem.getMaxStackSize() - currentItem.count) {
+								amount = heldItem.getMaxStackSize() - currentItem.count;
 							}
 
-							var14.a(var10);
+							heldItem.a(amount);
 
-							if (var14.count == 0) {
-								var6.setCarried(null);
+							if (heldItem.count == 0) {
+								inventory.setCarried(null);
 							}
 
-							var13.count += var10;
-						} else if (var14.count <= slot.a()) {
-							slot.set(var14);
-							var6.setCarried(var13);
+							currentItem.count += amount;
 						}
-					} else if (var13.id == var14.id && var14.getMaxStackSize() > 1 && (!var13.usesData() || var13.getData() == var14.getData())
-							&& ItemStack.equals(var13, var14)) {
-						int var10 = var13.count;
-
-						if (var10 > 0 && var10 + var14.count <= var14.getMaxStackSize()) {
-							var14.count += var10;
-
-							if (var1 < 10 || var1 > 25) {
-								var13.a(var10);
-
-								if (var13.count == 0) {
-									slot.set(null);
+						//if they dont match, swap them.
+						else if (heldItem.count <= slot.a()) {
+							slot.set(heldItem);
+							inventory.setCarried(currentItem);
+						}
+					}
+					//if not allowed to put the item in that slot AND they match (if you put it in output slot)
+					else if (currentItem.id == heldItem.id && heldItem.getMaxStackSize() > 1 && (!currentItem.usesData() || currentItem.getData() == heldItem.getData()) && ItemStack.equals(currentItem, heldItem)) {
+						int amount = currentItem.count;
+						
+						if (amount > 0 && amount + heldItem.count <= heldItem.getMaxStackSize()) {
+							if (slotNr < 10 || slotNr > 25 || transGrid.latentEnergy + transGrid.currentEnergy >= EEMaps.getEMC(currentItem)){
+								heldItem.count += amount;
+								
+								if (slotNr < 10 || slotNr > 25) {
+									currentItem.a(amount);
+	
+									if (currentItem.count == 0) {
+										slot.set(null);
+									}
 								}
+								
+								slot.c(inventory.getCarried());
 							}
-
-							slot.c(var6.getCarried());
 						}
+					}
+					if (slotNr < 26){
+						
+						
+						//if (var5 != null){
+							
+
+							if (transGrid.currentEnergy == 0) transGrid.unlock();
+							
+							transGrid.calculateEMC();
+							//transGrid.displayResults(transGrid.currentEnergy + transGrid.latentEnergy);
+							//transGrid.displayResultsNoUpdate(transGrid.currentEnergy + transGrid.latentEnergy);
+						//}
+						
 					}
 				}
 			}
@@ -456,30 +534,30 @@ public class ContainerTransmutation extends Container {
 		return var5;
 	}
 
-	protected void retrySlotClick(int var1, int var2, int var3, int var4, boolean var5, EntityHuman var6) {
-		if (var3 < var4) {
+	protected void retrySlotClick(int slotNr, int clickType, int var3, int maxStackSize, boolean shift, EntityHuman human) {
+		if (var3 < maxStackSize) {
 			var3++;
-			slotClick(var1, var2, var3, var4, var5, var6);
+			slotClick(slotNr, clickType, var3, maxStackSize, shift, human);
 		}
 	}
 
-	public ItemStack slotClick(int slotNr, int var2, int var3, int var4, boolean var5, EntityHuman human) {
+	
+	public ItemStack slotClick(int slotNr, int clickType, int var3, int maxStackSize, boolean shift, EntityHuman human) {
 		ItemStack var7 = null;
 
-		if (var2 > 1) return null;
+		if (clickType > 1) return null;
 		
-
-		if (var2 == 0 || var2 == 1) {
+		if (clickType == 0 || clickType == 1) {
 			PlayerInventory inv = human.inventory;
 
 			if (slotNr == -999) {
 				if (inv.getCarried() != null && slotNr == -999) {
-					if (var2 == 0) {
+					if (clickType == 0) {
 						human.drop(inv.getCarried());
 						inv.setCarried(null);
 					}
 
-					if (var2 == 1) {
+					if (clickType == 1) {
 						human.drop(inv.getCarried().a(1));
 
 						if (inv.getCarried().count == 0) {
@@ -487,7 +565,7 @@ public class ContainerTransmutation extends Container {
 						}
 					}
 				}
-			} else if (var5) {
+			} else if (shift) {
 				ItemStack var9 = a(slotNr);
 
 				if (var9 != null) {
@@ -496,7 +574,7 @@ public class ContainerTransmutation extends Container {
 					Slot var11 = (Slot) e.get(slotNr);
 
 					if (var11 != null && var11.getItem() != null && var11.getItem().id == var10) {
-						retrySlotClick(slotNr, var2, var3, var4, var5, human);
+						retrySlotClick(slotNr, clickType, var3, maxStackSize, shift, human);
 					}
 				}
 			} else {
@@ -508,80 +586,85 @@ public class ContainerTransmutation extends Container {
 
 				if (slot != null) {
 					slot.d();
-					ItemStack sItem = slot.getItem();
-					ItemStack mItem = inv.getCarried();
+					ItemStack currentItem = slot.getItem();
+					ItemStack heldItem = inv.getCarried();
 
-					if (sItem != null) {
-						var7 = sItem.cloneItemStack();
+					if (currentItem != null) {
+						var7 = currentItem.cloneItemStack();
 					}
 
-					if (sItem == null) {
-						if (mItem != null && slot.isAllowed(mItem)) {
-							int var12 = var2 != 0 ? 1 : mItem.count;
+					if (currentItem == null) {
+						if (heldItem != null && slot.isAllowed(heldItem)) {
+							int var12 = clickType != 0 ? 1 : heldItem.count;
 
 							if (var12 > slot.a()) {
 								var12 = slot.a();
 							}
 
-							slot.set(mItem.a(var12));
+							slot.set(heldItem.a(var12));
 
-							if (mItem.count == 0) {
+							if (heldItem.count == 0) {
 								inv.setCarried(null);
 							}
 						}
-					} else if (mItem == null) {
-						int var12 = var2 != 0 ? (sItem.count + 1) / 2 : sItem.count;
-						ItemStack var13 = slot.a(var12);
-						inv.setCarried(var13);
-
-						if (slotNr >= 10 && slotNr <= 25) {
-							slot.set(new ItemStack(var13.id, 1, var13.getData()));
-						} else if (sItem.count == 0) {
-							slot.set(null);
-						}
-
-						slot.c(inv.getCarried());
-					} else if (slot.isAllowed(mItem)) {
-						if (sItem.id == mItem.id && (!sItem.usesData() || sItem.getData() == mItem.getData()) && ItemStack.equals(sItem, mItem)) {
-							int var12 = var2 != 0 ? 1 : mItem.count;
-
-							if (var12 > slot.a() - sItem.count) {
-								var12 = slot.a() - sItem.count;
+					} else if (heldItem == null) {
+						if (slotNr < 10 || slotNr > 25 || transGrid.latentEnergy + transGrid.currentEnergy >= EEMaps.getEMC(currentItem)){
+							int var12 = clickType != 0 ? (currentItem.count + 1) / 2 : currentItem.count;
+							
+							ItemStack var13 = slot.a(var12);
+							inv.setCarried(var13);
+	
+							if (slotNr >= 10 && slotNr <= 25) {
+								slot.set(new ItemStack(var13.id, 1, var13.getData()));
+							} else if (currentItem.count == 0) {
+								slot.set(null);
 							}
-
-							if (var12 > mItem.getMaxStackSize() - sItem.count) {
-								var12 = mItem.getMaxStackSize() - sItem.count;
-							}
-
-							mItem.a(var12);
-
-							if (mItem.count == 0) {
-								inv.setCarried(null);
-							}
-
-							sItem.count += var12;
-						} else if (mItem.count <= slot.a()) {
-							slot.set(mItem);
-							inv.setCarried(sItem);
-						}
-					} else if (sItem.id == mItem.id && mItem.getMaxStackSize() > 1 && (!sItem.usesData() || sItem.getData() == mItem.getData())
-							&& ItemStack.equals(sItem, mItem)) {
-						int var12 = sItem.count;
-
-						if (var12 > 0 && var12 + mItem.count <= mItem.getMaxStackSize()) {
-							mItem.count += var12;
-
-							if (slotNr < 10 || slotNr > 25) {
-								sItem.a(var12);
-
-								if (sItem.count == 0) {
-									slot.set(null);
-								}
-							}
-
+	
 							slot.c(inv.getCarried());
 						}
+					} else if (slot.isAllowed(heldItem)) {
+						if (currentItem.id == heldItem.id && (!currentItem.usesData() || currentItem.getData() == heldItem.getData()) && ItemStack.equals(currentItem, heldItem)) {
+							int var12 = clickType != 0 ? 1 : heldItem.count;
+
+							if (var12 > slot.a() - currentItem.count) {
+								var12 = slot.a() - currentItem.count;
+							}
+
+							if (var12 > heldItem.getMaxStackSize() - currentItem.count) {
+								var12 = heldItem.getMaxStackSize() - currentItem.count;
+							}
+
+							heldItem.a(var12);
+
+							if (heldItem.count == 0) {
+								inv.setCarried(null);
+							}
+
+							currentItem.count += var12;
+						} else if (heldItem.count <= slot.a()) {
+							slot.set(heldItem);
+							inv.setCarried(currentItem);
+						}
+					} else if (currentItem.id == heldItem.id && heldItem.getMaxStackSize() > 1 && (!currentItem.usesData() || currentItem.getData() == heldItem.getData()) && ItemStack.equals(currentItem, heldItem)) {
+						int amount = currentItem.count;
+
+						if (amount > 0 && amount + heldItem.count <= heldItem.getMaxStackSize()) {
+							if (slotNr < 10 || slotNr > 25 || transGrid.latentEnergy + transGrid.currentEnergy >= EEMaps.getEMC(currentItem)){
+								heldItem.count += amount;
+	
+								if (slotNr < 10 || slotNr > 25) {
+									currentItem.a(amount);
+	
+									if (currentItem.count == 0) {
+										slot.set(null);
+									}
+								}
+	
+								slot.c(inv.getCarried());
+							}
+						}
 					}
+					//transGrid.quickCalculateEMC();
 				}
 			}
 		}

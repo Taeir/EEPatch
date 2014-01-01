@@ -39,7 +39,7 @@ public class mod_EE extends NetworkMod {
 	public static final String CHANNEL_NAME = "EE2";
 	public static final String SOUND_RESOURCE_LOCATION = "/ee/sound/";
 	public static final String SOUND_PREFIX = "ee.sound.";
-	private static int[] tickCounter = new int[30];
+	private static int[] tickCounter = new int[40];
 	private static mod_EE instance;
 	private int blackListTimer;
 	@SuppressWarnings("unused")
@@ -134,8 +134,8 @@ public class mod_EE extends NetworkMod {
 		
 		//String name = var3.worldProvider.dimension.getWorld().getName();
 		//Integer remaining = tickCounter.get(name);
-		int remaining = tickCounter[var3.worldProvider.dimension];
-		
+		int remaining = tickCounter[var3.worldProvider.dimension+10];
+
 		if (remaining % EEPatch.transTableInterval == 0) {
 			doTransGridUpdates(var2);
 			remaining = 0;
@@ -165,7 +165,7 @@ public class mod_EE extends NetworkMod {
 			blackListTimer -= 1;
 		}
 
-		tickCounter[var3.worldProvider.dimension] = remaining+1;
+		tickCounter[var3.worldProvider.dimension+10] = remaining+1;
 		return true;
 	}
 

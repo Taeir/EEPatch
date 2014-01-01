@@ -110,7 +110,7 @@ public class EEBase {
 	public static int portalDeviceSide = 28;
 	public static int portalDeviceBottom = 29;
 	public static int portalDeviceTop = 30;
-	public static HashMap<Integer, Integer[]> pedestalCoords = new HashMap<Integer, Integer[]>();
+	private static HashMap<Integer, int[]> pedestalCoords = new HashMap<Integer, int[]>();
 	private static int machineFactor;
 
 	public static void init(BaseMod var0) {
@@ -227,14 +227,13 @@ public class EEBase {
 	}
 
 	public static int getKleinEnergyForDisplay(ItemStack var0) {
-		return (var0.getItem() instanceof ItemKleinStar) ? ((ItemKleinStar) var0.getItem()).getKleinPoints(var0) : 0;
+		return (var0.getItem() instanceof ItemKleinStar) ? EEPBase.getKleinPoints(var0) : 0;
 	}
 
 	public static int getDisplayEnergy(ItemStack var0) {
 		if (var0 == null) return 0;
-		if ((var0.getItem() instanceof ItemEECharged) && (var0.getItem() instanceof ItemTransTablet)) {
-			ItemEECharged var1 = (ItemEECharged) var0.getItem();
-			return var1.getInteger(var0, "displayEnergy");
+		if (var0.getItem() instanceof ItemTransTablet) {
+			return EEPBase.getInteger(var0, "displayEnergy");
 		}
 
 		return 0;
@@ -244,7 +243,7 @@ public class EEBase {
 		if (var0 == null) return;
 
 		if (var0.getItem() instanceof ItemTransTablet) {
-			((ItemEECharged) var0.getItem()).setInteger(var0, "displayEnergy", var1);
+			EEPBase.setInteger(var0, "displayEnergy", var1);
 		}
 	}
 
@@ -252,7 +251,7 @@ public class EEBase {
 		if (var0 == null) return 0;
 
 		if (var0.getItem() instanceof ItemTransTablet) {
-			return ((ItemEECharged) var0.getItem()).getInteger(var0, "latentEnergy");
+			return EEPBase.getInteger(var0, "latentEnergy");
 		}
 
 		return 0;
@@ -261,33 +260,48 @@ public class EEBase {
 	public static void setLatentEnergy(ItemStack var0, int var1) {
 		if (var0 != null) {
 			if (var0.getItem() instanceof ItemTransTablet) {
-				((ItemEECharged) var0.getItem()).setInteger(var0, "latentEnergy", var1);
+				EEPBase.setInteger(var0, "latentEnergy", var1);
 			}
 		}
 	}
 
 	public static boolean canIncreaseKleinStarPoints(ItemStack var0, World var1) {
-		if (EEProxy.isClient(var1) || var0 == null || !isKleinStar(var0.id)) return false;
+		if (EEProxy.isClient(var1) || var0 == null || !isKleinStar(var0)) return false;
 		return var0.getData() - 1 != 0;
 	}
 
+	@Deprecated
 	public static boolean isKleinStar(int itemId) {
 		return (itemId == EEItem.kleinStar1.id) || (itemId == EEItem.kleinStar2.id) || (itemId == EEItem.kleinStar3.id) || (itemId == EEItem.kleinStar4.id)
 				|| (itemId == EEItem.kleinStar5.id) || (itemId == EEItem.kleinStar6.id);
 	}
+	
+	public static boolean isKleinStar(Item item){
+		return item instanceof ItemKleinStar;
+	}
+	
+	public static boolean isKleinStar(ItemStack item){
+		return item.getItem() instanceof ItemKleinStar;
+	}
 
+	/**
+	 * @param itemId
+	 * @return The level of the given kleinstar item id.
+	 * @deprecated Use item.getLevel() or ItemKleinStar.getLevel(var1);
+	 */
 	public static int getKleinLevel(int itemId) {
 		return itemId == EEItem.kleinStar6.id ? 6 : itemId == EEItem.kleinStar5.id ? 5 : itemId == EEItem.kleinStar4.id ? 4
 				: itemId == EEItem.kleinStar3.id ? 3 : itemId == EEItem.kleinStar2.id ? 2 : itemId == EEItem.kleinStar1.id ? 1 : 0;
 	}
 
 	public static boolean addKleinStarPoints(ItemStack var0, int var1, World var2) {
-		if (EEProxy.isClient(var2) || var0 == null || !isKleinStar(var0.id)) return false;
+		if (EEProxy.isClient(var2) || var0 == null || !isKleinStar(var0)) return false;
 
 		ItemKleinStar var3 = (ItemKleinStar) var0.getItem();
-
-		if (var3.getKleinPoints(var0) <= var3.getMaxPoints(var0) - var1) {
-			var3.setKleinPoints(var0, var3.getKleinPoints(var0) + var1);
+		
+		int points;
+		if ((points = EEPBase.getKleinPoints(var0)) <= var3.getMax() - var1) {
+			EEPBase.setKleinPoints(var0, points + var1);
 			var3.onUpdate(var0);
 			return true;
 		}
@@ -296,12 +310,12 @@ public class EEBase {
 	}
 
 	public static boolean addKleinStarPoints(ItemStack var0, int var1) {
-		if (var0 == null || !isKleinStar(var0.id)) return false;
+		if (var0 == null || !isKleinStar(var0)) return false;
 
 		ItemKleinStar var2 = (ItemKleinStar) var0.getItem();
 
-		if (var2.getKleinPoints(var0) <= var2.getMaxPoints(var0) - var1) {
-			var2.setKleinPoints(var0, var2.getKleinPoints(var0) + var1);
+		if (EEPBase.getKleinPoints(var0) <= var2.getMax() - var1) {
+			EEPBase.setKleinPoints(var0, EEPBase.getKleinPoints(var0) + var1);
 			var2.onUpdate(var0);
 			return true;
 		}
@@ -310,13 +324,12 @@ public class EEBase {
 	}
 
 	public static boolean takeKleinStarPoints(ItemStack var0, int var1, World var2) {
-		if (EEProxy.isClient(var2) || var0 == null || !isKleinStar(var0.id)) return false;
-
-		ItemKleinStar var3 = (ItemKleinStar) var0.getItem();
-		int points = var3.getKleinPoints(var0);
+		if (EEProxy.isClient(var2) || var0 == null || !isKleinStar(var0)) return false;
+		
+		int points = EEPBase.getKleinPoints(var0);
 		if (points >= var1) {
-			var3.setKleinPoints(var0, points - var1);
-			var3.onUpdate(var0);
+			EEPBase.setKleinPoints(var0, points - var1);
+			EEPBase.onUpdate_KleinStar(var0);
 			return true;
 		}
 
@@ -337,7 +350,7 @@ public class EEBase {
 		}*/
 		for (ItemStack current : var2.items) {
 			if (current == null) continue;
-			if ((isKleinStar(current.id)) && (takeKleinStarPoints(current, var1, var0.world))) return true;
+			if ((isKleinStar(current)) && (takeKleinStarPoints(current, var1, var0.world))) return true;
 		}
 
 		return false;
@@ -926,6 +939,7 @@ public class EEBase {
 		for (int var2 = 0; var2 < pedestalCoords.size(); var2++) {
 			if (pedestalCoords.get(var2) != null) {
 				var1 = (float) (var1 * 0.9D);
+				if (var1 < 0.1F) return 0.1F;
 			}
 		}
 
@@ -934,7 +948,7 @@ public class EEBase {
 
 	public static void addPedestalCoords(TilePedestal var0) {
 		int var1 = 0;
-		Integer[] var2 = {Integer.valueOf(var0.x), Integer.valueOf(var0.y), Integer.valueOf(var0.z)};
+		int[] var2 = {var0.x, var0.y, var0.z};
 		for (; pedestalCoords.get(var1) != null; var1++);
 		pedestalCoords.put(var1, var2);
 		validatePedestalCoords(var0.world);
@@ -942,16 +956,16 @@ public class EEBase {
 
 	public static void validatePedestalCoords(World var0) {
 		for (int var1 = 0; var1 < pedestalCoords.size(); var1++) {
-			Integer[] var2 = pedestalCoords.get(var1);
+			int[] var2 = pedestalCoords.get(var1);
 			if (var2 != null) {
-				Object old = EEProxy.getTileEntity(var0, var2[0].intValue(), var2[1].intValue(), var2[2].intValue(), TilePedestal.class);
+				TilePedestal old = EEPBase.getTileEntity2(var0, var2[0], var2[1], var2[2], false, TilePedestal.class);
 				if (old == null) {
 					removePedestalCoord(var1);
-				} else if (!((TilePedestal) old).isActivated()) {
+				} else if (!old.isActivated()) {
 					removePedestalCoord(var1);
 				} else {
 					for (int var3 = 0; var3 < pedestalCoords.size(); var3++) {
-						Integer[] var4 = pedestalCoords.get(var3);
+						int[] var4 = pedestalCoords.get(var3);
 						if ((var1 != var3) && (var4 != null)) {
 							if (coordsEqual(var2, var4)) removePedestalCoord(var3);
 						}
@@ -960,9 +974,9 @@ public class EEBase {
 			}
 		}
 	}
-
-	private static boolean coordsEqual(Integer[] var0, Integer[] var1) {
-		return (var0[0].equals(var1[0])) && (var0[1].equals(var1[1])) && (var0[2].equals(var1[2]));
+	
+	private static boolean coordsEqual(int[] var0, int[] var1) {
+		return (var0[0] == var1[0]) && (var0[1] == var1[1]) && (var0[2] == var1[2]);
 	}
 
 	private static void removePedestalCoord(int var0) {
@@ -1007,25 +1021,25 @@ public class EEBase {
 
 	public static void ConsumeReagent(ItemStack var0, EntityHuman var1, boolean var2) {
 		if (consumeKleinStarPoint(var1, 32)) {
-			((ItemEECharged) var0.getItem()).setShort(var0, "fuelRemaining", ((ItemEECharged) var0.getItem()).getShort(var0, "fuelRemaining") + 4);
+			EEPBase.setShort(var0, "fuelRemaining", EEPBase.getShort(var0, "fuelRemaining") + 4);
 		} else if (Consume(new ItemStack(EEItem.aeternalisFuel, 1), var1, false)) {
-			((ItemEECharged) var0.getItem()).setShort(var0, "fuelRemaining", ((ItemEECharged) var0.getItem()).getShort(var0, "fuelRemaining") + 1024);
+			EEPBase.setShort(var0, "fuelRemaining", EEPBase.getShort(var0, "fuelRemaining") + 1024);
 		} else if (Consume(new ItemStack(EEItem.mobiusFuel, 1), var1, false)) {
-			((ItemEECharged) var0.getItem()).setShort(var0, "fuelRemaining", ((ItemEECharged) var0.getItem()).getShort(var0, "fuelRemaining") + 256);
+			EEPBase.setShort(var0, "fuelRemaining", EEPBase.getShort(var0, "fuelRemaining") + 256);
 		} else if (Consume(new ItemStack(Block.GLOWSTONE, 1), var1, false)) {
-			((ItemEECharged) var0.getItem()).setShort(var0, "fuelRemaining", ((ItemEECharged) var0.getItem()).getShort(var0, "fuelRemaining") + 192);
+			EEPBase.setShort(var0, "fuelRemaining", EEPBase.getShort(var0, "fuelRemaining") + 192);
 		} else if (Consume(new ItemStack(EEItem.alchemicalCoal, 1), var1, false)) {
-			((ItemEECharged) var0.getItem()).setShort(var0, "fuelRemaining", ((ItemEECharged) var0.getItem()).getShort(var0, "fuelRemaining") + 64);
+			EEPBase.setShort(var0, "fuelRemaining", EEPBase.getShort(var0, "fuelRemaining") + 64);
 		} else if (Consume(new ItemStack(Item.GLOWSTONE_DUST, 1), var1, false)) {
-			((ItemEECharged) var0.getItem()).setShort(var0, "fuelRemaining", ((ItemEECharged) var0.getItem()).getShort(var0, "fuelRemaining") + 48);
+			EEPBase.setShort(var0, "fuelRemaining", EEPBase.getShort(var0, "fuelRemaining") + 48);
 		} else if (Consume(new ItemStack(Item.SULPHUR, 1), var1, false)) {
-			((ItemEECharged) var0.getItem()).setShort(var0, "fuelRemaining", ((ItemEECharged) var0.getItem()).getShort(var0, "fuelRemaining") + 24);
+			EEPBase.setShort(var0, "fuelRemaining", EEPBase.getShort(var0, "fuelRemaining") + 24);
 		} else if (Consume(new ItemStack(Item.COAL, 1, 0), var1, var2)) {
-			((ItemEECharged) var0.getItem()).setShort(var0, "fuelRemaining", ((ItemEECharged) var0.getItem()).getShort(var0, "fuelRemaining") + 16);
+			EEPBase.setShort(var0, "fuelRemaining", EEPBase.getShort(var0, "fuelRemaining") + 16);
 		} else if (Consume(new ItemStack(Item.REDSTONE, 1), var1, var2)) {
-			((ItemEECharged) var0.getItem()).setShort(var0, "fuelRemaining", ((ItemEECharged) var0.getItem()).getShort(var0, "fuelRemaining") + 8);
+			EEPBase.setShort(var0, "fuelRemaining", EEPBase.getShort(var0, "fuelRemaining") + 8);
 		} else if (Consume(new ItemStack(Item.COAL, 1, 1), var1, var2)) {
-			((ItemEECharged) var0.getItem()).setShort(var0, "fuelRemaining", ((ItemEECharged) var0.getItem()).getShort(var0, "fuelRemaining") + 4);
+			EEPBase.setShort(var0, "fuelRemaining", EEPBase.getShort(var0, "fuelRemaining") + 4);
 		}
 	}
 
