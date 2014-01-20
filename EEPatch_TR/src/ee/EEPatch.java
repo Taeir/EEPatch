@@ -14,7 +14,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import net.minecraft.server.EntityHuman;
 
 public class EEPatch {
-	public static double version = 1.9;//1.9
+	public static double version = 2.0;
 	public static int alcBagAmount = 15;
 	public static boolean allowAlcBags = true;
 	public static boolean separateAlcBags = false;

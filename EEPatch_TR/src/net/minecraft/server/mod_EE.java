@@ -130,6 +130,7 @@ public class mod_EE extends NetworkMod {
 			EEBase.externalModsInitialized = true;
 		}
 
+		//Indirectly gets tile entity
 		EEBase.validatePedestalCoords(var3);
 		
 		//String name = var3.worldProvider.dimension.getWorld().getName();

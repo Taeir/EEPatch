@@ -762,6 +762,9 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 		world.playNote(x, y, z, 1, numUsingPlayers);
 	}
 	
+	/**
+	 * Gets tile entity
+	 */
 	public boolean a(EntityHuman var1) {
 		return EEPBase.getTileEntity2(world, x, y, z, false) == this ? var1.e(x + 0.5D, y + 0.5D, z + 0.5D) <= 64D : false;
 	}

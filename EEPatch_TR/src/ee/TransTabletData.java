@@ -39,7 +39,6 @@ public class TransTabletData extends WorldMapBase implements IInventory {
 	}
 
 	public void onUpdate(World var1, EntityHuman var2) {
-		System.out.println("Update");
 		if (EEProxy.isClient(var1)) return;
 		if (player == null) player = var2;
 
@@ -95,27 +94,30 @@ public class TransTabletData extends WorldMapBase implements IInventory {
 		return var1;
 	}
 
-	private int lastEmc, lastId;
-	public void displayResults(int var1) {
+	private int lastEmc = -1, lastId = -1;
+	public void displayResults(int emc) {
+		final int newid = (items[9] == null?0:items[9].id);
+		if (lastEmc == emc && lastId == newid) return;
+
+		lastEmc = emc;
+		lastId = newid;//0
+		
 		//clear grid
-		if (lastEmc == var1) return;
-		int newid;
-		if (lastId == (newid= (items[9] == null?0:items[9].id))) return;
-		lastEmc = var1;
-		lastId = newid;
 		for (int var2 = 10; var2 < items.length; var2++){
 			items[var2] = null;
 		}
+		final int targetemc = (target() != null? targetEMC() : -1);
 		for (int var2 = 10; var2 < items.length; var2++) {
-			if (items[var2] != null && (var1 < EEMaps.getEMC(items[var2]) || !matchesLock(items[var2]) || isOnGridBut(items[var2], var2) || target() != null && EEMaps.getEMC(items[var2]) > targetEMC())) {
+			int temc;
+			if (items[var2] != null && (emc < (temc = EEMaps.getEMC(items[var2])) || !matchesLock(items[var2]) || isOnGridBut(items[var2], var2) || target() != null && temc > targetemc)) {
 				items[var2] = null;
 			}
 
-			if (var2 == 9 && target() != null && targetEMC() > 0 && var1 > targetEMC() && matchesLock(target())) {
+			if (var2 == 9 && target() != null && targetemc > 0 && emc > targetemc && matchesLock(target())) {
 				items[var2] = new ItemStack(target().id, 1, target().getData());
 			}
 
-			if (var2 == 10 && target() != null && targetEMC() > 0 && var1 >= targetEMC() && matchesLock(target())) {
+			if (var2 == 10 && target() != null && targetemc > 0 && emc >= targetemc && matchesLock(target())) {
 				items[10] = new ItemStack(target().id, 1, target().getData());
 			}
 
@@ -127,9 +129,9 @@ public class TransTabletData extends WorldMapBase implements IInventory {
 					ItemStack var6 = new ItemStack(var3, 1, var5);
 
 					if (isOnGrid(var6) || !matchesLock(var6)) continue;
-					int var7 = EEMaps.getEMC(var6);
+					final int var7 = EEMaps.getEMC(var6);
 
-					if (var7 == 0 || target() != null && var7 > targetEMC() || !playerKnows(var6.id, var6.getData()) || var1 < var7 || var7 <= EEMaps.getEMC(getItem(var2))) continue;
+					if (var7 == 0 || target() != null && var7 > targetemc || !playerKnows(var6.id, var6.getData()) || emc < var7 || var7 <= EEMaps.getEMC(getItem(var2))) continue;
 					items[var2] = new ItemStack(var3, 1, var5);
 				}
 
@@ -471,14 +473,20 @@ public class TransTabletData extends WorldMapBase implements IInventory {
 		return items;
 	}
 
+	private ArrayList<HumanEntity> transaction = new ArrayList<HumanEntity>(2);
 	public void onOpen(CraftHumanEntity who) {
-		
+		lastEmc = -1;
+		lastId = -1;
+		transaction.add(who);
 	}
 
-	public void onClose(CraftHumanEntity who) {}
+	public void onClose(CraftHumanEntity who) {
+		transaction.remove(who);
+	}
 
 	public List<HumanEntity> getViewers() {
-		return new ArrayList<HumanEntity>(0);
+		return transaction;
+		//return new ArrayList<HumanEntity>(0);
 	}
 
 	public InventoryHolder getOwner() {

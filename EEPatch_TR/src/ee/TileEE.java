@@ -93,6 +93,9 @@ public class TileEE extends TileEntity {
 		}
 	}
 
+	/**
+	 * Notice: gets Tile Entity in quick succession!
+	 */
 	public boolean tryDropInChest(ItemStack var1) {
 		if (world == null || EEProxy.isClient(world)) return false;
 		TileEntity var2;

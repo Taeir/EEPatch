@@ -932,6 +932,9 @@ public class EEBase {
 		return eeBaseInstance;
 	}
 
+	/**
+	 * Notice: indirectly gets Tile Entity
+	 */
 	public static float getPedestalFactor(World var0) {
 		float var1 = 1.0F;
 		validatePedestalCoords(var0);
@@ -946,6 +949,9 @@ public class EEBase {
 		return var1 < 0.1F ? 0.1F : var1;
 	}
 
+	/**
+	 * Notice: indirectly gets Tile Entity
+	 */
 	public static void addPedestalCoords(TilePedestal var0) {
 		int var1 = 0;
 		int[] var2 = {var0.x, var0.y, var0.z};
@@ -954,6 +960,9 @@ public class EEBase {
 		validatePedestalCoords(var0.world);
 	}
 
+	/**
+	 * Notice: gets Tile Entity
+	 */
 	public static void validatePedestalCoords(World var0) {
 		for (int var1 = 0; var1 < pedestalCoords.size(); var1++) {
 			int[] var2 = pedestalCoords.get(var1);

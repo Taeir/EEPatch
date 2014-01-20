@@ -301,6 +301,9 @@ public class TileRelay extends TileEE implements ISpecialInventory, ISidedInvent
 		return false;
 	}
 
+	/**
+	 * Gets tile entities
+	 */
 	private boolean passAllPackets(int var1, boolean var2) {
 		int var3 = 0;
 
@@ -317,14 +320,19 @@ public class TileRelay extends TileEE implements ISpecialInventory, ISidedInvent
 		if (var6 < 1) return false;
 
 		for (byte var5 = 0; var5 < 6; var5++) {
-			passEnergy(var6, var5, true);
+			passEnergy(var6, var5, true);//Gets tile entity
 		}
 
 		return true;
 	}
 
+	/**
+	 * 
+	 * Gets tile entity
+	 * @see ee.IEEPowerNet#passEnergy(int, byte, boolean)
+	 */
 	public boolean passEnergy(int var1, byte var2, boolean var3) {
-		TileEntity var4 = EEPBase.getTileEntity2(world, x + (var2 != 5 ? (int) (var2 != 4 ? 0 : 1) : -1), y + (var2 != 1 ? (int) (var2 != 0 ? 0 : 1) : -1), z + (var2 != 3 ? (int) (var2 != 2 ? 0 : 1) : -1), false);
+		final TileEntity var4 = EEPBase.getTileEntity2(world, x + (var2 != 5 ? (int) (var2 != 4 ? 0 : 1) : -1), y + (var2 != 1 ? (int) (var2 != 0 ? 0 : 1) : -1), z + (var2 != 3 ? (int) (var2 != 2 ? 0 : 1) : -1), false);
 		if (var4 == null) return false;
 		if (!(var4 instanceof TileRelay) && !(var4 instanceof TileRelay2) && !(var4 instanceof TileRelay3)) {
 			return var4 instanceof IEEPowerNet && ((IEEPowerNet) var4).receiveEnergy(var1, var2, var3);
@@ -334,11 +342,19 @@ public class TileRelay extends TileEE implements ISpecialInventory, ISidedInvent
 		}
 	}
 
+	/**
+	 * Gets tile entity
+	 * @see ee.IEEPowerNet#sendEnergy(int, byte, boolean)
+	 */
 	public boolean sendEnergy(int var1, byte var2, boolean var3) {
-		TileEntity var4 = EEPBase.getTileEntity2(world, x + (var2 == 4 ? 1 : var2 == 5 ? -1 : 0), y + (var2 == 0 ? 1 : var2 == 1 ? -1 : 0), z + (var2 == 2 ? 1 : var2 == 3 ? -1 : 0), false);
+		final TileEntity var4 = EEPBase.getTileEntity2(world, x + (var2 == 4 ? 1 : var2 == 5 ? -1 : 0), y + (var2 == 0 ? 1 : var2 == 1 ? -1 : 0), z + (var2 == 2 ? 1 : var2 == 3 ? -1 : 0), false);
 		return var4 != null ? var4 instanceof TileRelay || var4 instanceof TileRelay2 || var4 instanceof TileRelay3 ? false : var4 instanceof IEEPowerNet && ((IEEPowerNet) var4).receiveEnergy(var1, var2, var3) : false;
 	}
 
+	/**
+	 * Gets tile entity
+	 * @see ee.IEEPowerNet#sendAllPackets(int)
+	 */
 	public void sendAllPackets(int var1) {
 		int var2 = 0;
 

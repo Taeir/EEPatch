@@ -1183,6 +1183,9 @@ public class TilePedestal extends TileEE implements IInventory {
 		EEBase.addPedestalCoords(this);
 	}
 
+	/**
+	 * Indirectly gets tile entity
+	 */
 	public void resetTimeFactor() {
 		EEBase.validatePedestalCoords(world);
 	}
