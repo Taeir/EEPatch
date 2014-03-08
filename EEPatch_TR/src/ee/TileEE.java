@@ -99,12 +99,12 @@ public class TileEE extends TileEntity {
 	public boolean tryDropInChest(ItemStack var1) {
 		if (world == null || EEProxy.isClient(world)) return false;
 		TileEntity var2;
-			 if (isChest(var2 = EEPBase.getTileEntity2(world, x, y + 1, z, false))) return putInChest(var2, var1);
-		else if (isChest(var2 = EEPBase.getTileEntity2(world, x, y - 1, z, false))) return putInChest(var2, var1);
-		else if (isChest(var2 = EEPBase.getTileEntity2(world, x + 1, y, z, false))) return putInChest(var2, var1);
-		else if (isChest(var2 = EEPBase.getTileEntity2(world, x - 1, y, z, false))) return putInChest(var2, var1);
-		else if (isChest(var2 = EEPBase.getTileEntity2(world, x, y, z + 1, false))) return putInChest(var2, var1);
-		else if (isChest(var2 = EEPBase.getTileEntity2(world, x, y, z - 1, false))) return putInChest(var2, var1);
+			 if (isChest(var2 = world.getTileEntity(x, y + 1, z))) return putInChest(var2, var1);
+		else if (isChest(var2 = world.getTileEntity(x, y - 1, z))) return putInChest(var2, var1);
+		else if (isChest(var2 = world.getTileEntity(x + 1, y, z))) return putInChest(var2, var1);
+		else if (isChest(var2 = world.getTileEntity(x - 1, y, z))) return putInChest(var2, var1);
+		else if (isChest(var2 = world.getTileEntity(x, y, z + 1))) return putInChest(var2, var1);
+		else if (isChest(var2 = world.getTileEntity(x, y, z - 1))) return putInChest(var2, var1);
 		else return false;
 	}
 
@@ -159,7 +159,7 @@ public class TileEE extends TileEntity {
 	public boolean clientFail() {
 		if (world == null || EEProxy.isClient(world)) return true;
 		
-		return EEPBase.getTileEntity2(world, x, y, z, false) != this;
+		return world.getTileEntity(x, y, z) != this;
 	}
 
 	public void onBlockAdded() {}
@@ -228,7 +228,7 @@ public class TileEE extends TileEntity {
 	}
 
 	public Packet d() {
-		TileEntity t = EEPBase.getTileEntity2(this.world, x, y, z, false);
+		TileEntity t = this.world.getTileEntity(x, y, z);
 		if (!(t instanceof TileEE)) return null;
 		TileEntityPacket var1 = (TileEntityPacket) PacketHandler.getPacket(PacketTypeHandler.TILE);
 		var1.setCoords(x, y, z);

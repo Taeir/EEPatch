@@ -967,7 +967,7 @@ public class EEBase {
 		for (int var1 = 0; var1 < pedestalCoords.size(); var1++) {
 			int[] var2 = pedestalCoords.get(var1);
 			if (var2 != null) {
-				TilePedestal old = EEPBase.getTileEntity2(var0, var2[0], var2[1], var2[2], false, TilePedestal.class);
+				TilePedestal old = EEPBase.getTileEntity(var0, var2[0], var2[1], var2[2], TilePedestal.class);
 				if (old == null) {
 					removePedestalCoord(var1);
 				} else if (!old.isActivated()) {

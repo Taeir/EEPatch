@@ -1321,7 +1321,7 @@ public class TilePedestal extends TileEE implements IInventory {
 	public void g() {}
 
 	public boolean a(EntityHuman var1) {
-		return EEPBase.getTileEntity2(world, x, y, z, false) == this ? var1.f(x + 0.5D, y + 0.5D, z + 0.5D) <= 64D : false;
+		return world.getTileEntity(x, y, z) == this ? var1.f(x + 0.5D, y + 0.5D, z + 0.5D) <= 64D : false;
 	}
 	
 	public boolean onBlockActivated(EntityHuman var1) {

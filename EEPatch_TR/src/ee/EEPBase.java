@@ -1,14 +1,8 @@
 package ee;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import net.minecraft.server.Block;
-import net.minecraft.server.Chunk;
-import net.minecraft.server.ChunkPosition;
 import net.minecraft.server.EntityHuman;
 import net.minecraft.server.ItemStack;
 import net.minecraft.server.NBTTagCompound;
@@ -24,6 +18,14 @@ public class EEPBase {
 		setInteger(var0, "points", var1);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static <M extends TileEntity> M getTileEntity(World world, int x, int y, int z, Class<M> clazz){
+		if (y < 0) return null;
+		TileEntity te = world.getTileEntity(x, y, z);
+		return clazz.isInstance(te) ? (M) te : null;
+	}
+	
+	/*
 	public static TileEntity getTileEntity(World world, int x, int y, int z){
 		if (y >= 256) return null;
 		try {
@@ -50,8 +52,6 @@ public class EEPBase {
 		} catch (Exception ex){
 			return null;
 		}
-
-		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -94,6 +94,7 @@ public class EEPBase {
 			return null;
 		}
 	}
+	*/
 	
 	public static EntityHuman getHuman(World world, String name){
 		return world.a(name);

@@ -121,27 +121,27 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 	}
 
 	public boolean tryDropInChest(ItemStack var1) {
-		TileEntity var2 = EEPBase.getTileEntity2(world, x, y + 1, z, false);
+		TileEntity var2 = world.getTileEntity(x, y + 1, z);
 		if (isChest(var2)) {
 			return putInChest(var2, var1);
 		}
-		var2 = EEPBase.getTileEntity2(world, x, y - 1, z, false);
+		var2 = world.getTileEntity(x, y - 1, z);
 		if (isChest(var2)) {
 			return putInChest(var2, var1);
 		}
-		var2 = EEPBase.getTileEntity2(world, x + 1, y, z, false);
+		var2 = world.getTileEntity(x + 1, y, z);
 		if (isChest(var2)) {
 			return putInChest(var2, var1);
 		}
-		var2 = EEPBase.getTileEntity2(world, x - 1, y, z, false);
+		var2 = world.getTileEntity(x - 1, y, z);
 		if (isChest(var2)) {
 			return putInChest(var2, var1);
 		}
-		var2 = EEPBase.getTileEntity2(world, x, y, z + 1, false);
+		var2 = world.getTileEntity(x, y, z + 1);
 		if (isChest(var2)) {
 			return putInChest(var2, var1);
 		}
-		var2 = EEPBase.getTileEntity2(world, x, y, z - 1, false);
+		var2 = world.getTileEntity(x, y, z - 1);
 		if (isChest(var2)) {
 			return putInChest(var2, var1);
 		}
@@ -857,7 +857,7 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 	}
 
 	public boolean a(EntityHuman var1) {
-		return EEPBase.getTileEntity2(world, x, y, z, false) == this ? var1.e(x + 0.5D, y + 0.5D, z + 0.5D) <= 64D : false;
+		return world.getTileEntity(x, y, z) == this ? var1.e(x + 0.5D, y + 0.5D, z + 0.5D) <= 64D : false;
 	}
 
 	public int getStartInventorySide(int var1) {

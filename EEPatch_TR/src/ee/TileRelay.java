@@ -136,12 +136,12 @@ public class TileRelay extends TileEE implements ISpecialInventory, ISidedInvent
 	public boolean tryDropInChest(ItemStack var1) {
 		if (world == null || EEProxy.isClient(world)) return false;
 		TileEntity var2;
-			 if (isChest(var2 = EEPBase.getTileEntity2(world, x, y + 1, z, false))) return putInChest(var2, var1);
-		else if (isChest(var2 = EEPBase.getTileEntity2(world, x, y - 1, z, false))) return putInChest(var2, var1);
-		else if (isChest(var2 = EEPBase.getTileEntity2(world, x + 1, y, z, false))) return putInChest(var2, var1);
-		else if (isChest(var2 = EEPBase.getTileEntity2(world, x - 1, y, z, false))) return putInChest(var2, var1);
-		else if (isChest(var2 = EEPBase.getTileEntity2(world, x, y, z + 1, false))) return putInChest(var2, var1);
-		else if (isChest(var2 = EEPBase.getTileEntity2(world, x, y, z - 1, false))) return putInChest(var2, var1);
+			 if (isChest(var2 = world.getTileEntity(x, y + 1, z))) return putInChest(var2, var1);
+		else if (isChest(var2 = world.getTileEntity(x, y - 1, z))) return putInChest(var2, var1);
+		else if (isChest(var2 = world.getTileEntity(x + 1, y, z))) return putInChest(var2, var1);
+		else if (isChest(var2 = world.getTileEntity(x - 1, y, z))) return putInChest(var2, var1);
+		else if (isChest(var2 = world.getTileEntity(x, y, z + 1))) return putInChest(var2, var1);
+		else if (isChest(var2 = world.getTileEntity(x, y, z - 1))) return putInChest(var2, var1);
 		else return false;
 	}
 
@@ -332,7 +332,7 @@ public class TileRelay extends TileEE implements ISpecialInventory, ISidedInvent
 	 * @see ee.IEEPowerNet#passEnergy(int, byte, boolean)
 	 */
 	public boolean passEnergy(int var1, byte var2, boolean var3) {
-		final TileEntity var4 = EEPBase.getTileEntity2(world, x + (var2 != 5 ? (int) (var2 != 4 ? 0 : 1) : -1), y + (var2 != 1 ? (int) (var2 != 0 ? 0 : 1) : -1), z + (var2 != 3 ? (int) (var2 != 2 ? 0 : 1) : -1), false);
+		final TileEntity var4 = world.getTileEntity(x + (var2 != 5 ? (int) (var2 != 4 ? 0 : 1) : -1), y + (var2 != 1 ? (int) (var2 != 0 ? 0 : 1) : -1), z + (var2 != 3 ? (int) (var2 != 2 ? 0 : 1) : -1));
 		if (var4 == null) return false;
 		if (!(var4 instanceof TileRelay) && !(var4 instanceof TileRelay2) && !(var4 instanceof TileRelay3)) {
 			return var4 instanceof IEEPowerNet && ((IEEPowerNet) var4).receiveEnergy(var1, var2, var3);
@@ -347,8 +347,16 @@ public class TileRelay extends TileEE implements ISpecialInventory, ISidedInvent
 	 * @see ee.IEEPowerNet#sendEnergy(int, byte, boolean)
 	 */
 	public boolean sendEnergy(int var1, byte var2, boolean var3) {
-		final TileEntity var4 = EEPBase.getTileEntity2(world, x + (var2 == 4 ? 1 : var2 == 5 ? -1 : 0), y + (var2 == 0 ? 1 : var2 == 1 ? -1 : 0), z + (var2 == 2 ? 1 : var2 == 3 ? -1 : 0), false);
-		return var4 != null ? var4 instanceof TileRelay || var4 instanceof TileRelay2 || var4 instanceof TileRelay3 ? false : var4 instanceof IEEPowerNet && ((IEEPowerNet) var4).receiveEnergy(var1, var2, var3) : false;
+		final TileEntity var4 = world.getTileEntity(x + (var2 == 4 ? 1 : var2 == 5 ? -1 : 0), y + (var2 == 0 ? 1 : var2 == 1 ? -1 : 0), z + (var2 == 2 ? 1 : var2 == 3 ? -1 : 0));
+		return var4 != null
+				?
+					var4 instanceof TileRelay || var4 instanceof TileRelay2 || var4 instanceof TileRelay3
+					?
+						false
+					:
+						var4 instanceof IEEPowerNet && ((IEEPowerNet) var4).receiveEnergy(var1, var2, var3)
+				:
+				false;
 	}
 
 	/**
@@ -513,7 +521,7 @@ public class TileRelay extends TileEE implements ISpecialInventory, ISidedInvent
 	public void g() {}
 
 	public boolean a(EntityHuman var1) {
-		return EEPBase.getTileEntity2(world, x, y, z, false) == this ? var1.e(x + 0.5D, y + 0.5D, z + 0.5D) <= 64D : false;
+		return world.getTileEntity(x, y, z) == this ? var1.e(x + 0.5D, y + 0.5D, z + 0.5D) <= 64D : false;
 	}
 
 	public int getStartInventorySide(int var1) {

@@ -6,6 +6,7 @@
 package ee;
 
 import java.util.Random;
+
 import net.minecraft.server.*;
 
 // Referenced classes of package ee:
@@ -79,13 +80,13 @@ public class TileNovaCataclysm extends TileEE {
 	}
 
 	public boolean tryDropInChest(ItemStack var1) {
-		TileEntity var2 = null;
-			 if (isChest(var2 = EEPBase.getTileEntity2(world, x, y + 1, z, false))) return putInChest(var2, var1);
-		else if (isChest(var2 = EEPBase.getTileEntity2(world, x, y - 1, z, false))) return putInChest(var2, var1);
-		else if (isChest(var2 = EEPBase.getTileEntity2(world, x + 1, y, z, false))) return putInChest(var2, var1);
-		else if (isChest(var2 = EEPBase.getTileEntity2(world, x - 1, y, z, false))) return putInChest(var2, var1);
-		else if (isChest(var2 = EEPBase.getTileEntity2(world, x, y, z + 1, false))) return putInChest(var2, var1);
-		else if (isChest(var2 = EEPBase.getTileEntity2(world, x, y, z - 1, false))) return putInChest(var2, var1);
+		TileEntity var2;
+			 if (isChest(var2 = world.getTileEntity(x, y + 1, z))) return putInChest(var2, var1);
+		else if (isChest(var2 = world.getTileEntity(x, y - 1, z))) return putInChest(var2, var1);
+		else if (isChest(var2 = world.getTileEntity(x + 1, y, z))) return putInChest(var2, var1);
+		else if (isChest(var2 = world.getTileEntity(x - 1, y, z))) return putInChest(var2, var1);
+		else if (isChest(var2 = world.getTileEntity(x, y, z + 1))) return putInChest(var2, var1);
+		else if (isChest(var2 = world.getTileEntity(x, y, z - 1))) return putInChest(var2, var1);
 		else return false;
 	}
 

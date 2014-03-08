@@ -247,7 +247,7 @@ public class TileCollector extends TileEE implements ISpecialInventory, ISidedIn
 	 * Gets tile entity
 	 */
 	public boolean sendEnergy(int var1, byte var2, boolean var3) {
-		final TileEntity var4 = EEPBase.getTileEntity2(world, x + (var2 != 5 ? ((int) (var2 != 4 ? 0 : 1)) : -1), y + (var2 != 1 ? ((int) (var2 != 0 ? 0 : 1)) : -1), z + (var2 != 3 ? ((int) (var2 != 2 ? 0 : 1)) : -1), false);
+		final TileEntity var4 = world.getTileEntity(x + (var2 != 5 ? ((int) (var2 != 4 ? 0 : 1)) : -1), y + (var2 != 1 ? ((int) (var2 != 0 ? 0 : 1)) : -1), z + (var2 != 3 ? ((int) (var2 != 2 ? 0 : 1)) : -1));
 		return var4 != null ? (var4 instanceof IEEPowerNet) && ((IEEPowerNet) var4).receiveEnergy(var1 + ((IEEPowerNet) var4).relayBonus(), var2, var3) : false;
 	}
 
@@ -499,7 +499,7 @@ public class TileCollector extends TileEE implements ISpecialInventory, ISidedIn
 	public void g() {}
 
 	public boolean a(EntityHuman var1) {
-		return EEPBase.getTileEntity2(world, x, y, z, false) == this ? var1.e(x + 0.5D, y + 0.5D, z + 0.5D) <= 64D : false;
+		return world.getTileEntity(x, y, z) == this ? var1.e(x + 0.5D, y + 0.5D, z + 0.5D) <= 64D : false;
 	}
 
 	public int getStartInventorySide(int var1) {

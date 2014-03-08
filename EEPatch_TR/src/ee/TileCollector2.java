@@ -301,7 +301,7 @@ public class TileCollector2 extends TileEE
 
 	public boolean sendEnergy(int i, byte byte0, boolean flag)
 	{
-		TileEntity tileentity = EEPBase.getTileEntity2(world, x + (byte0 == 5 ? -1 : ((byte)(byte0 == 4 ? 1 : 0))), y + (byte0 == 1 ? -1 : ((byte)(byte0 == 0 ? 1 : 0))), z + (byte0 == 3 ? -1 : ((byte)(byte0 == 2 ? 1 : 0))), false);
+		TileEntity tileentity = world.getTileEntity(x + (byte0 == 5 ? -1 : ((byte)(byte0 == 4 ? 1 : 0))), y + (byte0 == 1 ? -1 : ((byte)(byte0 == 0 ? 1 : 0))), z + (byte0 == 3 ? -1 : ((byte)(byte0 == 2 ? 1 : 0))));
 		if (tileentity == null) return false;
 		return (tileentity instanceof IEEPowerNet) && ((IEEPowerNet)tileentity).receiveEnergy(i + ((IEEPowerNet)tileentity).relayBonus(), byte0, flag);
 	}
@@ -612,10 +612,8 @@ public class TileCollector2 extends TileEE
 	{
 	}
 
-	public boolean a(EntityHuman entityhuman)
-	{
-		if (EEPBase.getTileEntity2(world, x, y, z, false) != this)
-			return false;
+	public boolean a(EntityHuman entityhuman) {
+		if (world.getTileEntity(x, y, z) != this) return false;
 		return entityhuman.e(x + 0.5D, y + 0.5D, z + 0.5D) <= 64D;
 	}
 
