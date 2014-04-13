@@ -19,7 +19,7 @@ public class EEPatch {
 	public static boolean allowAlcBags = true;
 	public static boolean separateAlcBags = false;
 	public static boolean applySidePatch = false;
-	public static ArrayList<String> sharedWorlds = new ArrayList<String>();
+	public static ArrayList<String> sharedWorlds = new ArrayList<>();
 	public static String mainSharedWorld = "";
 	public static int transTableInterval;
 	
