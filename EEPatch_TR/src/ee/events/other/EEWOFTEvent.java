@@ -1,27 +1,28 @@
 package ee.events.other;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import net.minecraft.server.EntityHuman;
 import net.minecraft.server.ItemStack;
 import net.minecraft.server.World;
 import ee.events.EEEnums.EEAction;
 import ee.events.EEEnums.EEWatchAction;
-import ee.events.EEEvent;
+import ee.events.EEPlayerEvent;
 
-public class EEWOFTEvent extends EEEvent {
+/**
+ * Represents an event with a Watch of Flowing Time
+ */
+public class EEWOFTEvent extends EEPlayerEvent {
 	protected ItemStack tool;
 	protected EEAction action;
-	protected EntityHuman human;
 	protected EEWatchAction extra;
 	protected double x, y, z;
 	protected World world;
 	
 	public EEWOFTEvent(ItemStack tool, EEAction action, EntityHuman human, EEWatchAction extra) {
+		super(human);
 		this.action = action;
 		this.tool = tool;
-		this.human = human;
 		this.extra = extra;
 		this.world = human.world;
 		this.x = human.locX;
@@ -30,9 +31,9 @@ public class EEWOFTEvent extends EEEvent {
 	}
 	
 	public EEWOFTEvent(EEAction action, EntityHuman human, EEWatchAction extra) {
+		super(human);
 		this.action = action;
 		this.tool = null;
-		this.human = human;
 		this.extra = extra;
 		this.world = human.world;
 		this.x = human.locX;
@@ -41,9 +42,9 @@ public class EEWOFTEvent extends EEEvent {
 	}
 	
 	public EEWOFTEvent(ItemStack tool, EEAction action, EntityHuman human, int x, int y, int z, EEWatchAction extra) {
+		super(human);
 		this.action = action;
 		this.tool = tool;
-		this.human = human;
 		this.extra = extra;
 		this.world = human.world;
 		this.x = x;
@@ -51,6 +52,10 @@ public class EEWOFTEvent extends EEEvent {
 		this.z = z;
 	}
 
+	/**
+	 * @return The action of this event
+	 * @see EEAction
+	 */
 	public EEAction getAction() {
 		return action;
 	}
@@ -62,15 +67,10 @@ public class EEWOFTEvent extends EEEvent {
 		return tool;
 	}
 
-	public EntityHuman getHuman(){
-		return human;
-	}
-	
-	public Player getPlayer(){
-		if (human == null) return null;
-		return (Player) human.getBukkitEntity();
-	}
-	
+	/**
+	 * @return Extra information about this action
+	 * @see EEWatchAction
+	 */
 	public EEWatchAction getExtraInfo(){
 		return extra;
 	}

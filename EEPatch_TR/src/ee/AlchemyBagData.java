@@ -488,28 +488,29 @@ public class AlchemyBagData extends WorldMapBase implements IInventory {
 	private void PullItems(Entity entity, EntityHuman human) {
 		if (!(entity instanceof EntityItem) && !(entity instanceof EntityLootBall)) return;
 		if (entity instanceof EntityLootBall) ((EntityLootBall) entity).setBeingPulled(true);
-		double var4 = (EEBase.playerX(human) + 0.5D) - entity.locX;
-		double var6 = (EEBase.playerY(human) + 0.5D) - entity.locY;
-		double var8 = (EEBase.playerZ(human) + 0.5D) - entity.locZ;
-		double var10 = var4 * var4 + var6 * var6 + var8 * var8;
+		double dx = (EEBase.playerX(human) + 0.5D) - entity.locX;
+		double dy = (EEBase.playerY(human) + 0.5D) - entity.locY;
+		double dz = (EEBase.playerZ(human) + 0.5D) - entity.locZ;
+		double var10 = dx * dx + dy * dy + dz * dz;
 		var10 *= var10;
-		if (var10 <= Math.pow(6D, 4D)) {
-			double var12 = ((var4 * 0.019999999552965164D) / var10) * Math.pow(6D, 3D);
-			double var14 = ((var6 * 0.019999999552965164D) / var10) * Math.pow(6D, 3D);
-			double var16 = ((var8 * 0.019999999552965164D) / var10) * Math.pow(6D, 3D);
+		
+		if (var10 <= 1296d) {
+			double vx = ((dx * 0.01999999955296516D) / var10) * 216d;
+			double vy = ((dy * 0.01999999955296516D) / var10) * 216d;
+			double vz = ((dz * 0.01999999955296516D) / var10) * 216d;
 			
-			if (var12 > 0.1D) var12 = 0.1D;
-			else if (var12 < -0.1D) var12 = -0.1D;
+			if (vx > 0.1D) vx = 0.1D;
+			else if (vx < -0.1D) vx = -0.1D;
 			
-			if (var14 > 0.1D) var14 = 0.1D;
-			else if (var14 < -0.1D) var14 = -0.1D;
+			if (vy > 0.1D) vy = 0.1D;
+			else if (vy < -0.1D) vy = -0.1D;
 			
-			if (var16 > 0.1D) var16 = 0.1D;
-			else if (var16 < -0.1D) var16 = -0.1D;
+			if (vz > 0.1D) vz = 0.1D;
+			else if (vz < -0.1D) vz = -0.1D;
 			
-			entity.motX += var12 * 1.2D;
-			entity.motY += var14 * 1.2D;
-			entity.motZ += var16 * 1.2D;
+			entity.motX += vx * 1.2D;
+			entity.motY += vy * 1.2D;
+			entity.motZ += vz * 1.2D;
 		}
 	}
 

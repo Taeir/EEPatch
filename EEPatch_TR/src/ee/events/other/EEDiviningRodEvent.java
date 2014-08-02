@@ -6,6 +6,9 @@ import ee.events.EEEnums.EEAction;
 import ee.events.EEEnums.EEAction2;
 import ee.events.EEToolEvent;
 
+/**
+ * Represents an event with a Divining Rod
+ */
 public class EEDiviningRodEvent extends EEToolEvent {
 	public EEDiviningRodEvent(ItemStack tool, EEAction action, EntityHuman human, EEAction2 extra) {
 		super(tool, action, human, extra);

@@ -6,6 +6,9 @@ import ee.events.EEToolEvent;
 import ee.events.EEEnums.EEAction;
 import ee.events.EEEnums.EEAction2;
 
+/**
+ * Represents an event with a Red Matter Tool.
+ */
 public class EERMToolEvent extends EEToolEvent {
 
 	public EERMToolEvent(ItemStack tool, EEAction action, EntityHuman human) {

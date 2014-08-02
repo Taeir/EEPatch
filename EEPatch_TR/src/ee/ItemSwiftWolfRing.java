@@ -72,29 +72,29 @@ public class ItemSwiftWolfRing extends ItemEECharged {
 	private void PushEntities(Entity var1, EntityHuman human) {
 		if (var1 instanceof EntityHuman) return;
 		
-		double var4 = human.locX + 0.5D - var1.locX;
-		double var6 = human.locY + 0.5D - var1.locY;
-		double var8 = human.locZ + 0.5D - var1.locZ;
-		double var10 = var4 * var4 + var6 * var6 + var8 * var8;
+		double dx = human.locX + 0.5D - var1.locX;
+		double dy = human.locY + 0.5D - var1.locY;
+		double dz = human.locZ + 0.5D - var1.locZ;
+		double var10 = dx * dx + dy * dy + dz * dz;
 		var10 *= var10;
 
-		if (var10 <= Math.pow(6.0D, 4.0D)) {
-			double var12 = -(var4 * 0.01999999955296516D / var10) * Math.pow(6.0D, 3.0D);
-			double var14 = -(var6 * 0.01999999955296516D / var10) * Math.pow(6.0D, 3.0D);
-			double var16 = -(var8 * 0.01999999955296516D / var10) * Math.pow(6.0D, 3.0D);
+		if (var10 <= 1296d) {
+			double vx = -(dx * 0.02D / var10) * 216;
+			double vy = -(dy * 0.02D / var10) * 216;
+			double vz = -(dz * 0.02D / var10) * 216;
 
-			if (var12 > 0.0D) var12 = 0.12D;
-			else if (var12 < 0.0D) var12 = -0.12D;
+			if (vx > 0.0D) vx = 0.12D;
+			else if (vx < 0.0D) vx = -0.12D;
 
-			if (var14 > 0.2D) var14 = 0.12D;
-			else if (var14 < -0.1D) var14 = 0.12D;
+			if (vy > 0.2D) vy = 0.12D;
+			else if (vy < -0.1D) vy = 0.12D;
 
-			if (var16 > 0.0D) var16 = 0.12D;
-			else if (var16 < 0.0D) var16 = -0.12D;
+			if (vz > 0.0D) vz = 0.12D;
+			else if (vz < 0.0D) vz = -0.12D;
 
-			var1.motX += var12;
-			var1.motY += var14;
-			var1.motZ += var16;
+			var1.motX += vx;
+			var1.motY += vy;
+			var1.motZ += vz;
 		}
 		
 	}

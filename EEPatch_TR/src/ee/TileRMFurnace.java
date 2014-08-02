@@ -337,7 +337,7 @@ public class TileRMFurnace extends TileEE implements ISpecialInventory, ISidedIn
 
 			} else {
 				for(int var4 = 15; var4 < 27; var4++) {
-					if(items[var4] != null && items[var4].count >= items[var4].getMaxStackSize() && tryDropInChest(new ItemStack(items[var4].getItem(), items[var4].count)))
+					if(items[var4] != null && items[var4].count >= items[var4].getMaxStackSize() && tryDropInChest(new ItemStack(items[var4].getItem(), items[var4].count, items[var4].getData())))
 						items[var4] = null;
 				}
 

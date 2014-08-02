@@ -398,13 +398,13 @@ public class EEBase {
 		if (var0.pitch <= -55F)
 			return 1.0D;
 		else if ((var0.pitch > -55.0F) && (var0.pitch < 55.0F))
-			return (MathHelper.floor(var0.yaw * 4.0F / 360.0F + 0.5D) & 0x3) + 2;
+			return (MathHelper.floor(var0.yaw * 4.0F / 360.0F + 0.5f) & 0x3) + 2;
 		else
 			return 0.0D;
 				
 	}
 	public static double heading(EntityHuman var0) {
-		return (MathHelper.floor(var0.yaw * 4.0F / 360.0F + 0.5D) & 0x3) + 2;
+		return (MathHelper.floor(var0.yaw * 4.0F / 360.0F + 0.5f) & 0x3) + 2;
 	}
 	public static double playerX(EntityHuman var0) {
 		return MathHelper.floor(var0.locX);
@@ -570,21 +570,24 @@ public class EEBase {
 	private static void helmetCheck(EntityHuman var0) {
 		if ((hasRedHelmet(var0)) && (getPlayerArmorOffensive(var0))) {
 			if (EEEventManager.callEvent(new EEArmorEvent(var0, EEAction.RELEASE, EEArmorAction.OffensiveStrike))) return;
-			float var1 = 1.0F;
-			float var2 = var0.lastPitch + (var0.pitch - var0.lastPitch) * var1;
-			float var3 = var0.lastYaw + (var0.yaw - var0.lastYaw) * var1;
-			double var4 = var0.lastX + (var0.locX - var0.lastX) * var1;
-			double var6 = var0.lastY + (var0.locY - var0.lastY) * var1 + 1.62D - var0.height;
-			double var8 = var0.lastZ + (var0.locZ - var0.lastZ) * var1;
+
+			float var2 = var0.lastPitch + (var0.pitch - var0.lastPitch) * 1f;
+			float var3 = var0.lastYaw + (var0.yaw - var0.lastYaw) * 1f;
+			double var4 = var0.lastX + (var0.locX - var0.lastX) * 1f;
+			double var6 = var0.lastY + (var0.locY - var0.lastY) * 1f + 1.62D - var0.height;
+			double var8 = var0.lastZ + (var0.locZ - var0.lastZ) * 1f;
 			Vec3D var10 = Vec3D.create(var4, var6, var8);
-			float var11 = MathHelper.cos(-var3 * 0.01745329F - 3.141593F);
-			float var12 = MathHelper.sin(-var3 * 0.01745329F - 3.141593F);
-			float var13 = -MathHelper.cos(-var2 * 0.01745329F);
-			float var14 = MathHelper.sin(-var2 * 0.01745329F);
+			
+			float tmp = -var3 * 0.01745329F - 3.141593F;
+			float var11 = MathHelper.cos(tmp);
+			float var12 = MathHelper.sin(tmp);
+			tmp = -var2 * 0.01745329F;
+			float var13 = -MathHelper.cos(tmp);
+			float var14 = MathHelper.sin(tmp);
 			float var15 = var12 * var13;
 			float var17 = var11 * var13;
-			double var18 = 150.0D;
-			Vec3D var20 = var10.add(var15 * var18, var14 * var18, var17 * var18);
+
+			Vec3D var20 = var10.add(var15 * 150d, var14 * 150d, var17 * 150d);
 			MovingObjectPosition var21 = var0.world.rayTrace(var10, var20, true);
 
 			if (var21 == null) return;

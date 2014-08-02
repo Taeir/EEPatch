@@ -45,10 +45,10 @@ public class ItemVoidRing extends ItemEECharged {
 			double var10 = var4 * var4 + var6 * var6 + var8 * var8;
 			var10 *= var10;
 
-			if (var10 > Math.pow(6.0D, 4.0D)) return;
-			double var12 = var4 * 0.01999999955296516D / var10 * Math.pow(6.0D, 3.0D);
-			double var14 = var6 * 0.01999999955296516D / var10 * Math.pow(6.0D, 3.0D);
-			double var16 = var8 * 0.01999999955296516D / var10 * Math.pow(6.0D, 3.0D);
+			if (var10 > 1296d) return;
+			double var12 = var4 * 0.01999999955296516D / var10 * 216d;
+			double var14 = var6 * 0.01999999955296516D / var10 * 216d;
+			double var16 = var8 * 0.01999999955296516D / var10 * 216d;
 
 			if (var12 > 0.1D)
 				var12 = 0.1D;
@@ -77,10 +77,10 @@ public class ItemVoidRing extends ItemEECharged {
 			double var10 = var4 * var4 + var6 * var6 + var8 * var8;
 			var10 *= var10;
 
-			if (var10 > Math.pow(6.0D, 4.0D)) return;
-			double var12 = var4 * 0.01999999955296516D / var10 * Math.pow(6.0D, 3.0D);
-			double var14 = var6 * 0.01999999955296516D / var10 * Math.pow(6.0D, 3.0D);
-			double var16 = var8 * 0.01999999955296516D / var10 * Math.pow(6.0D, 3.0D);
+			if (var10 > 1296d) return;
+			double var12 = var4 * 0.01999999955296516D / var10 * 216d;
+			double var14 = var6 * 0.01999999955296516D / var10 * 216d;
+			double var16 = var8 * 0.01999999955296516D / var10 * 216d;
 
 			if (var12 > 0.1D)
 				var12 = 0.1D;

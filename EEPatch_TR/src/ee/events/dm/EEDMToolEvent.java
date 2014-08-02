@@ -5,6 +5,9 @@ import net.minecraft.server.ItemStack;
 import ee.events.EEToolEvent;
 import ee.events.EEEnums.*;
 
+/**
+ * Represents an event with a Dark Matter Tool.
+ */
 public class EEDMToolEvent extends EEToolEvent {
 	public EEDMToolEvent(ItemStack tool, EEAction action, EntityHuman human, EEAction2 extra) {
 		super(tool, action, human, extra);

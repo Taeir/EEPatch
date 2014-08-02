@@ -817,10 +817,10 @@ public class TileCondenser extends TileEE implements ISpecialInventory, ISidedIn
 			double var7 = z + 0.5D - var1.locZ;
 			double var9 = var3 * var3 + var5 * var5 + var7 * var7;
 			var9 *= var9;
-			if (var9 <= Math.pow(6D, 4D)) {
-				double var11 = var3 * 0.02D / var9 * Math.pow(6D, 3D);
-				double var13 = var5 * 0.02D / var9 * Math.pow(6D, 3D);
-				double var15 = var7 * 0.02D / var9 * Math.pow(6D, 3D);
+			if (var9 <= 1296d) {
+				double var11 = var3 * 0.02D / var9 * 216d;
+				double var13 = var5 * 0.02D / var9 * 216d;
+				double var15 = var7 * 0.02D / var9 * 216d;
 				if (var11 > 0.1D) var11 = 0.1D;
 				else if (var11 < -0.1D) var11 = -0.1D;
 				

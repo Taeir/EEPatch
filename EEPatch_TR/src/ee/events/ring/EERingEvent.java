@@ -1,27 +1,27 @@
 package ee.events.ring;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import net.minecraft.server.EntityHuman;
 import net.minecraft.server.ItemStack;
 import net.minecraft.server.World;
-
-import ee.events.EEEvent;
+import ee.events.EEPlayerEvent;
 import ee.events.EEEnums.*;
 
-public class EERingEvent extends EEEvent {
+/**
+ * Represents an event with a Ring
+ */
+public class EERingEvent extends EEPlayerEvent {
 	protected ItemStack ring;
 	protected EEAction action;
-	protected EntityHuman human;
 	protected EERingAction extra;
 	protected double x, y, z;
 	protected World world;
 	
 	public EERingEvent(ItemStack ring, EEAction action, EntityHuman human, EERingAction extra) {
+		super(human);
 		this.action = action;
 		this.ring = ring;
-		this.human = human;
 		this.extra = extra;
 		this.world = human.world;
 		this.x = human.locX;
@@ -30,9 +30,9 @@ public class EERingEvent extends EEEvent {
 	}
 	
 	public EERingEvent(ItemStack ring, EEAction action, EntityHuman human, int x, int y, int z, EERingAction extra) {
+		super(human);
 		this.action = action;
 		this.ring = ring;
-		this.human = human;
 		this.extra = extra;
 		this.world = human.world;
 		this.x = x;
@@ -40,23 +40,25 @@ public class EERingEvent extends EEEvent {
 		this.z = z;
 	}
 
+	/**
+	 * @return The action of this event
+	 * @see EEAction
+	 */
 	public EEAction getAction() {
 		return action;
 	}
 
+	/**
+	 * @return The Ring used.
+	 */
 	public ItemStack getRing() {
 		return ring;
 	}
 
-	public EntityHuman getHuman(){
-		return human;
-	}
-	
-	public Player getPlayer(){
-		if (human == null) return null;
-		return (Player) human.getBukkitEntity();
-	}
-	
+	/**
+	 * @return Extra information about this event
+	 * @see EERingAction
+	 */
 	public EERingAction getExtraInfo(){
 		return extra;
 	}

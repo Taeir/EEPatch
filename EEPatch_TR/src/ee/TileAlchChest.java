@@ -671,10 +671,10 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 			double var9 = var3 * var3 + var5 * var5 + var7 * var7;
 			var9 *= var9;
 
-			if (var9 <= Math.pow(6.0D, 4.0D)) {
-				double var11 = var3 * 0.02D / var9 * Math.pow(6.0D, 3.0D);
-				double var13 = var5 * 0.02D / var9 * Math.pow(6.0D, 3.0D);
-				double var15 = var7 * 0.02D / var9 * Math.pow(6.0D, 3.0D);
+			if (var9 <= 1296d) {
+				double var11 = var3 * 0.02D / var9 * 216d;
+				double var13 = var5 * 0.02D / var9 * 216d;
+				double var15 = var7 * 0.02D / var9 * 216d;
 
 				if (var11 > 0.1D) {
 					var11 = 0.1D;
@@ -714,10 +714,10 @@ public class TileAlchChest extends TileEE implements ISpecialInventory, ISidedIn
 			double var12 = var6 * var6 + var8 * var8 + var10 * var10;
 			var12 *= var12;
 
-			if (var12 <= Math.pow(6.0D, 4.0D)) {
-				double var14 = -(var6 * 0.02D / var12) * Math.pow(6.0D, 3.0D);
-				double var16 = -(var8 * 0.02D / var12) * Math.pow(6.0D, 3.0D);
-				double var18 = -(var10 * 0.02D / var12) * Math.pow(6.0D, 3.0D);
+			if (var12 <= 1296d) {
+				double var14 = -(var6 * 0.02D / var12) * 216d;
+				double var16 = -(var8 * 0.02D / var12) * 216d;
+				double var18 = -(var10 * 0.02D / var12) * 216d;
 
 				if (var14 > 0.0D) {
 					var14 = 0.22D;

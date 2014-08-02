@@ -255,7 +255,7 @@ public class EEMaps {
 
 		int emc = getEMC(var0.id, var0.getData());
 		if (emc != 0) {
-			return emc;
+			return emc < 0 ? 0 : emc;
 		} else {
 			emc = getEMC(var0.id);
 			if (emc <= 0) {

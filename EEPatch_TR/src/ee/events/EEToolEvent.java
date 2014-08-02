@@ -1,7 +1,6 @@
 package ee.events;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import net.minecraft.server.EntityHuman;
 import net.minecraft.server.ItemStack;
@@ -9,18 +8,20 @@ import net.minecraft.server.World;
 
 import ee.events.EEEnums.*;
 
-public class EEToolEvent extends EEEvent {
+/**
+ * Represents an event with an EE Tool.
+ */
+public class EEToolEvent extends EEPlayerEvent {
 	protected ItemStack tool;
 	protected EEAction action;
-	protected EntityHuman human;
 	protected EEAction2 extra;
 	protected double x, y, z;
 	protected World world;
 	
 	public EEToolEvent(ItemStack tool, EEAction action, EntityHuman human, EEAction2 extra) {
+		super(human);
 		this.action = action;
 		this.tool = tool;
-		this.human = human;
 		this.extra = extra;
 		this.world = human.world;
 		this.x = human.locX;
@@ -29,9 +30,9 @@ public class EEToolEvent extends EEEvent {
 	}
 	
 	public EEToolEvent(ItemStack tool, EEAction action, EntityHuman human, int x, int y, int z, EEAction2 extra) {
+		super(human);
 		this.action = action;
 		this.tool = tool;
-		this.human = human;
 		this.extra = extra;
 		this.world = human.world;
 		this.x = x;
@@ -39,21 +40,19 @@ public class EEToolEvent extends EEEvent {
 		this.z = z;
 	}
 
+	/**
+	 * @return The Action of this Event.
+	 * @see EEAction
+	 */
 	public EEAction getAction() {
 		return action;
 	}
 
+	/**
+	 * @return The tool that caused this event.
+	 */
 	public ItemStack getTool() {
 		return tool;
-	}
-
-	public EntityHuman getHuman(){
-		return human;
-	}
-	
-	public Player getPlayer(){
-		if (human == null) return null;
-		return (Player) human.getBukkitEntity();
 	}
 	
 	/**
@@ -62,7 +61,8 @@ public class EEToolEvent extends EEEvent {
 	 * TallBreak, WideBreak, LongBreak, MegaBreak (hammer)<br>
 	 * UpdateToolMode, UpdateHammerMode<br>
 	 * Shear
-	 * @return
+	 * @return Extra info about this event.
+	 * @see EEAction2
 	 */
 	public EEAction2 getExtraInfo(){
 		return extra;
@@ -74,5 +74,25 @@ public class EEToolEvent extends EEEvent {
 	
 	public Location getLocation(){
 		return new Location(world.getWorld(), x, y, z);
+	}
+	
+	public double getX(){
+		return x;
+	}
+	
+	public double getY(){
+		return y;
+	}
+	
+	public double getZ(){
+		return z;
+	}
+	
+	public World getMCWorld(){
+		return world;
+	}
+	
+	public org.bukkit.World getWorld(){
+		return world.getWorld();
 	}
 }

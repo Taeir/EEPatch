@@ -3,9 +3,13 @@ package ee;
 import java.util.List;
 //import java.util.Random;
 
+
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 
+import ee.events.EEEventManager;
+import ee.events.entity.WaterVaporizeEvent;
 import net.minecraft.server.AxisAlignedBB;
 import net.minecraft.server.DamageSource;
 import net.minecraft.server.EEProxy;
@@ -169,13 +173,19 @@ public class EntityLavaEssence extends Entity {
 		int y = MathHelper.floor(locY);
 		int z = MathHelper.floor(locZ);
 
+		int nx, ny, nz;
 		for (int var5 = -2; var5 <= 2; var5++) {
 			for (int var6 = -2; var6 <= 2; var6++) {
 				for (int var7 = -2; var7 <= 2; var7++) {
-					if (world.getMaterial(x + var5, y + var6, z + var7) == Material.WATER) {
-						if (attemptBreak(player, x + var5, y + var6, z + var7)) {
-							world.setTypeId(x + var5, y + var6, z + var7, 0);
-							world.a("smoke", x + var5, y + var6, z + var7, 0.0D, 0.1D, 0.0D);
+					nx = x + var5;
+					ny = y + var6;
+					nz = z + var7;
+					if (world.getMaterial(nx, ny, nz) == Material.WATER) {
+						if (EEEventManager.callEvent(new WaterVaporizeEvent(player, nx, ny, nz))) continue;
+						
+						if (attemptBreak(player, nx, ny, nz)) {
+							world.setTypeId(nx, ny, nz, 0);
+							world.a("smoke", nx, ny, nz, 0.0D, 0.1D, 0.0D);
 							world.makeSound(this, "random.fizz", 1.0F, 1.2F / (random.nextFloat() * 0.2F + 0.9F));
 						}
 					}
@@ -194,8 +204,9 @@ public class EntityLavaEssence extends Entity {
 			double var10 = 0.0D;
 
 			Entity var8 = null;
+			Entity var13;
 			for (int var12 = 0; var12 < var9.size(); var12++) {
-				Entity var13 = var9.get(var12);
+				var13 = var9.get(var12);
 
 				if (var13.o_() && (player == null || var13 != player)) {
 					float var14 = 0.3F;

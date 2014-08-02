@@ -490,7 +490,7 @@ public class TransTabletData extends WorldMapBase implements IInventory {
 	}
 
 	public InventoryHolder getOwner() {
-		return null;
+		return player == null ? null : player.getBukkitEntity();
 	}
 
 	public void setMaxStackSize(int size) {}

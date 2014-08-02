@@ -188,14 +188,14 @@ public class ContainerTransmutation extends Container {
 		super.a(var1);
 		EEBase.closeTransGrid(player);
 		
-		if (player.world.isStatic) return;
-		for (int var2 = 0; var2 < 25; var2++) {
-			ItemStack var3 = transGrid.splitWithoutUpdate(var2);
-
-			if (var3 != null) {
-				player.drop(var3);
-			}
-		}
+//		if (player.world.isStatic) return;
+//		for (int var2 = 0; var2 < 25; var2++) {
+//			ItemStack var3 = transGrid.splitWithoutUpdate(var2);
+//
+//			if (var3 != null) {
+//				player.drop(var3);
+//			}
+//		}
 		
 	}
 	
