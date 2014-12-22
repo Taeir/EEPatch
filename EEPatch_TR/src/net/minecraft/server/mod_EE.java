@@ -177,7 +177,7 @@ public class mod_EE extends NetworkMod {
 			EntityHuman var3 = var2.next();
 
 			if (!EEBase.getTransGridOpen(var3).booleanValue()) continue;
-			EEProxy.getTransData(var3).onUpdate(var3.world, var3);
+			EEPatch.getTransData(var3).onUpdate(var3.world, var3);
 		}
 	}
 

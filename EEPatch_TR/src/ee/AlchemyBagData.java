@@ -66,7 +66,14 @@ public class AlchemyBagData extends WorldMapBase implements IInventory {
 
 				if (!found) continue;
 				
-				String datName = new StringBuilder("bag_").append(var2.name).append(data).toString();
+				//ADDED
+				if (data > EEPatch.alcBagAmount) continue;
+				
+				String datName = EEPatch.getBag(var2, var1, data);
+				//---
+				//REMOVED
+				//String datName = new StringBuilder("bag_").append(var2.name).append(data).toString();
+				//---
 				AlchemyBagData bag = (AlchemyBagData) var1.a(ee.AlchemyBagData.class, datName);
 				
 				if (bag == null) continue;

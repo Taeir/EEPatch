@@ -35,7 +35,7 @@ public class ItemAlchemyBag extends ItemEECharged {
 
 	@SuppressWarnings("unused")
 	private AlchemyBagData getBagData(ItemStack item, World world) {
-		String datName = "bag_global" + item.getData();
+		String datName = "bag_global_" + item.getData();
 		AlchemyBagData bag = (AlchemyBagData) world.a(AlchemyBagData.class, datName);
 
 		if (bag == null) {
@@ -70,21 +70,23 @@ public class ItemAlchemyBag extends ItemEECharged {
 		if (EEProxy.isClient(world) || !(entity instanceof EntityHuman)) return;
 		if (!EEPatch.allowAlcBags) return;
 		EntityHuman human = (EntityHuman) entity;
-		String datName;
 		
-		if (item.getData() > EEPatch.alcBagAmount){
-			human.a("You are not allowed to have more than " + (EEPatch.alcBagAmount+1) + " different bags!");
-			item.setData(EEPatch.alcBagAmount);
-		}
-		
-		if (EEPatch.separateAlcBags){
-			if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
-				datName = "bag_"+EEPatch.mainSharedWorld+"_"+human.name+item.getData();
-			else
-				datName = "bag_" + world.worldData.name + "_" + human.name + item.getData();
-		} else {
-			datName = "bag_" + human.name + item.getData();
-		}
+		String datName = EEPatch.getBag(human, world, item);
+//		String datName;
+//		
+//		if (item.getData() > EEPatch.alcBagAmount){
+//			human.a("You are not allowed to have more than " + (EEPatch.alcBagAmount+1) + " different bags!");
+//			item.setData(EEPatch.alcBagAmount);
+//		}
+//		
+//		if (EEPatch.separateAlcBags){
+//			if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
+//				datName = "bag_"+EEPatch.mainSharedWorld+"_"+human.name+item.getData();
+//			else
+//				datName = "bag_" + world.worldData.name + "_" + human.name + item.getData();
+//		} else {
+//			datName = "bag_" + human.name + item.getData();
+//		}
 		
 		AlchemyBagData bag = (AlchemyBagData) world.a(AlchemyBagData.class, datName);
 		
@@ -98,30 +100,32 @@ public class ItemAlchemyBag extends ItemEECharged {
 	}
 
 	public static AlchemyBagData getBagData(ItemStack item, EntityHuman human, World world) {
-		String datName;
-		if (!EEPatch.allowAlcBags){
-			datName = "bag_global";
-		} else if (item.getData() > EEPatch.alcBagAmount){
-			human.a("You are not allowed to have more than " + (EEPatch.alcBagAmount+1) + " different bags!");
-			item.setData(EEPatch.alcBagAmount);
-			if (EEPatch.separateAlcBags){
-				if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
-					datName = "bag_"+EEPatch.mainSharedWorld+"_"+human.name+item.getData();
-				else
-					datName = "bag_" + world.worldData.name + "_" + human.name + item.getData();
-			} else {
-				datName = "bag_" + human.name + item.getData();
-			}
-		} else {
-			if (EEPatch.separateAlcBags){
-				if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
-					datName = "bag_" + EEPatch.mainSharedWorld + "_" + human.name + item.getData();
-				else
-					datName = "bag_" + world.worldData.name + "_" + human.name + item.getData();
-			} else {
-				datName = "bag_" + human.name + item.getData();
-			}
-		}
+		String datName = EEPatch.getBag(human, world, item);
+//		String datName;
+//		
+//		if (!EEPatch.allowAlcBags){
+//			datName = "bag_global";
+//		} else if (item.getData() > EEPatch.alcBagAmount){
+//			human.a("You are not allowed to have more than " + (EEPatch.alcBagAmount+1) + " different bags!");
+//			item.setData(EEPatch.alcBagAmount);
+//			if (EEPatch.separateAlcBags){
+//				if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
+//					datName = "bag_"+EEPatch.mainSharedWorld+"_"+human.name+item.getData();
+//				else
+//					datName = "bag_" + world.worldData.name + "_" + human.name + item.getData();
+//			} else {
+//				datName = "bag_" + human.name + item.getData();
+//			}
+//		} else {
+//			if (EEPatch.separateAlcBags){
+//				if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
+//					datName = "bag_" + EEPatch.mainSharedWorld + "_" + human.name + item.getData();
+//				else
+//					datName = "bag_" + world.worldData.name + "_" + human.name + item.getData();
+//			} else {
+//				datName = "bag_" + human.name + item.getData();
+//			}
+//		}
 		
 		AlchemyBagData bag = (AlchemyBagData) world.a(AlchemyBagData.class, datName);
 
@@ -135,32 +139,34 @@ public class ItemAlchemyBag extends ItemEECharged {
 	}
 
 	public static AlchemyBagData getBagData(int color, EntityHuman human, World world) {
+		String datName = EEPatch.getBag(human, world, color);
+		
 		//String name = human.name;
-		String datName; //= "bag_" + name + color;
-		if (!EEPatch.allowAlcBags){
-			datName = "bag_global";
-		} else if (color > EEPatch.alcBagAmount) {
-			human.a("You are not allowed to have more than " + (EEPatch.alcBagAmount+1) + " different bags!");
-			color = EEPatch.alcBagAmount;
-			
-			if (EEPatch.separateAlcBags){
-				if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
-					datName = "bag_" + EEPatch.mainSharedWorld + "_" + human.name + color;
-				else
-					datName = "bag_" + world.worldData.name + "_" + human.name + color;
-			} else {
-				datName = "bag_" + human.name + color;
-			}
-		} else {
-			if (EEPatch.separateAlcBags){
-				if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
-					datName = "bag_" + EEPatch.mainSharedWorld + "_" + human.name + color;
-				else
-					datName = "bag_" + world.worldData.name + "_" + human.name + color;
-			} else {
-				datName = "bag_" + human.name + color;
-			}
-		}
+//		String datName; //= "bag_" + name + color;
+//		if (!EEPatch.allowAlcBags){
+//			datName = "bag_global";
+//		} else if (color > EEPatch.alcBagAmount) {
+//			human.a("You are not allowed to have more than " + (EEPatch.alcBagAmount+1) + " different bags!");
+//			color = EEPatch.alcBagAmount;
+//			
+//			if (EEPatch.separateAlcBags){
+//				if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
+//					datName = "bag_" + EEPatch.mainSharedWorld + "_" + human.name + color;
+//				else
+//					datName = "bag_" + world.worldData.name + "_" + human.name + color;
+//			} else {
+//				datName = "bag_" + human.name + color;
+//			}
+//		} else {
+//			if (EEPatch.separateAlcBags){
+//				if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
+//					datName = "bag_" + EEPatch.mainSharedWorld + "_" + human.name + color;
+//				else
+//					datName = "bag_" + world.worldData.name + "_" + human.name + color;
+//			} else {
+//				datName = "bag_" + human.name + color;
+//			}
+//		}
 		AlchemyBagData bag = (AlchemyBagData) world.a(AlchemyBagData.class, datName);
 
 		if (bag == null) {
@@ -177,19 +183,21 @@ public class ItemAlchemyBag extends ItemEECharged {
 		if (EEProxy.isClient(world)) return;
 		if (!EEPatch.allowAlcBags) return;
 		
-		if (item.getData() > EEPatch.alcBagAmount){
-			human.a("You are not allowed to have more than " + (EEPatch.alcBagAmount+1) + " different bags!");
-			item.setData(EEPatch.alcBagAmount);
-		}
-		String datName;
-		if (EEPatch.separateAlcBags){
-			if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
-				datName = "bag_" + EEPatch.mainSharedWorld + "_" + human.name + item.getData();
-			else
-				datName = "bag_" + world.worldData.name + "_" + human.name + item.getData();
-		} else {
-			datName = "bag_" + human.name + item.getData();
-		}
+		String datName = EEPatch.getBag(human, world, item);
+//		if (item.getData() > EEPatch.alcBagAmount){
+//			human.a("You are not allowed to have more than " + (EEPatch.alcBagAmount+1) + " different bags!");
+//			item.setData(EEPatch.alcBagAmount);
+//		}
+//
+//		String datName;
+//		if (EEPatch.separateAlcBags){
+//			if (EEPatch.sharedWorlds.contains(world.worldData.name.toLowerCase()))
+//				datName = "bag_" + EEPatch.mainSharedWorld + "_" + human.name + item.getData();
+//			else
+//				datName = "bag_" + world.worldData.name + "_" + human.name + item.getData();
+//		} else {
+//			datName = "bag_" + human.name + item.getData();
+//		}
 
 		AlchemyBagData bag = (AlchemyBagData) world.a(AlchemyBagData.class, datName);
 

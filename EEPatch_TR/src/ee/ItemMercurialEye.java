@@ -1,5 +1,7 @@
 package ee;
 
+import net.minecraft.server.Item;
+
 import ee.core.GuiIds;
 //import java.util.HashMap;
 //import java.util.Random;
@@ -13,8 +15,6 @@ import net.minecraft.server.World;
 import net.minecraft.server.mod_EE;
 
 public class ItemMercurialEye extends ItemEECharged {
-	private static String prefix_ = "eye_";
-
 	public ItemMercurialEye(int var1) {
 		super(var1, 4);
 	}
@@ -79,12 +79,14 @@ public class ItemMercurialEye extends ItemEECharged {
 
 	public static int getKleinStarPoints(ItemStack var0) {
 		if (var0 == null) return 0;
-		return (var0.getItem() instanceof ItemKleinStar) ? ((ItemKleinStar) var0.getItem()).getKleinPoints(var0) : 0;
+		Item i0;
+		return ((i0 = var0.getItem()) instanceof ItemKleinStar) ? ((ItemKleinStar) i0).getKleinPoints(var0) : 0;
 	}
 
 	public static MercurialEyeData getEyeData(EntityHuman human, World world) {
-		String plname = human.name;
-		String var3 = prefix_ + plname;
+//		String plname = human.name;
+//		String var3 = prefix_ + plname;
+		String var3 = EEPatch.getEye(human, world);
 		MercurialEyeData eyedata = (MercurialEyeData) world.a(MercurialEyeData.class, var3);
 
 		if (eyedata == null) {
@@ -96,15 +98,16 @@ public class ItemMercurialEye extends ItemEECharged {
 		return eyedata;
 	}
 
-	public static MercurialEyeData getEyeData(ItemStack var0, EntityHuman var1, World var2) {
-		String var3 = var1.name;
-		String var4 = prefix_ + var3;
-		MercurialEyeData var5 = (MercurialEyeData) var2.a(MercurialEyeData.class, var4);
+	public static MercurialEyeData getEyeData(ItemStack item, EntityHuman human, World world) {
+//		String plname = human.name;
+//		String var4 = prefix_ + plname;
+		String var4 = EEPatch.getEye(human, world);
+		MercurialEyeData var5 = (MercurialEyeData) world.a(MercurialEyeData.class, var4);
 
 		if (var5 == null) {
 			var5 = new MercurialEyeData(var4);
 			var5.a();
-			var2.a(var4, var5);
+			world.a(var4, var5);
 		}
 
 		return var5;
@@ -128,8 +131,9 @@ public class ItemMercurialEye extends ItemEECharged {
 
 	public void d(ItemStack var1, World var2, EntityHuman var3) {
 		if (!EEProxy.isClient(var2)) {
-			String var4 = var3.name;
-			String var5 = prefix_ + var4;
+//			String var4 = var3.name;
+//			String var5 = prefix_ + var4;
+			String var5 = EEPatch.getEye(var3, var2);
 			MercurialEyeData var6 = (MercurialEyeData) var2.a(MercurialEyeData.class, var5);
 
 			if (var6 == null) {
@@ -151,10 +155,11 @@ public class ItemMercurialEye extends ItemEECharged {
 		
 		MercurialEyeData eyedata = getEyeData(item, human, world);
 
-		if ((eyedata.getItem(0) != null) && (eyedata.getItem(1) != null)) {
-			if (EEMaps.getEMC(eyedata.getItem(1)) == 0) return false;
+		ItemStack i1;
+		if ((eyedata.getItem(0) != null) && ((i1 = eyedata.getItem(1)) != null)) {
+			if (EEMaps.getEMC(i1) == 0) return false;
 			if (!EEBase.isKleinStar(eyedata.getItem(0))) return false;
-			if (eyedata.getItem(1).id >= Block.byId.length) return false;
+			if (i1.id >= Block.byId.length) return false;
 
 			if (Block.byId[world.getTypeId(x, y, z)].hasTileEntity(world.getData(x, y, z))) {
 				if ((world.getTypeId(x, y, z) == EEBlock.eeStone.id) && (world.getData(x, y, z) <= 7)) {
@@ -166,18 +171,18 @@ public class ItemMercurialEye extends ItemEECharged {
 				}
 			}
 
-			if (Block.byId[eyedata.getItem(1).id].hasTileEntity(eyedata.getItem(1).getData())) {
-				if ((eyedata.getItem(1).id == EEBlock.eeStone.id) && (eyedata.getItem(1).getData() <= 7)) {
+			if (Block.byId[i1.id].hasTileEntity(i1.getData())) {
+				if ((i1.id == EEBlock.eeStone.id) && (i1.getData() <= 7)) {
 					return false;
 				}
 
-				if (eyedata.getItem(1).id != EEBlock.eeStone.id) {
+				if (i1.id != EEBlock.eeStone.id) {
 					return false;
 				}
 			}
 
-			int itemid = eyedata.getItem(1).id;
-			int itemdata = eyedata.getItem(1).getData();
+			int itemid = i1.id;
+			int itemdata = i1.getData();
 			double direction = EEBase.direction(human);
 
 			if (world.getTypeId(x, y, z) == Block.SNOW.id) {
